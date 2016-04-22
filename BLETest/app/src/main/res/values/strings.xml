@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BLETest</string>
+    <string name="BTcheck">Check for Blujetooth</string>
+    <string name="BLEcheck">Check for BLE</string>
 </resources>
