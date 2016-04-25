@@ -6,4 +6,6 @@
     <string name="btNotSupported">Bluetooth not supported</string>
     <string name="bleSupported">BLE supported</string>
     <string name="bleNotSupported">BLE not supported</string>
+    <string name="broadcast">Broadcast Message</string>
+    <string name="listen">Listen for Broadcasts</string>
 </resources>

@@ -24,4 +24,20 @@
         android:id="@+id/btnBLECheck"
         android:layout_below="@+id/btnBTCheck"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/broadcast"
+        android:id="@+id/btnBroadcast"
+        android:layout_below="@+id/btnBLECheck"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/listen"
+        android:id="@+id/btnListen"
+        android:layout_below="@+id/btnBroadcast"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
