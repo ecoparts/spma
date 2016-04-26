@@ -23,9 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private void addButtonListeners() {
         Button btnBTCheck=(Button)findViewById(R.id.btnBTCheck);
         Button btnBLECheck=(Button)findViewById(R.id.btnBLECheck);
-        Button btnBroadcast=(Button)findViewById(R.id.btnBroadcast);
-        Button btnListen=(Button)findViewById(R.id.btnListen);
-        
+
         btnBTCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
