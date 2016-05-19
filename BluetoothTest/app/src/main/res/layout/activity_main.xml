@@ -9,8 +9,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="de.dralle.bluetoothtest.MainActivity">
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="@string/scan"
+        android:id="@+id/btnScn"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollViewDevices"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/btnScn" >
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/listViewDevices"
+            android:layout_alignTop="@id/scrollViewDevices"
+            android:layout_alignEnd="@id/scrollViewDevices" />
+    </ScrollView>
+
 </RelativeLayout>
