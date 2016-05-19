@@ -6,17 +6,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG=MainActivity.class.getName();
 
     private int REQUEST_ENABLE_BT=42;
+    private ArrayList<BluetoothDevice> devices;
+    private ArrayList<String> deviceNames;
+    private ArrayAdapter<String> displayAdapter;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -28,7 +40,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG,device.getName());
                 Log.i(LOG_TAG,device.getBluetoothClass().toString());
                 Log.i(LOG_TAG,"Bond state: "+device.getBondState()+"");
-                Log.i(LOG_TAG,"Type :"+device.getBondState()+"");
+                Log.i(LOG_TAG,"Type: "+device.getBondState()+"");
+                devices.add(device);
+                deviceNames.add(device.getName());
+                displayAdapter.notifyDataSetChanged();
             }
         }
     };
@@ -37,6 +52,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        devices=new ArrayList<>();
+        deviceNames=new ArrayList<>();
+        displayAdapter=new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_list_item_1,deviceNames){
+            @Override
+            public View getView(int position, View convertView,
+                                ViewGroup parent) {
+                View view =super.getView(position, convertView, parent);
+
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+                textView.setTextColor(Color.BLUE);
+
+                return view;
+            }
+        };
+
         Button btnScan=(Button)findViewById(R.id.btnScn);
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 startDeviceScan();
             }
         });
+        ListView lvDevices=(ListView)findViewById(R.id.listViewDevices);
+        lvDevices.setAdapter(displayAdapter);
+
 
 
     }
@@ -118,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
             Log.i(LOG_TAG,"Starting discovery");
             if(btAdapter.startDiscovery()){
                 Log.i(LOG_TAG,"Started discovery");
+                devices.clear();
+                deviceNames.clear();
+                displayAdapter.notifyDataSetChanged();
             }else{
                 Log.i(LOG_TAG,"Failed discovery");
             }
