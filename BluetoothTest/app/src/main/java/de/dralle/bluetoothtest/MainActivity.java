@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+    }
+    protected void onStart(){
+        super.onStart();
         BluetoothAdapter btAdapter=BluetoothAdapter.getDefaultAdapter();
         if(btAdapter!=null){
             if(!btAdapter.isEnabled()){
@@ -33,10 +37,38 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    protected void onRestart(){
+        super.onRestart();
+    }
+
+    protected void onResume(){
+        super.onResume();
+    }
+
+    protected void onPause(){
+        super.onPause();
+    }
+
+    protected void onStop(){
+        super.onStop();
+    }
+
+    protected void onDestroy(){
+        super.onDestroy();
+        BluetoothAdapter btAdapter=BluetoothAdapter.getDefaultAdapter();
+        if(btAdapter!=null&&btAdapter.isEnabled()){
+            if(btAdapter.isDiscovering()){
+                Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
+                btAdapter.cancelDiscovery();
+            }
+        }
+    }
     @Override
     protected void onActivityResult (int requestCode,
                                 int resultCode,
                                 Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
         if(requestCode==REQUEST_ENABLE_BT){
             startDeviceScan();
         }
@@ -44,7 +76,16 @@ public class MainActivity extends AppCompatActivity {
     private void startDeviceScan() {
         BluetoothAdapter btAdapter=BluetoothAdapter.getDefaultAdapter();
         if(btAdapter!=null&&btAdapter.isEnabled()){
-
+            if(btAdapter.isDiscovering()){
+                Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
+                btAdapter.cancelDiscovery();
+            }
+            Log.i(LOG_TAG,"Starting discovery");
+            if(btAdapter.startDiscovery()){
+                Log.i(LOG_TAG,"Started discovery");
+            }else{
+                Log.i(LOG_TAG,"Failed discovery");
+            }
         }else{
             Log.e(LOG_TAG,"Bluetooth not enabled");
             Toast.makeText(getApplicationContext(),getText(R.string.btNotEnabled),Toast.LENGTH_LONG).show();
