@@ -30,7 +30,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
 
-    private final int REQUEST_ENABLE_BT = 42;
+    private final int REQUEST_ENABLE_BT = 2;
     private final int REQUEST_ACCESS_COARSE_LOCATION=1;
 
     private ArrayList<BluetoothDevice> devices;
@@ -45,12 +45,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "New device found");
                 Log.i(LOG_TAG, device.getAddress());
                 Log.i(LOG_TAG, device.getName());
-                Log.i(LOG_TAG, device.getBluetoothClass().toString());
-                Log.i(LOG_TAG, "Bond state: " + device.getBondState() + "");
-                Log.i(LOG_TAG, "Type: " + device.getBondState() + "");
                 devices.add(device);
                 deviceNames.add(device.getName());
                 displayAdapter.notifyDataSetChanged();
+            }
+            if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)){
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(device.getBondState()==BluetoothDevice.BOND_BONDED){
+                    Log.i(LOG_TAG, "New device bonded");
+                    Log.i(LOG_TAG, device.getAddress());
+                    Log.i(LOG_TAG, device.getName());
+                }else{
+                    Log.i(LOG_TAG, "Bonding failed");
+                }
             }
         }
     };
@@ -89,12 +96,26 @@ public class MainActivity extends AppCompatActivity {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(LOG_TAG, "Clicked item " + id);
+                BluetoothDevice btDevice = devices.get((int) id);
+                Log.i(LOG_TAG, "Selected device " + btDevice.getName());
+                if (btDevice.getBondState() == BluetoothDevice.BOND_NONE) {
+                    Log.i(LOG_TAG, "Device not bonded");
+                    if (btDevice.createBond()) {
+                        Log.i(LOG_TAG, "Bonding is starting...");
+                    } else {
+                        Log.i(LOG_TAG, "Bonding failed to start");
+                    }
+                } else {
+                    Log.i(LOG_TAG, "Device already bonded");
+                }
             }
         });
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(broadcastReceiver, filter); // Don't forget to unregister during onDestroy
+        registerReceiver(broadcastReceiver, filter);
+
+        filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        registerReceiver(broadcastReceiver, filter);
 
 
     }
