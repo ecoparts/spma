@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
 
     private final int REQUEST_ENABLE_BT = 2;
-    private final int REQUEST_ACCESS_COARSE_LOCATION=1;
+    private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
 
     private ArrayList<BluetoothDevice> devices;
     private ArrayList<String> deviceNames;
@@ -49,15 +49,34 @@ public class MainActivity extends AppCompatActivity {
                 deviceNames.add(device.getName());
                 displayAdapter.notifyDataSetChanged();
             }
-            if(BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)){
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getBondState()==BluetoothDevice.BOND_BONDED){
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                     Log.i(LOG_TAG, "New device bonded");
                     Log.i(LOG_TAG, device.getAddress());
                     Log.i(LOG_TAG, device.getName());
-                }else{
+                } else {
                     Log.i(LOG_TAG, "Bonding failed");
                 }
+            }
+            if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                try {
+
+
+                    Log.i(LOG_TAG, "Device requesting pairing");
+                    Log.i(LOG_TAG, device.getAddress());
+                    Log.i(LOG_TAG, device.getName());
+                    int pin = intent.getIntExtra("android.bluetooth.device.extra.PAIRING_KEY", 0);
+                    byte[] pinBytes;
+                    pinBytes = ("" + pin).getBytes("UTF-8");
+                    device.setPin(pinBytes);
+                    device.setPairingConfirmation(true);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Automatic pairing failed");
+                }
+
+
             }
         }
     };
@@ -117,14 +136,30 @@ public class MainActivity extends AppCompatActivity {
         filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(broadcastReceiver, filter);
 
+        filter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        registerReceiver(broadcastReceiver, filter);
 
+        makeDeviceVisible();
+
+
+    }
+
+    private void makeDeviceVisible() {
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (btAdapter != null) {
+            Log.i(LOG_TAG,"Making device discoverable");
+            if(btAdapter.getScanMode()!=BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
+                Intent discoverableIntent = new
+                        Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //0 for always visible
+                startActivity(discoverableIntent);
+            }
+
+        }
     }
 
     protected void onStart() {
         super.onStart();
-
-
-
 
 
     }
@@ -170,9 +205,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startDeviceScan() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION.toString())!= PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION.toString()},REQUEST_ACCESS_COARSE_LOCATION); //need to request permission at runtime for android 6.0+
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION.toString()}, REQUEST_ACCESS_COARSE_LOCATION); //need to request permission at runtime for android 6.0+
             }
         }
 
