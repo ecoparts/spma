@@ -3,4 +3,5 @@
     <string name="scan">Scan</string>
     <string name="btNotSupported">Bluetooth not supported</string>
     <string name="btNotEnabled">Bluetooth not enabled</string>
+    <string name="uuid">d453cc08-615b-4300-b802-ccb61927aca9</string>
 </resources>
