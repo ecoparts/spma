@@ -21,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG=MainActivity.class.getName();
@@ -52,9 +51,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        UUID rid=UUID.randomUUID();
-        Log.i(LOG_TAG,rid.toString());
 
         devices=new ArrayList<>();
         deviceNames=new ArrayList<>();
