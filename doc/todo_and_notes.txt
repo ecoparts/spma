@@ -1,3 +1,35 @@
 GUI
+-app name
+-login screen (user , password ; for local encryption)
+-Show nearby devices screen (listview)
+-p2p chat screen (like sms/mms app or whatsapp?)
+-settings
+--make device discoverable/not discoverable
+--view chat history
+--delete chat history
+--view recent/paired (?) devices
+--view and delete saved foreign public keys (see encryption)
+--view and generate new device key
+--change local encryption password
+-icon
+--https://www.google.com/design/spec/style/icons.html
+--http://developer.android.com/design/style/iconography.html
+--LDPI 36 x 36
+--MDPI 48 x 48
+--TVDPI 64 x 64
+--HDPI 72 x 72
+--XHDPI 96 x 96
+--XXHDPI 144 x 144
+--XXXHDPI 192 x 192
+--WEB 512 x 512 (only required for play store)
+--material design (?)
 Background Service
-Verschlüsselung
+-JSON (for IPC (intents) and BT communiation)(json-java available on github)
+-sqlite for saved data //builtin?
+-createInsecureRfcommSocketToServiceRecord(uuid); //for unpaired devices
+-createRfcommSocketToServiceRecord(uuid); //for paired devices, make MITM impossible
+-GUI activities and intentservice
+-multithreading
+Encryption
+-local: file encryption with AES
+-communication: AES and RSA (RSA for exchanging AES keys)
