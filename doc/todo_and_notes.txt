@@ -33,3 +33,4 @@ Background Service
 Encryption
 -local: file encryption with AES
 -communication: AES and RSA (RSA for exchanging AES keys)
+Documentaion
