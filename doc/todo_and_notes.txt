@@ -24,8 +24,8 @@ GUI
 --WEB 512 x 512 (only required for play store)
 --material design (?)
 Background Service
--JSON (for IPC (intents) and BT communiation)(json-java available on github)
--sqlite for saved data //builtin?
+-JSON (for IPC (intents) and BT communiation) //android has a built in json lib
+-sqlite for saved data //builtin sqlite support in android
 -createInsecureRfcommSocketToServiceRecord(uuid); //for unpaired devices
 -createRfcommSocketToServiceRecord(uuid); //for paired devices, make MITM impossible
 -GUI activities and intentservice
