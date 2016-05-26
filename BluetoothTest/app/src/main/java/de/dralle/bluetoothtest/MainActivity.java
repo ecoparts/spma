@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         UUID rid= UUID.randomUUID();
         Log.i(LOG_TAG,rid.toString());
-        
+
         devices = new ArrayList<>();
         deviceNames = new ArrayList<>();
         displayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNames) {
