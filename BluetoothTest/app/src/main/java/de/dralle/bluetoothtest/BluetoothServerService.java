@@ -7,6 +7,7 @@ import android.content.Intent;
  * Created by Nils on 26.05.2016.
  */
 public class BluetoothServerService extends IntentService {
+    private static final String LOG_TAG = BluetoothServerService.class.getName();
     public BluetoothServerService(){
         super("BluetoothServerService");
     }
