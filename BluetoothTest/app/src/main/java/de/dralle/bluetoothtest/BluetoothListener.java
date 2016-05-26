@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 /**
  * Created by Nils on 26.05.2016.
@@ -61,7 +63,10 @@ public class BluetoothListener implements Runnable {
                         e.printStackTrace();
                     }
                     if(btSock!=null){
-
+                        BluetoothConnection btCon=new BluetoothConnection(btSock);
+                       Thread t=new Thread(btCon);
+                        t.start();
+                   //     BluetoothConnectionObserver.getInstance().
                     }else{
                         Log.e(LOG_TAG,"Listener failed");
                         continueListen=false;
