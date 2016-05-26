@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -115,6 +120,25 @@ public class MainActivity extends AppCompatActivity {
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JSONObject startServerCmd=new JSONObject();
+                try {
+                    startServerCmd.put("Extern",false);
+                    startServerCmd.put("Level",0);
+                    startServerCmd.put("Action","StartListen");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    JSONArray srvArray=new JSONArray(new String[]{"insecure","secure"});
+                    startServerCmd.put("Servers",srvArray);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
+                btServerIntent.setData(Uri.parse(startServerCmd.toString()));
+                MainActivity.this.startService(btServerIntent);
+                Log.i(LOG_TAG,"Background servers starting");
+                Log.i(LOG_TAG,"Command is "+startServerCmd.toString());
 
             }
         });
