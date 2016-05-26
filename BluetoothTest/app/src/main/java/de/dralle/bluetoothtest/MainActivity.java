@@ -110,6 +110,15 @@ public class MainActivity extends AppCompatActivity {
                 startDeviceScan();
             }
         });
+
+        Button btnCntrlServer=(Button)findViewById(R.id.ctrlBTserver);
+        btnCntrlServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         ListView lvDevices = (ListView) findViewById(R.id.listViewDevices);
         lvDevices.setAdapter(displayAdapter);
 
