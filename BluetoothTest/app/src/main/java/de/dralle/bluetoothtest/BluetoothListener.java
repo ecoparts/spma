@@ -61,16 +61,18 @@ public class BluetoothListener implements Runnable {
                         btSock=serverSocket.accept();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                    if(btSock!=null){
-                        BluetoothConnection btCon=new BluetoothConnection(btSock);
-                       Thread t=new Thread(btCon);
-                        t.start();
-                   //     BluetoothConnectionObserver.getInstance().
-                    }else{
                         Log.e(LOG_TAG,"Listener failed");
                         continueListen=false;
                     }
+                    if(btSock!=null) {
+                        Log.i(LOG_TAG, "New connection");
+                        BluetoothConnection btCon = new BluetoothConnection(btSock, secure);
+                        btCon.addObserver(BluetoothConnectionObserver.getInstance());
+                        BluetoothConnectionObserver.getInstance().registerConnection(btCon);
+                        Thread t = new Thread(btCon);
+                        t.start();
+                    }
+
                 }
                 Log.w(LOG_TAG,"Listener stopped");
 

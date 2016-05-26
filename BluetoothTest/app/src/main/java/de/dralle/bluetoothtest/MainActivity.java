@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                 btServerIntent.setData(Uri.parse(startServerCmd.toString()));
                 MainActivity.this.startService(btServerIntent);
                 Log.i(LOG_TAG,"Background servers starting");
-                Log.i(LOG_TAG,"Command is "+startServerCmd.toString());
 
             }
         });
