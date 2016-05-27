@@ -116,28 +116,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnCntrlServer=(Button)findViewById(R.id.ctrlBTserver);
+        final Button btnCntrlServer=(Button)findViewById(R.id.ctrlBTserver);
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JSONObject startServerCmd=new JSONObject();
-                try {
-                    startServerCmd.put("Extern",false);
-                    startServerCmd.put("Level",0);
-                    startServerCmd.put("Action","StartListen");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                Button clicked=(Button)v;
+                if(clicked.getText().equals(getResources().getString(R.string.startBTserver))){
+
+
+                    JSONObject startServerCmd=new JSONObject();
+                    try {
+                        startServerCmd.put("Extern",false);
+                        startServerCmd.put("Level",0);
+                        startServerCmd.put("Action","StartListen");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        JSONArray srvArray=new JSONArray(new String[]{"insecure","secure"});
+                        startServerCmd.put("Servers",srvArray);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
+                    btServerIntent.setData(Uri.parse(startServerCmd.toString()));
+                    MainActivity.this.startService(btServerIntent);
+                    Log.i(LOG_TAG,"Background servers starting");
+                    clicked.setText(R.string.stopBTserver);
+                }else if(clicked.getText().equals(getResources().getString(R.string.stopBTserver))){
+
+
+                    JSONObject stopServerCmd=new JSONObject();
+                    try {
+                        stopServerCmd.put("Extern",false);
+                        stopServerCmd.put("Level",0);
+                        stopServerCmd.put("Action","StopListen");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
+                    btServerIntent.setData(Uri.parse(stopServerCmd.toString()));
+                    MainActivity.this.startService(btServerIntent);
+                    Log.i(LOG_TAG,"Background servers stopping");
+                    clicked.setText(R.string.startBTserver);
                 }
-                try {
-                    JSONArray srvArray=new JSONArray(new String[]{"insecure","secure"});
-                    startServerCmd.put("Servers",srvArray);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
-                btServerIntent.setData(Uri.parse(startServerCmd.toString()));
-                MainActivity.this.startService(btServerIntent);
-                Log.i(LOG_TAG,"Background servers starting");
 
             }
         });

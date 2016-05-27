@@ -56,6 +56,11 @@ public class BluetoothServerService extends IntentService {
             case "StartListen":
                 startListeningForConnections(requestData.getJSONArray("Servers"));
                 break;
+            case "StopListen":
+               for (BluetoothListener l:listeners){
+                   l.stopListener();
+               }
+                break;
             default:
                 Log.w(LOG_TAG, "Action " + action + " not recognized");
                 break;

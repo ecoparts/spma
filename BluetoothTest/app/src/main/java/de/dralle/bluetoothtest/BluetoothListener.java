@@ -19,7 +19,7 @@ public class BluetoothListener implements Runnable {
     private String uuid="";
     private boolean secure=false;
     private boolean continueListen=false; //continue to listen if new connection is accepted
-
+    private BluetoothServerSocket serverSocket=null;
     public boolean isListening() {
         return continueListen;
     }
@@ -37,7 +37,7 @@ public class BluetoothListener implements Runnable {
         Log.i(LOG_TAG,"Use secure mode: "+secure);
         BluetoothAdapter btAdapter=BluetoothAdapter.getDefaultAdapter();
         if(btAdapter!=null){
-            BluetoothServerSocket serverSocket=null;
+
             if(secure) {
                 try {
                     Log.i(LOG_TAG,"Starting listener using secure mode");
@@ -70,7 +70,9 @@ public class BluetoothListener implements Runnable {
                         btCon.addObserver(BluetoothConnectionObserver.getInstance());
                         BluetoothConnectionObserver.getInstance().registerConnection(btCon);
                         Thread t = new Thread(btCon);
-                        t.start();
+                        if(continueListen){
+                            t.start();
+                        }
                     }
 
                 }
@@ -83,6 +85,11 @@ public class BluetoothListener implements Runnable {
 
     }
     public void stopListener(){
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         continueListen=false;
     }
 }
