@@ -112,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDeviceScan();
+                //startDeviceScan();
+                startNewChatActivity(null);
             }
         });
 
@@ -198,6 +199,11 @@ public class MainActivity extends AppCompatActivity {
         makeDeviceVisible();
 
 
+    }
+
+    private void startNewChatActivity(BluetoothDevice remoteDevice) {
+        Intent newChatIntent=new Intent(this,ChatActivity.class);
+        startActivity(newChatIntent);
     }
 
     private void makeDeviceVisible() {
