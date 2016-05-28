@@ -8,18 +8,27 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ChatActivity">
-    <EditText
+    <TextView
         android:id="@+id/lblChatHistory"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <EditText
-        android:id="@+id/etNewLine"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"/>
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/btnSend"
-        android:text="@string/send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/lblChatHistory">
+        <EditText
+            android:id="@+id/etNewMsg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/btnSend"
+            android:text="@string/send"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 
 </RelativeLayout>
