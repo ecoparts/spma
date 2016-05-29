@@ -12,23 +12,25 @@
         android:id="@+id/lblChatHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="vertical"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/lblChatHistory">
-        <EditText
-            android:id="@+id/etNewMsg"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-        <Button
-            android:id="@+id/btnSend"
-            android:text="@string/send"
+        android:scrollbars="vertical"
+        android:layout_above="@+id/button"
+        android:layout_alignParentTop="true" />
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Button"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_alignBottom="@+id/button"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/button" />
 
 
 </RelativeLayout>
