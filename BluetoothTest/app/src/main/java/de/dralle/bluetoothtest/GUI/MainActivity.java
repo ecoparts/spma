@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v(LOG_TAG,"Service starting");
             serviceConnector.startService();
         }
+        serviceConnector.bindService();
 
 
         devices = new ArrayList<>();
@@ -121,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.v(LOG_TAG,"Service is running "+serviceConnector.isServiceRunning());
+                serviceConnector.bindService();
+                serviceConnector.sendMessage("Just a test");
                 /*Button clicked = (Button) v;
                 if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
 
@@ -246,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        serviceConnector.unbindService();
         serviceConnector.stopService();
         stopServers();
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
