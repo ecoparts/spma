@@ -23,6 +23,8 @@
         <service
             android:name=".BGS.deprecated.BluetoothServerService"
             android:exported="false" />
+        <service android:name=".BGS.SPMAService"
+            android:exported="false" />
 
         <activity android:name=".GUI.ChatActivity"></activity>
     </application>

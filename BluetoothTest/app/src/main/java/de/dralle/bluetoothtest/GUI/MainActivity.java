@@ -34,7 +34,7 @@ import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
-
+    private SPMAServiceConnector serviceConnector;
     private final int REQUEST_ENABLE_BT = 2;
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
 
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i(LOG_TAG, "New device found");
                 Log.i(LOG_TAG, device.getAddress());
-                Log.i(LOG_TAG, device.getName());
+                //Log.i(LOG_TAG, device.getName());
                 devices.add(device);
                 deviceNames.add(device.getName());
                 displayAdapter.notifyDataSetChanged();
@@ -82,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        serviceConnector=new SPMAServiceConnector(this);
+        if(serviceConnector.isServiceRunning()){
+            Log.i(LOG_TAG,"Service already running");
+        }else{
+            Log.v(LOG_TAG,"Service starting");
+            serviceConnector.startService();
+        }
+
 
         devices = new ArrayList<>();
         deviceNames = new ArrayList<>();
@@ -112,7 +120,8 @@ public class MainActivity extends AppCompatActivity {
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button clicked = (Button) v;
+                Log.v(LOG_TAG,"Service is running "+serviceConnector.isServiceRunning());
+                /*Button clicked = (Button) v;
                 if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
 
 
@@ -139,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     stopServers();
                     Log.i(LOG_TAG, "Background servers stopping");
                     clicked.setText(R.string.startBTserver);
-                }
+                }*/
 
             }
         });
@@ -237,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        serviceConnector.stopService();
         stopServers();
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null && btAdapter.isEnabled()) {

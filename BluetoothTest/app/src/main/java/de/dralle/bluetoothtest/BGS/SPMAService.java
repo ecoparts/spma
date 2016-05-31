@@ -18,5 +18,9 @@ public class SPMAService extends Service {
     }
 
 
-
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
 }
