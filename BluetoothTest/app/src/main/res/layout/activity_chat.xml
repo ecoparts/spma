@@ -13,24 +13,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="vertical"
-        android:layout_above="@+id/button"
+        android:layout_above="@+id/btnSend"
         android:layout_alignParentTop="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
-        android:id="@+id/button"
+        android:text="@string/send"
+        android:id="@+id/btnSend"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
-        android:layout_alignBottom="@+id/button"
+        android:id="@+id/etNewMsg"
+        android:layout_alignBottom="@+id/btnSend"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/button" />
+        android:layout_toStartOf="@+id/btnSend" />
 
 
 </RelativeLayout>
