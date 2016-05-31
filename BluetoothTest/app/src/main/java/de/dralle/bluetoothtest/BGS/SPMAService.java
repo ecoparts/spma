@@ -10,11 +10,13 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
+
 /**
  * Created by nils on 31.05.16.
  */
 public class SPMAService extends IntentService {
-    public static final String ACTION_NEW_MSG = "ACTION_NEW_MSG";
+    public static final String ACTION_NEW_MSG = "SPMAService.ACTION_NEW_MSG";
     private static final String LOG_TAG = SPMAService.class.getName();
 
 
@@ -52,6 +54,7 @@ public class SPMAService extends IntentService {
                 String msg = intent.getStringExtra("msg");
                 Log.i(LOG_TAG, "New message");
                 Log.i(LOG_TAG, msg);
+                sendMessage("Hello");
 
             }
         }
@@ -60,6 +63,15 @@ public class SPMAService extends IntentService {
 
     public SPMAService() {
         super("SPMAService");
+    }
+
+    public void sendMessage(String msg){
+        Intent bgServiceIntent = new Intent(SPMAServiceConnector.ACTION_NEW_MSG);
+        bgServiceIntent.putExtra("msg", msg);
+        sendBroadcast(bgServiceIntent);
+
+
+        //parentActivity.startService(bgServiceIntent);
     }
 
     @Nullable

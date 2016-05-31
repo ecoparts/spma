@@ -45,33 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Log.i(LOG_TAG, "New device found");
-                Log.i(LOG_TAG, device.getAddress());
-                //Log.i(LOG_TAG, device.getName());
-                devices.add(device);
-                deviceNames.add(device.getName());
-                displayAdapter.notifyDataSetChanged();
-            }
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    Log.i(LOG_TAG, "New device bonded");
-                    Log.i(LOG_TAG, device.getAddress());
-                    Log.i(LOG_TAG, device.getName());
-                } else {
-                    Log.i(LOG_TAG, "Bonding failed");
-                }
-            }
-            if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-
-                Log.i(LOG_TAG, "Device requesting pairing");
-                Log.i(LOG_TAG, device.getAddress());
-                Log.i(LOG_TAG, device.getName());
-
+            if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
+                Log.i(LOG_TAG,"New message from service");
 
             }
         }
@@ -89,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v(LOG_TAG,"Service starting");
             serviceConnector.startService();
         }
-        serviceConnector.bindService();
+
 
 
         devices = new ArrayList<>();
@@ -122,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.v(LOG_TAG,"Service is running "+serviceConnector.isServiceRunning());
-                serviceConnector.bindService();
+
                 serviceConnector.sendMessage("Just a test");
                 /*Button clicked = (Button) v;
                 if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
@@ -167,13 +143,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(broadcastReceiver, filter);
 
-        filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-        registerReceiver(broadcastReceiver, filter);
 
-        filter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
 
         makeDeviceVisible();
@@ -249,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-        serviceConnector.unbindService();
+
         serviceConnector.stopService();
         stopServers();
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();

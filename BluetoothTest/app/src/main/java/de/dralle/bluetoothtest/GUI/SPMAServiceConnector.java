@@ -3,9 +3,12 @@ package de.dralle.bluetoothtest.GUI;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -19,14 +22,21 @@ import de.dralle.bluetoothtest.BGS.deprecated.BluetoothServerService;
 /**
  * Created by nils on 31.05.16.
  */
-public class SPMAServiceConnector implements ServiceConnection{
+public class SPMAServiceConnector {
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
-    private boolean serviceBound=false;
-    private Messenger serviceMessenger=null;
+    public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
+              Log.i(LOG_TAG,"New message from service");
 
-    public boolean isServiceBound() {
-        return serviceBound;
-    }
+            }
+
+        }
+    };
+
+
 
     private Activity parentActivity;
 
@@ -39,33 +49,30 @@ public class SPMAServiceConnector implements ServiceConnection{
     public void startService(){
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.startService(bgServiceIntent);
-    }
-    public void bindService(){
-        if(!serviceBound){
-            Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
-            parentActivity.bindService(bgServiceIntent,this,Context.BIND_ABOVE_CLIENT);
 
+        //register broadcast receiver for messages from the service
+        IntentFilter filter=new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
+        try {
+            parentActivity.registerReceiver(broadcastReceiver, filter);
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
     }
-    public void unbindService(){
-        if(serviceBound){
-            Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
-            parentActivity.unbindService(this);
 
-        }
-
-
-    }
     public void sendMessage(String msg){
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
+
+
         //parentActivity.startService(bgServiceIntent);
     }
     public void stopService(){
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.stopService(bgServiceIntent);
+
+        //unregister receiver
+        parentActivity.unregisterReceiver(broadcastReceiver);
     }
     public boolean isServiceRunning(){
         ActivityManager am=(ActivityManager)parentActivity.getSystemService(Context.ACTIVITY_SERVICE);
@@ -79,17 +86,5 @@ public class SPMAServiceConnector implements ServiceConnection{
         return false;
     }
 
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.i(LOG_TAG,"Service "+componentName+" bound");
-        serviceBound=true;
 
-
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-        Log.i(LOG_TAG,"Service "+componentName+" unbound");
-        serviceBound=false;
-    }
 }
