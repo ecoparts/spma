@@ -66,20 +66,13 @@ public class MainActivity extends AppCompatActivity {
             }
             if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                try {
+              
 
 
                     Log.i(LOG_TAG, "Device requesting pairing");
                     Log.i(LOG_TAG, device.getAddress());
                     Log.i(LOG_TAG, device.getName());
-                    int pin = intent.getIntExtra("android.bluetooth.device.extra.PAIRING_KEY", 0);
-                    byte[] pinBytes;
-                    pinBytes = ("" + pin).getBytes("UTF-8");
-                    device.setPin(pinBytes);
-                    device.setPairingConfirmation(true);
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Automatic pairing failed");
-                }
+
 
 
             }
@@ -112,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startDeviceScan();
-                startNewChatActivity(null);
+                startDeviceScan();
+
             }
         });
 
@@ -173,17 +166,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BluetoothDevice btDevice = devices.get((int) id);
-                Log.i(LOG_TAG, "Selected device " + btDevice.getName());
-                if (btDevice.getBondState() == BluetoothDevice.BOND_NONE) {
-                    Log.i(LOG_TAG, "Device not bonded");
-                    if (btDevice.createBond()) {
-                        Log.i(LOG_TAG, "Bonding is starting...");
-                    } else {
-                        Log.i(LOG_TAG, "Bonding failed to start");
-                    }
-                } else {
-                    Log.i(LOG_TAG, "Device already bonded");
-                }
+                startNewChatActivity(btDevice);
             }
         });
 
@@ -202,8 +185,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
-        Intent newChatIntent=new Intent(this,ChatActivity.class);
-        startActivity(newChatIntent);
+        if(remoteDevice!=null){
+            Intent newChatIntent=new Intent(this,ChatActivity.class);
+            newChatIntent.putExtra("address",remoteDevice.getAddress());
+            startActivity(newChatIntent);
+        }
+
     }
 
     private void makeDeviceVisible() {
