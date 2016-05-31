@@ -4,6 +4,12 @@ package de.dralle.bluetoothtest.GUI;
  * Created by nils on 31.05.16.
  */
 public class SPMAServiceConnector {
+    private static SPMAServiceConnector ourInstance = new SPMAServiceConnector();
 
-    private static final String LOG_TAG = SPMAServiceConnector.class.getName();
+    public static SPMAServiceConnector getInstance() {
+        return ourInstance;
+    }
+
+    private SPMAServiceConnector() {
+    }
 }
