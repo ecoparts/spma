@@ -26,7 +26,7 @@ public class BluetoothServerService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.i(LOG_TAG, "New work request");
-        String data = intent.getDataString();
+        String data = intent.getStringExtra("command");
         Log.i(LOG_TAG, "Data: " + data);
         JSONObject requestData = null;
         try {

@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (BluetoothDevice.ACTION_PAIRING_REQUEST.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-              
+
 
 
                     Log.i(LOG_TAG, "Device requesting pairing");
@@ -132,26 +132,13 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
-                    btServerIntent.setData(Uri.parse(startServerCmd.toString()));
-                    MainActivity.this.startService(btServerIntent);
+                    sendCommandToBackgroundService(startServerCmd.toString());
                     Log.i(LOG_TAG,"Background servers starting");
                     clicked.setText(R.string.stopBTserver);
                 }else if(clicked.getText().equals(getResources().getString(R.string.stopBTserver))){
 
 
-                    JSONObject stopServerCmd=new JSONObject();
-                    try {
-                        stopServerCmd.put("Extern",false);
-                        stopServerCmd.put("Level",0);
-                        stopServerCmd.put("Action","StopListen");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    Intent btServerIntent=new Intent(MainActivity.this,BluetoothServerService.class);
-                    btServerIntent.setData(Uri.parse(stopServerCmd.toString()));
-                    MainActivity.this.startService(btServerIntent);
+                    stopServers();
                     Log.i(LOG_TAG,"Background servers stopping");
                     clicked.setText(R.string.startBTserver);
                 }
@@ -182,6 +169,25 @@ public class MainActivity extends AppCompatActivity {
         makeDeviceVisible();
 
 
+    }
+
+    private void stopServers() {
+        JSONObject stopServerCmd=new JSONObject();
+        try {
+            stopServerCmd.put("Extern",false);
+            stopServerCmd.put("Level",0);
+            stopServerCmd.put("Action","StopListen");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        sendCommandToBackgroundService(stopServerCmd.toString());
+    }
+
+    private void sendCommandToBackgroundService(String command){
+        Intent bgServiceIntent=new Intent(this,BluetoothServerService.class);
+        bgServiceIntent.putExtra("command",command);
+        startService(bgServiceIntent);
     }
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
@@ -233,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-
+        stopServers();
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null && btAdapter.isEnabled()) {
             if (btAdapter.isDiscovering()) {
