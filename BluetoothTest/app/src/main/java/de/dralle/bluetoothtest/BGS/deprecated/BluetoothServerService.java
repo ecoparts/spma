@@ -1,4 +1,4 @@
-package de.dralle.bluetoothtest;
+package de.dralle.bluetoothtest.BGS.deprecated;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -10,6 +10,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.dralle.bluetoothtest.BGS.BluetoothListener;
+import de.dralle.bluetoothtest.R;
 
 /**
  * Created by Nils on 26.05.2016.
@@ -57,6 +60,7 @@ public class BluetoothServerService extends IntentService {
                 startListeningForConnections(requestData.getJSONArray("Servers"));
                 break;
             case "StopListen":
+                Log.i(LOG_TAG,"Stopping "+listeners.size()+" listeners");
                for (BluetoothListener l:listeners){
                    l.stopListener();
                }

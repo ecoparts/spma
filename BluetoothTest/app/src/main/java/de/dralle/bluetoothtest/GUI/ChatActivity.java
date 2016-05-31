@@ -1,10 +1,11 @@
-package de.dralle.bluetoothtest;
+package de.dralle.bluetoothtest.GUI;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+
+import de.dralle.bluetoothtest.R;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String LOG_TAG = ChatActivity.class.getName();

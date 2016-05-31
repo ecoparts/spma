@@ -1,4 +1,4 @@
-package de.dralle.bluetoothtest;
+package de.dralle.bluetoothtest.GUI;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -8,9 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.DataSetObserver;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import de.dralle.bluetoothtest.BGS.deprecated.BluetoothServerService;
+import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
@@ -68,11 +68,9 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
 
-
-                    Log.i(LOG_TAG, "Device requesting pairing");
-                    Log.i(LOG_TAG, device.getAddress());
-                    Log.i(LOG_TAG, device.getName());
-
+                Log.i(LOG_TAG, "Device requesting pairing");
+                Log.i(LOG_TAG, device.getAddress());
+                Log.i(LOG_TAG, device.getName());
 
 
             }
@@ -110,36 +108,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button btnCntrlServer=(Button)findViewById(R.id.ctrlBTserver);
+        final Button btnCntrlServer = (Button) findViewById(R.id.ctrlBTserver);
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button clicked=(Button)v;
-                if(clicked.getText().equals(getResources().getString(R.string.startBTserver))){
+                Button clicked = (Button) v;
+                if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
 
 
-                    JSONObject startServerCmd=new JSONObject();
+                    JSONObject startServerCmd = new JSONObject();
                     try {
-                        startServerCmd.put("Extern",false);
-                        startServerCmd.put("Level",0);
-                        startServerCmd.put("Action","StartListen");
+                        startServerCmd.put("Extern", false);
+                        startServerCmd.put("Level", 0);
+                        startServerCmd.put("Action", "StartListen");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     try {
-                        JSONArray srvArray=new JSONArray(new String[]{"insecure","secure"});
-                        startServerCmd.put("Servers",srvArray);
+                        JSONArray srvArray = new JSONArray(new String[]{"insecure", "secure"});
+                        startServerCmd.put("Servers", srvArray);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     sendCommandToBackgroundService(startServerCmd.toString());
-                    Log.i(LOG_TAG,"Background servers starting");
+                    Log.i(LOG_TAG, "Background servers starting");
                     clicked.setText(R.string.stopBTserver);
-                }else if(clicked.getText().equals(getResources().getString(R.string.stopBTserver))){
+                } else if (clicked.getText().equals(getResources().getString(R.string.stopBTserver))) {
 
 
                     stopServers();
-                    Log.i(LOG_TAG,"Background servers stopping");
+                    Log.i(LOG_TAG, "Background servers stopping");
                     clicked.setText(R.string.startBTserver);
                 }
 
@@ -172,11 +170,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopServers() {
-        JSONObject stopServerCmd=new JSONObject();
+        JSONObject stopServerCmd = new JSONObject();
         try {
-            stopServerCmd.put("Extern",false);
-            stopServerCmd.put("Level",0);
-            stopServerCmd.put("Action","StopListen");
+            stopServerCmd.put("Extern", false);
+            stopServerCmd.put("Level", 0);
+            stopServerCmd.put("Action", "StopListen");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -184,16 +182,16 @@ public class MainActivity extends AppCompatActivity {
         sendCommandToBackgroundService(stopServerCmd.toString());
     }
 
-    private void sendCommandToBackgroundService(String command){
-        Intent bgServiceIntent=new Intent(this,BluetoothServerService.class);
-        bgServiceIntent.putExtra("command",command);
+    private void sendCommandToBackgroundService(String command) {
+        Intent bgServiceIntent = new Intent(this, BluetoothServerService.class);
+        bgServiceIntent.putExtra("command", command);
         startService(bgServiceIntent);
     }
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
-        if(remoteDevice!=null){
-            Intent newChatIntent=new Intent(this,ChatActivity.class);
-            newChatIntent.putExtra("address",remoteDevice.getAddress());
+        if (remoteDevice != null) {
+            Intent newChatIntent = new Intent(this, ChatActivity.class);
+            newChatIntent.putExtra("address", remoteDevice.getAddress());
             startActivity(newChatIntent);
         }
 
@@ -202,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
     private void makeDeviceVisible() {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null) {
-            Log.i(LOG_TAG,"Making device discoverable");
-            if(btAdapter.getScanMode()!=BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
+            Log.i(LOG_TAG, "Making device discoverable");
+            if (btAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                 Intent discoverableIntent = new
                         Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //0 for always visible

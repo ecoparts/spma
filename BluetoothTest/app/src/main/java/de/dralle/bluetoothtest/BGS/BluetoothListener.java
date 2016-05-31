@@ -1,4 +1,4 @@
-package de.dralle.bluetoothtest;
+package de.dralle.bluetoothtest.BGS;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -7,8 +7,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.UUID;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 /**
  * Created by Nils on 26.05.2016.

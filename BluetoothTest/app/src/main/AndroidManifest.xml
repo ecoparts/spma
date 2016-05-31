@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".GUI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,10 +21,10 @@
         </activity>
 
         <service
-            android:name=".BluetoothServerService"
+            android:name=".BGS.deprecated.BluetoothServerService"
             android:exported="false" />
 
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".GUI.ChatActivity"></activity>
     </application>
 
 </manifest>

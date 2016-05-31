@@ -1,4 +1,4 @@
-package de.dralle.bluetoothtest;
+package de.dralle.bluetoothtest.BGS;
 
 import java.util.ArrayList;
 import java.util.List;
