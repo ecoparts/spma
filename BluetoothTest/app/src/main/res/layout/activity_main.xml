@@ -12,16 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/llButtons">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/scan"
-            android:id="@+id/btnScn" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/startBTserver"
-            android:id="@+id/ctrlBTserver" />
+
     </LinearLayout>
 
 
@@ -31,8 +22,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/listViewDevices"
-            android:layout_below="@id/llButtons"
-            android:layout_alignParentStart="true"/>
+            android:layout_below="@+id/llButtons"
+            android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/scan"
+        android:id="@+id/btnScn"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/startBTserver"
+        android:id="@+id/ctrlBTserver"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/btnScn" />
 
 
 </RelativeLayout>
