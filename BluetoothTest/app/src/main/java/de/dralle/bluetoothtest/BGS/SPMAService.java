@@ -1,5 +1,6 @@
 package de.dralle.bluetoothtest.BGS;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -7,8 +8,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -55,15 +59,15 @@ public class SPMAService extends IntentService {
 
             }
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                BluetoothAdapter defaultAdapter=BluetoothAdapter.getDefaultAdapter();
-                if(defaultAdapter!=null){
-                    if(defaultAdapter.isEnabled()){
-                        Log.i(LOG_TAG,"Bluetooth is now enabled");
-                    }else{
-                        Log.i(LOG_TAG,"Bluetooth is now disabled");
+                BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (defaultAdapter != null) {
+                    if (defaultAdapter.isEnabled()) {
+                        Log.i(LOG_TAG, "Bluetooth is now enabled");
+                    } else {
+                        Log.i(LOG_TAG, "Bluetooth is now disabled");
                     }
-                }else{
-                    Log.w(LOG_TAG,"BluetoothAdapter is null after state change. Its bad");
+                } else {
+                    Log.w(LOG_TAG, "BluetoothAdapter is null after state change. Its bad");
                 }
 
 
@@ -79,12 +83,12 @@ public class SPMAService extends IntentService {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(msgData!=null){
-                    if(checkMessage(msgData)){
+                if (msgData != null) {
+                    if (checkMessage(msgData)) {
                         parseMessageForAction(msgData);
                     }
-                }else{
-                    Log.w(LOG_TAG,"Message not JSON");
+                } else {
+                    Log.w(LOG_TAG, "Message not JSON");
                 }
 
 
@@ -94,42 +98,89 @@ public class SPMAService extends IntentService {
 
     /**
      * Checks the message action attribute and executes the appropriate action
+     *
      * @param msgData JSON formatted message to be checked
      */
     private void parseMessageForAction(JSONObject msgData) {
-        String action="";
+        String action = "";
         try {
-            action=msgData.getString("Action");
+            action = msgData.getString("Action");
         } catch (JSONException e) {
             e.printStackTrace();
 
         }
-        if(action==null){
-            action="";
+        if (action == null) {
+            action = "";
         }
-        switch(action){
+        switch (action) {
             case "MakeVisible":
                 makeDeviceVisible(msgData);
                 break;
             case "TurnOn":
                 turnBluetoothOn();
                 break;
+            case "Scan":
+                scanForNearbyDevices(msgData);
+                break;
             default:
-                Log.w(LOG_TAG,"Action not recognized: "+action);
+                Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
         }
     }
 
     /**
+     * Starts scanning for bluetooth devices
+     *
+     * @param msgData may contain additional data
+     * @return scan was successfully initialized
+     */
+    private boolean scanForNearbyDevices(JSONObject msgData) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {
+
+                Log.i(LOG_TAG, "Permission ACCESS_COARSE_LOCATION granted");
+            } else {
+                Log.w(LOG_TAG, "Permission ACCESS_COARSE_LOCATION denied");
+                return false;
+            }
+
+        }
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (btAdapter != null) {
+            if (btAdapter.isEnabled()) {
+
+
+                if (btAdapter.isDiscovering()) {
+                    Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
+                    btAdapter.cancelDiscovery();
+                }
+                Log.i(LOG_TAG, "Starting discovery");
+                if (btAdapter.startDiscovery()) {
+                    Log.i(LOG_TAG, "Started discovery");
+                    return true;
+                } else {
+                    Log.i(LOG_TAG, "Failed to start discovery");
+                }
+            } else {
+                Log.i(LOG_TAG, "Bluetooth disabled. Cant scan");
+
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if the message is plausible. Checks the attributes 'Extern' and 'Level'. Extern needs to be false, Level needs to be 0 (for non encrypted, cause not extern)
+     *
      * @param msgData JSON formatted message to be checked
      * @return true if valid
      */
+
     private boolean checkMessage(JSONObject msgData) {
-        boolean b= false;
+        boolean b = false;
         try {
             b = (!msgData.getBoolean("Extern") && msgData.getInt("Level") == 0);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
         return b;
@@ -137,13 +188,14 @@ public class SPMAService extends IntentService {
 
     /**
      * Checks if the device is discoverable, and if no requests it
+     *
      * @param msgData may contain additional data
      */
     private void makeDeviceVisible(JSONObject msgData) {
         //if a duration is given, use that
-        int duration=0; //0 for always visible
+        int duration = 0; //0 for always visible
         try {
-            duration=msgData.getInt("Duration");
+            duration = msgData.getInt("Duration");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -157,12 +209,13 @@ public class SPMAService extends IntentService {
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, duration);
                 discoverableIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(discoverableIntent);
-            }else{
-                Log.v(LOG_TAG,"Device already visible");
+            } else {
+                Log.v(LOG_TAG, "Device already visible");
             }
 
         }
     }
+
     /**
      * Checks if bluetooth is on, and if no requests permission to turn it on
      */
@@ -175,8 +228,8 @@ public class SPMAService extends IntentService {
                 btOnRequest.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //Flag needed when starting from a service
                 startActivity(btOnRequest);
 
-            }else{
-                Log.v(LOG_TAG,"Bluetooth already on");
+            } else {
+                Log.v(LOG_TAG, "Bluetooth already on");
             }
 
         }
@@ -187,7 +240,7 @@ public class SPMAService extends IntentService {
         super("SPMAService");
     }
 
-    public void sendMessage(String msg){
+    public void sendMessage(String msg) {
         Intent bgServiceIntent = new Intent(SPMAServiceConnector.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         sendBroadcast(bgServiceIntent);
