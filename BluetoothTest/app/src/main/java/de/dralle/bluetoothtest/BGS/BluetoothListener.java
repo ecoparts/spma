@@ -25,7 +25,7 @@ public class BluetoothListener implements Runnable {
     public BluetoothListener(boolean secure, String uuid) {
         this.secure = secure;
         this.uuid = uuid;
-        this.continueListen = true;
+        this.continueListen = false;
     }
 
     @Override
@@ -85,7 +85,9 @@ public class BluetoothListener implements Runnable {
     }
     public void stopListener(){
         try {
-            serverSocket.close();
+            if(serverSocket!=null){
+                serverSocket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
