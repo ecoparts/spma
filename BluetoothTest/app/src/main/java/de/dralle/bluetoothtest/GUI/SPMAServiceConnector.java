@@ -70,6 +70,12 @@ public class SPMAServiceConnector {
             case "NewDevice":
                 handleNewDevice(msgData);
                 break;
+            case "ListenersStarted":
+                listenersOnline=true;
+                break;
+            case "ListenersStopped":
+                listenersOnline=false;
+                break;
             default:
                 break;
         }

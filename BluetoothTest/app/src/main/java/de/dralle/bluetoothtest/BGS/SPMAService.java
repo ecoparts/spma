@@ -174,6 +174,7 @@ public class SPMAService extends IntentService {
                 scanForNearbyDevices(msgData);
                 break;
             case "StartListeners":
+                startListeners(msgData);
                 break;
             case "StopListeners":
                 break;
@@ -181,6 +182,85 @@ public class SPMAService extends IntentService {
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
         }
+    }
+    /**
+     * Starts the listeners
+     *
+     * @param msgData may contain additional data
+     * @return scan was successfully initialized
+     */
+    private void startListeners(JSONObject msgData) {
+        if(!secureListener.isListening()){
+            Thread t=new Thread(secureListener);
+            t.start();
+            Log.i(LOG_TAG,"Secure listener started");
+        }else{
+            secureListener.stopListener();
+            Thread t=new Thread(secureListener);
+            t.start();
+            Log.i(LOG_TAG,"Secure listener restarted");
+        }
+
+        if(!insecureListener.isListening()){
+            Thread t=new Thread(insecureListener);
+            t.start();
+            Log.i(LOG_TAG,"Insecure listener started");
+        }else{
+            insecureListener.stopListener();
+            Thread t=new Thread(insecureListener);
+            t.start();
+            Log.i(LOG_TAG,"Insecure listener restarted");
+        }
+        sendListenerStartMessage();
+    }
+    /**
+     * Send a message that Listeners started
+     */
+    private void sendListenerStartMessage() {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ListenersStarted");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(mdvCmd.toString());
+    }
+
+    /**
+     * Stops the listeners
+     *
+     * @param msgData may contain additional data
+     * @return scan was successfully initialized
+     */
+    private void stopListeners(JSONObject msgData) {
+        if(secureListener.isListening()){
+            secureListener.stopListener();
+            Log.i(LOG_TAG,"Secure listener stopped");
+        }
+
+        if(insecureListener.isListening()){
+            insecureListener.stopListener();
+            Log.i(LOG_TAG,"Insecure listener stopped");
+        }
+        sendListenerStopMessage();
+    }
+    /**
+     * Send a message that Listeners stopped
+     */
+    private void sendListenerStopMessage() {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ListenersStopped");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessage(mdvCmd.toString());
     }
 
     /**
@@ -355,8 +435,8 @@ public class SPMAService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
        devices=new ArrayList<>(); //initialize device list
-        secureListener=new BluetoothListener(true,getResources().getString(R.string.uuid_secure),true);
-        insecureListener=new BluetoothListener(false,getResources().getString(R.string.uuid_insecure),true);
+        secureListener=new BluetoothListener(true,getResources().getString(R.string.uuid_secure));
+        insecureListener=new BluetoothListener(false,getResources().getString(R.string.uuid_insecure));
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }

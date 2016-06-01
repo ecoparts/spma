@@ -22,14 +22,15 @@ public class BluetoothListener implements Runnable {
         return continueListen;
     }
 
-    public BluetoothListener(boolean secure, String uuid, boolean continueListen) {
+    public BluetoothListener(boolean secure, String uuid) {
         this.secure = secure;
         this.uuid = uuid;
-        this.continueListen = continueListen;
+        this.continueListen = true;
     }
 
     @Override
     public void run() {
+        continueListen=true;
         Log.i(LOG_TAG,"Bluetooth Listener starting");
         Log.i(LOG_TAG,"Selected UUID: "+uuid);
         Log.i(LOG_TAG,"Use secure mode: "+secure);
