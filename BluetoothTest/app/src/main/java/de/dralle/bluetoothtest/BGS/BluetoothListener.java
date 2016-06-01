@@ -92,5 +92,6 @@ public class BluetoothListener implements Runnable {
             e.printStackTrace();
         }
         continueListen=false;
+        Log.i(LOG_TAG,"listener stopped. Listener was secure: "+secure);
     }
 }

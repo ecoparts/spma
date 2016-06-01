@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
                    }
                }else{
-                   serviceConnector.startService();
+
                }
                 /*Button clicked = (Button) v;
                 if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {

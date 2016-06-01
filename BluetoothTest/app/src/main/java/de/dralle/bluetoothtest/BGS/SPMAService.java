@@ -177,6 +177,7 @@ public class SPMAService extends IntentService {
                 startListeners(msgData);
                 break;
             case "StopListeners":
+                stopListeners(msgData);
                 break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
