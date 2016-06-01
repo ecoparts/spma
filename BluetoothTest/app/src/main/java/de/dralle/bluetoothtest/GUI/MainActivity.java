@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        startDeviceScan();
+        //startDeviceScan();
     }
 
     protected void onPause() {
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT) {
-            startDeviceScan();
+            //startDeviceScan();
         }
     }
 
