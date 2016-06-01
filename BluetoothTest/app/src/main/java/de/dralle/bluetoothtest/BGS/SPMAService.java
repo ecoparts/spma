@@ -18,6 +18,9 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 
 /**
@@ -26,6 +29,7 @@ import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 public class SPMAService extends IntentService {
     public static final String ACTION_NEW_MSG = "SPMAService.ACTION_NEW_MSG";
     private static final String LOG_TAG = SPMAService.class.getName();
+    private List<BluetoothDevice> devices;
 
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -36,7 +40,10 @@ public class SPMAService extends IntentService {
                 Log.i(LOG_TAG, "New device found");
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-               sendNewDeviceFoundMessage(device);
+               if(addNewDevice(device)){ //Only send message if device is new
+                   sendNewDeviceFoundMessage(device);
+               }
+
 
             }
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
@@ -95,6 +102,25 @@ public class SPMAService extends IntentService {
             }
         }
     };
+
+    /**
+     * Adds a new device to the List of devices.
+     * Tries to ensure that every device is only added once by checking its address
+     * @param device Device to be added
+     * @return True if the device is new
+     */
+    private boolean addNewDevice(BluetoothDevice device) {
+        for(BluetoothDevice d:devices) {
+            if (d.getAddress().equals(device.getAddress())) {
+                Log.w(LOG_TAG, device.getAddress() + " already known");
+                return false;
+            }
+
+        }
+        devices.add(device);
+        return true;
+
+    }
 
     /**
      * Send a message that a new device was discovered
@@ -171,7 +197,7 @@ public class SPMAService extends IntentService {
         if (btAdapter != null) {
             if (btAdapter.isEnabled()) {
 
-
+                devices.clear(); //clear current device list
                 if (btAdapter.isDiscovering()) {
                     Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
                     btAdapter.cancelDiscovery();
@@ -312,8 +338,16 @@ public class SPMAService extends IntentService {
         unregisterReceiver(broadcastReceiver);
     }
 
+    /**
+     * Called when the service is started
+     * @param intent The Starting intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+       devices=new ArrayList<>(); //initialize device list
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
