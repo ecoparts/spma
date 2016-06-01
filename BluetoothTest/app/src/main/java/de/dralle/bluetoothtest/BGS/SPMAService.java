@@ -109,7 +109,7 @@ public class SPMAService extends IntentService {
         }
         switch(action){
             case "MakeVisible":
-                makeDeviceVisible();
+                makeDeviceVisible(msgData);
                 break;
             case "TurnOn":
                 turnBluetoothOn();
@@ -137,15 +137,24 @@ public class SPMAService extends IntentService {
 
     /**
      * Checks if the device is discoverable, and if no requests it
+     * @param msgData may contain additional data
      */
-    private void makeDeviceVisible() {
+    private void makeDeviceVisible(JSONObject msgData) {
+        //if a duration is given, use that
+        int duration=0; //0 for always visible
+        try {
+            duration=msgData.getInt("Duration");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null) {
             Log.i(LOG_TAG, "Making device discoverable");
             if (btAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                 Intent discoverableIntent = new
                         Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //0 for always visible
+                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, duration);
                 discoverableIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(discoverableIntent);
             }else{
