@@ -139,4 +139,25 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG,"Service not running");
         return false;
     }
+    /**
+     * Sends a message to the service to scan for nearby devices
+     * @return true if service is running and message was sent
+     */
+    public boolean scanForNearbyDevices() {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending Scan");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "Scan");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
 }
