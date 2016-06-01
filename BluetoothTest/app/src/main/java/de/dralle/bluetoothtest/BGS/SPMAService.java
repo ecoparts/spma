@@ -54,6 +54,20 @@ public class SPMAService extends IntentService {
 
 
             }
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                BluetoothAdapter defaultAdapter=BluetoothAdapter.getDefaultAdapter();
+                if(defaultAdapter!=null){
+                    if(defaultAdapter.isEnabled()){
+                        Log.i(LOG_TAG,"Bluetooth is now enabled");
+                    }else{
+                        Log.i(LOG_TAG,"Bluetooth is now disabled");
+                    }
+                }else{
+                    Log.w(LOG_TAG,"BluetoothAdapter is null after state change. Its bad");
+                }
+
+
+            }
             if (SPMAService.ACTION_NEW_MSG.equals(action)) {
                 String msg = intent.getStringExtra("msg");
                 Log.i(LOG_TAG, "New message");
@@ -190,6 +204,8 @@ public class SPMAService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //register a receiver for broadcasts
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(broadcastReceiver, filter);
 
@@ -197,6 +213,9 @@ public class SPMAService extends IntentService {
         registerReceiver(broadcastReceiver, filter);
 
         filter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        registerReceiver(broadcastReceiver, filter);
+
+        filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(broadcastReceiver, filter);
 
         filter = new IntentFilter(SPMAService.ACTION_NEW_MSG);
