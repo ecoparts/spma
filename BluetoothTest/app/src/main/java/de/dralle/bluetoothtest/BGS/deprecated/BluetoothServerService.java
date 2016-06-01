@@ -75,14 +75,14 @@ public class BluetoothServerService extends IntentService {
         for (int i = 0; i < servers.length(); i++) {
             Object o = servers.get(i);
             if (o.equals("secure")) {
-                BluetoothListener secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure), true);
+                BluetoothListener secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
                 listeners.add(secureListener);
                 Thread t = new Thread(secureListener);
                 t.start();
                 Log.i(LOG_TAG, "Secure listener started");
             }
             if (o.equals("insecure")) {
-                BluetoothListener insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure), true);
+                BluetoothListener insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
                 listeners.add(insecureListener);
                 Thread t = new Thread(insecureListener);
                 t.start();
