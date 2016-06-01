@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
+import de.dralle.bluetoothtest.R;
 
 /**
  * Created by nils on 31.05.16.
@@ -30,6 +31,8 @@ public class SPMAService extends IntentService {
     public static final String ACTION_NEW_MSG = "SPMAService.ACTION_NEW_MSG";
     private static final String LOG_TAG = SPMAService.class.getName();
     private List<BluetoothDevice> devices;
+    private BluetoothListener secureListener;
+    private BluetoothListener insecureListener;
 
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -169,6 +172,10 @@ public class SPMAService extends IntentService {
                 break;
             case "Scan":
                 scanForNearbyDevices(msgData);
+                break;
+            case "StartListeners":
+                break;
+            case "StopListeners":
                 break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
@@ -348,6 +355,8 @@ public class SPMAService extends IntentService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
        devices=new ArrayList<>(); //initialize device list
+        secureListener=new BluetoothListener(true,getResources().getString(R.string.uuid_secure),true);
+        insecureListener=new BluetoothListener(false,getResources().getString(R.string.uuid_insecure),true);
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
