@@ -14,6 +14,9 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
@@ -59,6 +62,30 @@ public class SPMAServiceConnector {
         }
     }
 
+    /**
+     * Sends a message to the service to make the device visible
+     * @return true if service is running and message was sent
+     */
+    public boolean makeDeviceVisible(){
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending MakeVisible");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "MakeVisible");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+
+
+    }
+
     public void sendMessage(String msg){
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
@@ -74,11 +101,16 @@ public class SPMAServiceConnector {
         //unregister receiver
         parentActivity.unregisterReceiver(broadcastReceiver);
     }
+
+    /**
+     * Checks if SPMAService is running
+     * @return true if running
+     */
     public boolean isServiceRunning(){
         ActivityManager am=(ActivityManager)parentActivity.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(Integer.MAX_VALUE);
         for(ActivityManager.RunningServiceInfo rsi:services){
-            Log.v(LOG_TAG,"Comparing "+rsi.service.getClassName()+" to "+SPMAService.class.getName());
+
             if(rsi.service.getClassName().equals(SPMAService.class.getName())){
                 return true;
             }
@@ -86,5 +118,25 @@ public class SPMAServiceConnector {
         return false;
     }
 
-
+    /**
+     * Sends a message to the service to turn bluetooth on
+     * @return true if service is running and message was sent
+     */
+    public boolean turnBluetoothOn() {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending TurnOn");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "TurnOn");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
 }

@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDeviceScan();
+                serviceConnector.turnBluetoothOn();
+                serviceConnector.makeDeviceVisible();
+                //startDeviceScan();
 
             }
         });
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
 
-        makeDeviceVisible();
+
 
 
     }
@@ -181,19 +183,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void makeDeviceVisible() {
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (btAdapter != null) {
-            Log.i(LOG_TAG, "Making device discoverable");
-            if (btAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                Intent discoverableIntent = new
-                        Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //0 for always visible
-                startActivity(discoverableIntent);
-            }
-
-        }
-    }
 
     protected void onStart() {
         super.onStart();
