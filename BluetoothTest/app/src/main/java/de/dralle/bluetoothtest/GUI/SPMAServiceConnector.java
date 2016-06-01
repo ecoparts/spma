@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -21,6 +22,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
@@ -31,25 +33,74 @@ import de.dralle.bluetoothtest.BGS.deprecated.BluetoothServerService;
  */
 public class SPMAServiceConnector {
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
+    private List<BluetoothDevice> devices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
-              Log.i(LOG_TAG,"New message from service");
-
+            String msg = intent.getStringExtra("msg");
+            Log.i(LOG_TAG, "New message");
+            Log.i(LOG_TAG, msg);
+            JSONObject msgData = null;
+            try {
+                msgData = new JSONObject(msg);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (msgData != null) {
+                if (checkMessage(msgData)) {
+                    parseMessageForAction(msgData);
+                }
+            } else {
+                Log.w(LOG_TAG, "Message not JSON");
             }
 
         }
     };
 
+    private void parseMessageForAction(JSONObject msgData) {
+        String action = getMessageAction(msgData);
+        switch(action){
+            case "NewDevice":
+                handleNewDevice(msgData);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     *  handle a newly discovered bt device
+     */
+    private void handleNewDevice(JSONObject msgData) {
+        String address="";
+        try {
+            address=msgData.getString("Address");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(BluetoothAdapter.checkBluetoothAddress(address)){
+            BluetoothAdapter defaultAdapter=BluetoothAdapter.getDefaultAdapter();
+            if(defaultAdapter!=null){
+                BluetoothDevice device=defaultAdapter.getRemoteDevice(address);
+                if(device!=null){
+                    Log.i(LOG_TAG, "Added device with address "+address);
+                    devices.add(device);
+                }
+            }else{
+                Log.w(LOG_TAG,"Adapter is null. Now this is bad");
+            }
+        }else{
+            Log.w(LOG_TAG,"Address "+address+" is not valid");
+        }
+    }
 
 
     private Activity parentActivity;
 
     public SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;
+        devices=new ArrayList<>();
     }
 
 
@@ -160,6 +211,7 @@ public class SPMAServiceConnector {
 
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending Scan");
+            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
