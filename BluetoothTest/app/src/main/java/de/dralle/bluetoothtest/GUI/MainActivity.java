@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private final int REQUEST_ENABLE_BT = 2;
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
 
-    private ArrayList<BluetoothDevice> devices;
     private ArrayList<String> deviceNames;
     private ArrayAdapter<String> displayAdapter;
 
@@ -47,8 +46,29 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
 
             if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
-                Log.i(LOG_TAG,"New message from service");
-
+                String msg = intent.getStringExtra("msg");
+                Log.i(LOG_TAG, "New message");
+                Log.i(LOG_TAG, msg);
+                JSONObject msgData = null;
+                try {
+                    msgData = new JSONObject(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (msgData != null) {
+                    if (serviceConnector.checkMessage(msgData)) {
+                        if(serviceConnector.getMessageAction(msgData).equals("NewDevice")){
+                            try {
+                                deviceNames.add(msgData.getString("Name"));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            displayAdapter.notifyDataSetChanged();
+                        }
+                    }
+                } else {
+                    Log.w(LOG_TAG, "Message not JSON");
+                }
             }
         }
     };
@@ -68,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        devices = new ArrayList<>();
+
         deviceNames = new ArrayList<>();
         displayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNames) {
             @Override
@@ -91,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
                 serviceConnector.turnBluetoothOn();
                 serviceConnector.makeDeviceVisible();
                 serviceConnector.scanForNearbyDevices();
+
+                deviceNames.clear();
+                displayAdapter.notifyDataSetChanged();
                 //startDeviceScan();
 
             }
@@ -141,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BluetoothDevice btDevice = devices.get((int) id);
+                BluetoothDevice btDevice = null;
                 startNewChatActivity(btDevice);
             }
         });
@@ -254,7 +277,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "Starting discovery");
                 if (btAdapter.startDiscovery()) {
                     Log.i(LOG_TAG, "Started discovery");
-                    devices.clear();
                     deviceNames.clear();
                     displayAdapter.notifyDataSetChanged();
                 } else {

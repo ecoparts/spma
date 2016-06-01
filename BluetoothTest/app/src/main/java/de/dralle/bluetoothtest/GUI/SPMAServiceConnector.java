@@ -174,4 +174,30 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG,"Service not running");
         return false;
     }
+    /**
+     * Checks if the message is plausible. Checks the attributes 'Extern' and 'Level'. Extern needs to be false, Level needs to be 0 (for non encrypted, cause not extern)
+     *
+     * @param msgData JSON formatted message to be checked
+     * @return true if valid
+     */
+
+    public boolean checkMessage(JSONObject msgData) {
+        boolean b = false;
+        try {
+            b = (!msgData.getBoolean("Extern") && msgData.getInt("Level") == 0);
+        } catch (Exception e) {
+
+        }
+        return b;
+    }
+
+    public String getMessageAction(JSONObject msgData) {
+        String action="";
+        try {
+            action=msgData.getString("Action");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return action;
+    }
 }
