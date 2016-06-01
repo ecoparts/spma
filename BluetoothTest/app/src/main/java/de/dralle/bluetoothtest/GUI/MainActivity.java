@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 serviceConnector.makeDeviceVisible();
                 serviceConnector.scanForNearbyDevices();
 
-                deviceNames.clear();
+                deviceNames.clear(); //Clear current device name list
                 displayAdapter.notifyDataSetChanged();
                 //startDeviceScan();
 
@@ -123,9 +123,21 @@ public class MainActivity extends AppCompatActivity {
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v(LOG_TAG,"Service is running "+serviceConnector.isServiceRunning());
+                boolean serviceOnline=serviceConnector.isServiceRunning();
+                Log.v(LOG_TAG,"Service is running "+serviceOnline);
 
-                serviceConnector.sendMessage("Just a test");
+               if(serviceOnline){
+                   boolean listenersOnline=serviceConnector.areListenersOnline();
+                   Log.v(LOG_TAG,"Listeners are "+listenersOnline);
+                   if(listenersOnline){
+                       serviceConnector.stopListeners();
+                   }else{
+                       serviceConnector.startListeners();
+
+                   }
+               }else{
+                   serviceConnector.startService();
+               }
                 /*Button clicked = (Button) v;
                 if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
 

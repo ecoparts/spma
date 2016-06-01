@@ -36,6 +36,12 @@ public class SPMAServiceConnector {
     private List<BluetoothDevice> devices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
+    private boolean listenersOnline=false;
+
+    public boolean areListenersOnline() {
+        return listenersOnline;
+    }
+
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String msg = intent.getStringExtra("msg");
@@ -251,5 +257,51 @@ public class SPMAServiceConnector {
             e.printStackTrace();
         }
         return action;
+    }
+
+    /**
+     * Calls the service to start listeners
+     * @return true if service is running and message was sent
+     */
+    public boolean startListeners() {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending startListeners");
+            devices.clear(); //clear current device list
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "StartListeners");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
+
+    /**
+     * Calls the service to stop listeners
+     * @return true if service is running and message was sent
+     */
+    public boolean stopListeners() {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending StopListeners");
+            devices.clear(); //clear current device list
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "StopListeners");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
     }
 }
