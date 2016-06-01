@@ -32,10 +32,11 @@ public class SPMAService extends IntentService {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
                 Log.i(LOG_TAG, "New device found");
-                Log.i(LOG_TAG, device.getAddress());
-                //Log.i(LOG_TAG, device.getName());
+
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+               sendNewDeviceFoundMessage(device);
 
             }
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
@@ -76,7 +77,6 @@ public class SPMAService extends IntentService {
                 String msg = intent.getStringExtra("msg");
                 Log.i(LOG_TAG, "New message");
                 Log.i(LOG_TAG, msg);
-                sendMessage("Hello");
                 JSONObject msgData = null;
                 try {
                     msgData = new JSONObject(msg);
@@ -95,6 +95,28 @@ public class SPMAService extends IntentService {
             }
         }
     };
+
+    /**
+     * Send a message that a new device was discovered
+     * @param device newly discovered device
+     */
+    private void sendNewDeviceFoundMessage(BluetoothDevice device) {
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "NewDevice");
+                mdvCmd.put("Name", device.getName());
+                mdvCmd.put("Address", device.getAddress());
+                boolean bonded=device.getBondState()==BluetoothDevice.BOND_BONDED;
+                mdvCmd.put("Paired",bonded);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+
+
+    }
 
     /**
      * Checks the message action attribute and executes the appropriate action
