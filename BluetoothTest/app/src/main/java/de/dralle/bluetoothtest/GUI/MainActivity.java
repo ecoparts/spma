@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             //startDeviceScan();
         }
     }
-
+    @Deprecated
     private void startDeviceScan() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {

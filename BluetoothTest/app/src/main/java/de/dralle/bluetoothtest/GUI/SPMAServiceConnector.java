@@ -149,7 +149,7 @@ public class SPMAServiceConnector {
      * @return true if service is running and message was sent
      */
     public boolean scanForNearbyDevices() {
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {
 
