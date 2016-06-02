@@ -48,16 +48,21 @@ public class BluetoothConnection extends Observable implements Runnable{
     @Override
     public void run() {
         Log.i(LOG_TAG,"Starting new connection thread to "+device.getAddress());
-        try {
-            socket.connect();
+        if(!socket.isConnected()){
+            try {
+                socket.connect();
+                active=true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                active=false;
+                Log.w(LOG_TAG,"Connection to "+device.getAddress()+" failed"+countObservers());
+
+            }
+
+        }else{
             active=true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            active=false;
-            Log.w(LOG_TAG,"Connection to "+device.getAddress()+" failed"+countObservers());
-
         }
-
+        Log.i(LOG_TAG,"Socket connected");
         if(socket!=null&&active){
             try {
                 in=socket.getInputStream();
@@ -117,6 +122,24 @@ public class BluetoothConnection extends Observable implements Runnable{
 
 
     }
+    public void sendExternalMessage(String msg){
+        Log.i(LOG_TAG,"Writing message");
+        if(active){
+            char[] msgChars=msg.toCharArray();
+            for(int i=0;i<msgChars.length;i++){
+                try {
+                    out.write((int)msgChars[i]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    active=false;
+                }
+            }
+        }else{
+            Log.i(LOG_TAG,"Write failed");
+            notifyObserversAboutShutdown();
+        }
+
+    }
 
     private void notifyObserversAboutShutdown() {
         JSONObject jso=new JSONObject();
@@ -151,7 +174,7 @@ jso.put("Address",device.getAddress());
             jso.put("Level",0);
             jso.put("Address",device.getAddress());
             jso.put("Action","NewMessage");
-            jso.put("Content",msg);
+            jso.put("Message",msg);
         } catch (JSONException e) {
             e.printStackTrace();
         }

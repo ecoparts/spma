@@ -7,6 +7,9 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -80,6 +83,11 @@ public class ChatActivity extends AppCompatActivity {
     private String localBroadcastTag=ACTION_NEW_MSG; //will listen for broadcasts with tag
     private String deviceAddress=null;
 
+    public ChatActivity() {
+        super();
+        serviceConnector=new SPMAServiceConnector(this); //initialize a service connector
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -94,8 +102,18 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         mainTextView=(TextView)findViewById(R.id.lblChatHistory);
+        Button btnSend=(Button)findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText etNewMsg=(EditText)findViewById(R.id.etNewMsg);
+                String msg= String.valueOf(etNewMsg.getText());
+                etNewMsg.setText("");
+                serviceConnector.sendExternalMessage(msg,deviceAddress);
+            }
+        });
 
-        serviceConnector=new SPMAServiceConnector(this); //initialize a service connector
+
 
         Intent startIntent=getIntent();
         if(startIntent!=null){

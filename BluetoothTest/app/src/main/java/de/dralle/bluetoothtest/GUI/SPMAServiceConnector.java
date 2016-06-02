@@ -354,4 +354,28 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG,"Service not running");
         return false;
     }
+    /**
+     * Calls the service to send a new external message
+     * @return true if service is running and message was sent
+     */
+    public boolean sendExternalMessage(String msg, String deviceAddress) {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending SendNewMessage");
+            devices.clear(); //clear current device list
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "SendNewMessage");
+                mdvCmd.put("Address", deviceAddress);
+                mdvCmd.put("Message",msg);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
 }

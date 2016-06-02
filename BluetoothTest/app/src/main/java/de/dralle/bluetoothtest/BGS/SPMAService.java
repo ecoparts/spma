@@ -225,6 +225,10 @@ public class SPMAService extends IntentService {
                 sendConnectionShutdownMessage(msgData);
                 break;
             case "NewMessage":
+                handleNewMessage(msgData);
+                break;
+            case "SendNewMessage":
+                handleSendNewMessage(msgData);
                 break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
@@ -257,6 +261,75 @@ public class SPMAService extends IntentService {
             }
         }
 
+
+    }
+    /**
+     * Send a new external message
+     *
+     * @param msgData may contain additional data
+     * @return
+     */
+    private void handleSendNewMessage(JSONObject msgData) {
+        String address= null;
+        String msg="";
+        try {
+            address = msgData.getString("Address");
+            msg=msgData.getString("Message");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(address!=null){
+            Log.i(LOG_TAG,"Sending new message to "+address);
+            BluetoothConnectionObserver bco=BluetoothConnectionObserver.getInstance();
+            BluetoothConnection connection=bco.getConnection(address);
+            if(connection!=null){
+                connection.sendExternalMessage(msg);
+            }else{
+                Log.i(LOG_TAG,"No suitable connection found");
+
+            }
+        }
+
+
+    }
+    /**
+     * Handle received new message
+     *
+     * @param msgData may contain additional data
+     * @return
+     */
+    private void handleNewMessage(JSONObject msgData) {
+        String address= null;
+        String msg="";
+        try {
+            address = msgData.getString("Address");
+            msg=msgData.getString("Message");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(address!=null){
+            sendNewMessageInternalMessage(msg,address);
+        }
+
+
+    }
+    /**
+     * Send a message that Listeners started
+     */
+    private void sendNewMessageInternalMessage(String msg, String address) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "NewMessage");
+            mdvCmd.put("Address",address);
+            mdvCmd.put("Sender",address);
+            mdvCmd.put("Message",msg);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForChatActivity(mdvCmd.toString(),address);
 
     }
 
