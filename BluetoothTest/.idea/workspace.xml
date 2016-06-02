@@ -27,8 +27,8 @@
       <file leaf-file-name="ChatActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/ChatActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0695652">
-              <caret line="52" column="12" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="50" />
+            <state vertical-scroll-proportion="0.6">
+              <caret line="82" column="68" selection-start-line="82" selection-start-column="68" selection-end-line="82" selection-end-column="68" />
               <folding>
                 <element signature="e#486#1313#0" expanded="true" />
                 <element signature="e#1312#1313#0" expanded="true" />
@@ -2302,8 +2302,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/ChatActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0695652">
-          <caret line="52" column="12" selection-start-line="52" selection-start-column="12" selection-end-line="52" selection-end-column="50" />
+        <state vertical-scroll-proportion="0.6">
+          <caret line="82" column="68" selection-start-line="82" selection-start-column="68" selection-end-line="82" selection-end-column="68" />
           <folding>
             <element signature="e#486#1313#0" expanded="true" />
             <element signature="e#1312#1313#0" expanded="true" />

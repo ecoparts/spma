@@ -79,7 +79,8 @@ public class ChatActivity extends AppCompatActivity {
             finish();
         }
         if(deviceAddress!=null){
-            IntentFilter filter = new IntentFilter(ChatActivity.ACTION_NEW_MSG+"_"+deviceAddress);
+            localBroadcastTag=ChatActivity.ACTION_NEW_MSG+"_"+deviceAddress;
+            IntentFilter filter = new IntentFilter(localBroadcastTag);
             registerReceiver(broadcastReceiver, filter);
         }
 
