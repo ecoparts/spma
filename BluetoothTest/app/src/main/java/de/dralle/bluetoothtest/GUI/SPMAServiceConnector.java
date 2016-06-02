@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Messenger;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -69,6 +70,9 @@ public class SPMAServiceConnector {
                 break;
             case "ListenersStopped":
                 listenersOnline=false;
+                break;
+            case "ConnectionReady":
+                broadcastToGUI(msgData.toString());
                 break;
             default:
                 break;
@@ -153,6 +157,14 @@ public class SPMAServiceConnector {
 
     public void sendMessage(String msg){
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
+        bgServiceIntent.putExtra("msg", msg);
+        parentActivity.sendBroadcast(bgServiceIntent);
+
+
+        //parentActivity.startService(bgServiceIntent);
+    }
+    public void broadcastToGUI(String msg){
+        Intent bgServiceIntent = new Intent(MainActivity.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
 

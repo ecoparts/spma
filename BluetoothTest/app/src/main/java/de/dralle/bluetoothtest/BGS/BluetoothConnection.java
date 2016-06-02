@@ -91,14 +91,24 @@ public class BluetoothConnection extends Observable implements Runnable{
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                        active=false;
                     }
-                    byte[] msgBytesForRealThisTime=new byte[msgBytes.size()]; //TODO: rename
-                    for(int i=0;i<msgBytes.size();i++){
-                        msgBytesForRealThisTime[i]=msgBytes.get(i);
+                    if(msgBytes.size()>0){
+                            byte[] msgBytesForRealThisTime=new byte[msgBytes.size()]; //TODO: rename
+
+                        for(int i=0;i<msgBytes.size();i++){
+                            msgBytesForRealThisTime[i]=msgBytes.get(i);
+                        }
+                        String message=new String(msgBytesForRealThisTime);
+                        Log.i(LOG_TAG,"New message"+message);
+                        notifyObserversAboutNewMessage(message);
+                    }else{
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    String message=new String(msgBytesForRealThisTime);
-                    Log.i(LOG_TAG,"New message"+message);
-                    notifyObserversAboutNewMessage(message);
                 }
             }
         }

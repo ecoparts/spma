@@ -105,7 +105,7 @@ public class ChatActivity extends AppCompatActivity {
 
             if(remoteBTDeviceAddress!=null&&remoteBTDeviceAddress!=""){
                 Log.i(LOG_TAG,"Remote device bt address "+remoteBTDeviceAddress);
-                requestNewConnection(remoteBTDeviceAddress);
+
             }else{
                 Log.w(LOG_TAG,"No remote device given");
                 finish();
@@ -122,19 +122,5 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Request a new connection
-     * @param remoteBTDeviceAddress
-     */
-    private void requestNewConnection(String remoteBTDeviceAddress) {
-        if(serviceConnector.requestNewConnection(remoteBTDeviceAddress)){
-            Log.i(LOG_TAG,"Connection requested");
-            if(mainTextView!=null){
-                mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionRequested));
-            }
-        }else{
-            Log.w(LOG_TAG,"Connection not requested");
-            finish();
-        }
-    }
+
 }

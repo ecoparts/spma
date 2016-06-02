@@ -64,6 +64,20 @@ public class MainActivity extends AppCompatActivity {
                             }
                             displayAdapter.notifyDataSetChanged();
                         }
+                        if (serviceConnector.getMessageAction(msgData).equals("ConnectionReady")) {
+                            String address=null;
+                            try {
+                                address=msgData.getString("Address");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            BluetoothAdapter adapter=BluetoothAdapter.getDefaultAdapter();
+                            if(adapter!=null&&address!=null){
+                                BluetoothDevice device=adapter.getRemoteDevice(address);
+                                startNewChatActivity(device);
+                            }
+                          
+                        }
                     }
                 } else {
                     Log.w(LOG_TAG, "Message not JSON");
@@ -152,8 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
                 BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
                 if(btDevice!=null){
-                    Log.i(LOG_TAG,"Starting new Chat activity for device "+btDevice.getAddress() + " ( "+btDevice.getName()+" ) ");
-                    startNewChatActivity(btDevice);
+                    requestNewConnection(btDevice.getAddress());
                 }
             }
         });
@@ -163,6 +176,20 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(broadcastReceiver, filter);
 
 
+    }
+
+    /**
+     * Request a new connection
+     * @param remoteBTDeviceAddress
+     */
+    private void requestNewConnection(String remoteBTDeviceAddress) {
+        if(serviceConnector.requestNewConnection(remoteBTDeviceAddress)){
+            Log.i(LOG_TAG,"Connection requested");
+
+        }else{
+            Log.w(LOG_TAG,"Connection not requested");
+            finish();
+        }
     }
 
 
