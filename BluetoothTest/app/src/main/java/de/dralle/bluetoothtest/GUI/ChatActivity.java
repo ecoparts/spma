@@ -42,12 +42,17 @@ public class ChatActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = ChatActivity.class.getName();
     private SPMAServiceConnector serviceConnector;
+    public static final String ACTION_NEW_MSG="ChatActivity.ACTION_NEW_MSG";
+    private String localBroadcastTag=ACTION_NEW_MSG; //will listen for broadcasts with tag
+    private String deviceAddress=null;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(deviceAddress!=null){
+            unregisterReceiver(broadcastReceiver);
+        }
 
-        unregisterReceiver(broadcastReceiver);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,8 @@ public class ChatActivity extends AppCompatActivity {
         if(startIntent!=null){
             Log.i(LOG_TAG,"Activity started with intent");
             String remoteBTDeviceAddress=startIntent.getStringExtra("address");
+            deviceAddress=remoteBTDeviceAddress;
+
             if(remoteBTDeviceAddress!=null&&remoteBTDeviceAddress!=""){
                 Log.i(LOG_TAG,"Remote device bt address "+remoteBTDeviceAddress);
                 requestNewConnection(remoteBTDeviceAddress);
@@ -71,9 +78,11 @@ public class ChatActivity extends AppCompatActivity {
             Log.e(LOG_TAG,"Activity has no intent");
             finish();
         }
+        if(deviceAddress!=null){
+            IntentFilter filter = new IntentFilter(ChatActivity.ACTION_NEW_MSG+"_"+deviceAddress);
+            registerReceiver(broadcastReceiver, filter);
+        }
 
-        IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
-        registerReceiver(broadcastReceiver, filter);
     }
 
     /**
