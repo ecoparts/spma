@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
-                        if(serviceConnector.getMessageAction(msgData).equals("NewDevice")){
+                        if (serviceConnector.getMessageAction(msgData).equals("NewDevice")) {
                             try {
                                 deviceNames.add(msgData.getString("Name"));
                             } catch (JSONException e) {
@@ -76,15 +76,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        serviceConnector=new SPMAServiceConnector(this);
-        if(serviceConnector.isServiceRunning()){
-            Log.i(LOG_TAG,"Service already running");
-        }else{
-            Log.v(LOG_TAG,"Service starting");
+        serviceConnector = new SPMAServiceConnector(this);
+        if (serviceConnector.isServiceRunning()) {
+            Log.i(LOG_TAG, "Service already running");
+        } else {
+            Log.v(LOG_TAG, "Service starting");
             serviceConnector.startService();
         }
-
-
 
 
         deviceNames = new ArrayList<>();
@@ -121,49 +119,23 @@ public class MainActivity extends AppCompatActivity {
         btnCntrlServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean serviceOnline=serviceConnector.isServiceRunning();
-                Log.v(LOG_TAG,"Service is running "+serviceOnline);
+                boolean serviceOnline = serviceConnector.isServiceRunning();
+                Log.v(LOG_TAG, "Service is running " + serviceOnline);
 
-               if(serviceOnline){
-                   boolean listenersOnline=serviceConnector.areListenersOnline();
-                   Log.v(LOG_TAG,"Listeners are "+listenersOnline);
-                   if(listenersOnline){
-                       serviceConnector.stopListeners();
-                   }else{
-                       serviceConnector.startListeners();
+                if (serviceOnline) {
+                    boolean listenersOnline = serviceConnector.areListenersOnline();
+                    Log.v(LOG_TAG, "Listeners are " + listenersOnline);
+                    if (listenersOnline) {
+                        serviceConnector.stopListeners();
+                    } else {
+                        serviceConnector.startListeners();
 
-                   }
-               }else{
-
-               }
-                /*Button clicked = (Button) v;
-                if (clicked.getText().equals(getResources().getString(R.string.startBTserver))) {
-
-
-                    JSONObject startServerCmd = new JSONObject();
-                    try {
-                        startServerCmd.put("Extern", false);
-                        startServerCmd.put("Level", 0);
-                        startServerCmd.put("Action", "StartListen");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                    try {
-                        JSONArray srvArray = new JSONArray(new String[]{"insecure", "secure"});
-                        startServerCmd.put("Servers", srvArray);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    sendCommandToBackgroundService(startServerCmd.toString());
-                    Log.i(LOG_TAG, "Background servers starting");
-                    clicked.setText(R.string.stopBTserver);
-                } else if (clicked.getText().equals(getResources().getString(R.string.stopBTserver))) {
+                } else {
+                    Log.w(LOG_TAG,"service not online. Starting now");
+                    serviceConnector.startService();
+                }
 
-
-                    stopServers();
-                    Log.i(LOG_TAG, "Background servers stopping");
-                    clicked.setText(R.string.startBTserver);
-                }*/
 
             }
         });
@@ -174,23 +146,20 @@ public class MainActivity extends AppCompatActivity {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BluetoothDevice btDevice = null;
-                startNewChatActivity(btDevice);
+                BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
+                if(btDevice!=null){
+                    Log.i(LOG_TAG,"Starting new Chat activity for device "+btDevice.getAddress() + " ( "+btDevice.getName()+" ) ");
+                    startNewChatActivity(btDevice);
+                }
             }
         });
-
 
 
         IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
 
 
-
-
     }
-
-
-
 
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
@@ -241,52 +210,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode,
-                                    int resultCode,
-                                    Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT) {
-            //startDeviceScan();
-        }
-    }
-    @Deprecated
-    private void startDeviceScan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION.toString()}, REQUEST_ACCESS_COARSE_LOCATION); //need to request permission at runtime for android 6.0+
-
-            }
-        }
-
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (btAdapter != null) {
-            if (btAdapter.isEnabled()) {
-
-
-                if (btAdapter.isDiscovering()) {
-                    Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
-                    btAdapter.cancelDiscovery();
-                }
-                Log.i(LOG_TAG, "Starting discovery");
-                if (btAdapter.startDiscovery()) {
-                    Log.i(LOG_TAG, "Started discovery");
-                    deviceNames.clear();
-                    displayAdapter.notifyDataSetChanged();
-                } else {
-                    Log.i(LOG_TAG, "Failed discovery");
-                }
-            } else {
-                Log.i(LOG_TAG, "Bluetooth disabled");
-
-                Intent btOnRequest = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(btOnRequest, REQUEST_ENABLE_BT);
-            }
-        } else {
-            Log.e(LOG_TAG, "Bluetooth not enabled");
-            Toast.makeText(getApplicationContext(), getText(R.string.btNotEnabled), Toast.LENGTH_LONG).show();
-            finish();
-        }
-    }
 }

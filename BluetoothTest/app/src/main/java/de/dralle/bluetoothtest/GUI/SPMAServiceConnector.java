@@ -304,4 +304,16 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG,"Service not running");
         return false;
     }
+
+    /**
+     * Gets a Bluetooth device by its index
+     * @param id the index
+     * @return the device with this index
+     */
+    public BluetoothDevice getDeviceByIndex(int id) {
+        if(id>-1&&id<devices.size()){
+            return devices.get(id);
+        }
+        return null;
+    }
 }

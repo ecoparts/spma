@@ -212,7 +212,10 @@ public class SPMAService extends IntentService {
             t.start();
             Log.i(LOG_TAG,"Insecure listener restarted");
         }
-        sendListenerStartMessage();
+
+
+            sendListenerStartMessage();
+
     }
     /**
      * Send a message that Listeners started
@@ -237,16 +240,20 @@ public class SPMAService extends IntentService {
      * @return scan was successfully initialized
      */
     private void stopListeners(JSONObject msgData) {
+        boolean stopped=true;
         if(secureListener.isListening()){
-            secureListener.stopListener();
+            stopped = stopped&&secureListener.stopListener();
             Log.i(LOG_TAG,"Secure listener stopped");
         }
 
         if(insecureListener.isListening()){
-            insecureListener.stopListener();
+            stopped = stopped&&insecureListener.stopListener();
             Log.i(LOG_TAG,"Insecure listener stopped");
         }
-        sendListenerStopMessage();
+        if(stopped){
+            Log.i(LOG_TAG,"Listeners stopped");
+            sendListenerStopMessage();
+        }
     }
     /**
      * Send a message that Listeners stopped

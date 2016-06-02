@@ -17,6 +17,19 @@ public class BluetoothListener implements Runnable {
     private String uuid="";
     private boolean secure=false;
     private boolean continueListen=false; //continue to listen if new connection is accepted
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+
+
+
+
+
     private BluetoothServerSocket serverSocket=null;
     public boolean isListening() {
         return continueListen;
@@ -87,15 +100,24 @@ public class BluetoothListener implements Runnable {
         }
 
     }
-    public void stopListener(){
+
+    /**
+     * Stops the listener
+     * @return Only true, when the listener was stopped by this
+     */
+    public boolean stopListener(){
+        boolean value=false;
         try {
             if(serverSocket!=null){
                 serverSocket.close();
+                value=true;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            value=false;
         }
         continueListen=false;
-        Log.i(LOG_TAG,"listener stopped. Listener was secure: "+secure);
+        Log.i(LOG_TAG,"listener stopped. Listener was secure: "+secure+". Listener was running: "+value);
+        return value;
     }
 }
