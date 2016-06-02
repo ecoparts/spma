@@ -316,4 +316,27 @@ public class SPMAServiceConnector {
         }
         return null;
     }
+    /**
+     * Calls the service to get a connection ready
+     * @return true if service is running and message was sent
+     */
+    public boolean requestNewConnection(String address) {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending RequestConnection");
+            devices.clear(); //clear current device list
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "RequestConnection");
+                mdvCmd.put("Address", address);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
 }
