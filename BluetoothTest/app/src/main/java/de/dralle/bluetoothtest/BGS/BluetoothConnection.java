@@ -4,7 +4,14 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -15,6 +22,13 @@ public class BluetoothConnection extends Observable implements Runnable{
 
     private BluetoothSocket socket;
     private BluetoothDevice device;
+    private InputStream in=null;
+    private OutputStream out=null;
+    private boolean active=false;
+
+    public boolean isActive() {
+        return active;
+    }
 
     public BluetoothDevice getDevice() {
         return device;
@@ -33,7 +47,106 @@ public class BluetoothConnection extends Observable implements Runnable{
     private boolean secureConnection=false;
     @Override
     public void run() {
+        Log.i(LOG_TAG,"Starting new connection thread to "+device.getAddress());
+        try {
+            socket.connect();
+            active=true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            active=false;
+            Log.w(LOG_TAG,"Connection to "+device.getAddress()+" failed"+countObservers());
 
+        }
+
+        if(socket!=null&&active){
+            try {
+                in=socket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                active=false;
+            }
+            try {
+                out=socket.getOutputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                active=false;
+            }
+            if(in!=null&&out!=null){
+                Log.i(LOG_TAG,"Input and outputstreams retrieved");
+                notifyObserversAboutConnectionReady();
+                while(active){
+                    List<Byte> msgBytes=new ArrayList<>();
+                    try {
+                        while (in.available()>0) {
+                            int received = -1;
+                            try {
+                                received = in.read();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                active=false;
+                            }
+                            if (received != -1){
+                                msgBytes.add((byte)received);
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    byte[] msgBytesForRealThisTime=new byte[msgBytes.size()]; //TODO: rename
+                    for(int i=0;i<msgBytes.size();i++){
+                        msgBytesForRealThisTime[i]=msgBytes.get(i);
+                    }
+                    String message=new String(msgBytesForRealThisTime);
+                    Log.i(LOG_TAG,"New message"+message);
+                    notifyObserversAboutNewMessage(message);
+                }
+            }
+        }
+        notifyObserversAboutShutdown();
+        Log.i(LOG_TAG,"Shutting down");
+
+
+    }
+
+    private void notifyObserversAboutShutdown() {
+        JSONObject jso=new JSONObject();
+        try {
+        jso.put("Extern",false);
+        jso.put("Level",0);
+jso.put("Address",device.getAddress());
+            jso.put("Action","Shutdown");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setChanged();
+        notifyObservers(jso.toString());
+    }
+    private void notifyObserversAboutConnectionReady() {
+        JSONObject jso=new JSONObject();
+        try {
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Address",device.getAddress());
+            jso.put("Action","Ready");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setChanged();
+        notifyObservers(jso.toString());
+    }
+    private void notifyObserversAboutNewMessage(String msg) {
+        JSONObject jso=new JSONObject();
+        try {
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Address",device.getAddress());
+            jso.put("Action","NewMessage");
+            jso.put("Content",msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        setChanged();
+        notifyObservers(jso.toString());
     }
 
     public void close() {
@@ -44,6 +157,7 @@ public class BluetoothConnection extends Observable implements Runnable{
             e.printStackTrace();
         }
         socket=null;
+        active=false;
         Log.i(LOG_TAG,"Socket removed");
     }
 }

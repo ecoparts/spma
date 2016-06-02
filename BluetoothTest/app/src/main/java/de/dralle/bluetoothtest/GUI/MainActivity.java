@@ -33,6 +33,7 @@ import de.dralle.bluetoothtest.R;
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getName();
     private SPMAServiceConnector serviceConnector;
+    public static final String ACTION_NEW_MSG = "MainActivity.ACTION_NEW_MSG";
     private final int REQUEST_ENABLE_BT = 2;
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
+            if (ACTION_NEW_MSG.equals(action)) {
                 String msg = intent.getStringExtra("msg");
                 Log.i(LOG_TAG, "New message");
                 Log.i(LOG_TAG, msg);
@@ -147,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i(LOG_TAG,"Clicked device "+id);
+
+
                 BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
                 if(btDevice!=null){
                     Log.i(LOG_TAG,"Starting new Chat activity for device "+btDevice.getAddress() + " ( "+btDevice.getName()+" ) ");
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
+        IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
 
 

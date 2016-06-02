@@ -28,14 +28,26 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/ChatActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="21" column="33" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
+              <caret line="52" column="25" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
               <folding>
                 <element signature="e#518#1533#0" expanded="true" />
                 <element signature="e#1532#1533#0" expanded="true" />
-                <element signature="e#1808#1858#0" expanded="true" />
-                <element signature="e#2080#2131#0" expanded="true" />
-                <element signature="e#4464#4518#0" expanded="true" />
+                <element signature="e#1811#1864#0" expanded="true" />
+                <element signature="e#2111#2161#0" expanded="true" />
+                <element signature="e#2386#2440#0" expanded="true" />
+                <element signature="e#2662#2713#0" expanded="true" />
+                <element signature="e#5046#5100#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.4615386">
+              <caret line="12" column="59" selection-start-line="12" selection-start-column="59" selection-end-line="12" selection-end-column="59" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -44,13 +56,8 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="13" column="78" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="78" />
-              <folding>
-                <element signature="e#513#514#0" expanded="true" />
-                <element signature="e#542#543#0" expanded="true" />
-                <element signature="e#585#586#0" expanded="true" />
-                <element signature="e#624#625#0" expanded="true" />
-              </folding>
+              <caret line="141" column="51" selection-start-line="141" selection-start-column="51" selection-end-line="141" selection-end-column="51" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -69,14 +76,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SPMAService.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SPMAService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="506" column="69" selection-start-line="506" selection-start-column="69" selection-end-line="506" selection-end-column="69" />
+            <state vertical-scroll-proportion="0.80173916">
+              <caret line="373" column="12" selection-start-line="373" selection-start-column="12" selection-end-line="373" selection-end-column="12" />
               <folding>
-                <element signature="e#18645#18691#0" expanded="true" />
-                <element signature="e#18747#18795#0" expanded="true" />
+                <element signature="e#20120#20166#0" expanded="true" />
+                <element signature="e#20222#20270#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -103,20 +110,27 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="28" column="10" selection-start-line="28" selection-start-column="10" selection-end-line="28" selection-end-column="10" />
-              <folding />
+              <caret line="67" column="40" selection-start-line="67" selection-start-column="40" selection-end-line="67" selection-end-column="40" />
+              <folding>
+                <element signature="e#685#686#0" expanded="true" />
+                <element signature="e#715#716#0" expanded="true" />
+                <element signature="e#766#767#0" expanded="true" />
+                <element signature="e#804#805#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7304348">
-              <caret line="148" column="52" selection-start-line="148" selection-start-column="52" selection-end-line="148" selection-end-column="52" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="150" column="0" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
               <folding>
-                <element signature="e#5307#5865#0" expanded="true" />
-                <element signature="e#5864#5865#0" expanded="true" />
+                <element signature="e#1422#2663#0" expanded="true" />
+                <element signature="e#2662#2663#0" expanded="true" />
+                <element signature="e#5365#5925#0" expanded="true" />
+                <element signature="e#5924#5925#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -126,17 +140,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="331" column="45" selection-start-line="331" selection-start-column="45" selection-end-line="331" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Encryption.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/Encryption.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+              <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
               <folding />
             </state>
           </provider>
@@ -1728,14 +1732,15 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/Encryption.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothListener.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionMaker.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/ChatActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java" />
       </list>
     </option>
   </component>
@@ -2153,15 +2158,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2204,22 +2209,11 @@
           <folding>
             <element signature="e#518#1533#0" expanded="true" />
             <element signature="e#1532#1533#0" expanded="true" />
-            <element signature="e#1808#1858#0" expanded="true" />
-            <element signature="e#2080#2131#0" expanded="true" />
-            <element signature="e#4464#4518#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="13" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding>
-            <element signature="e#513#514#0" expanded="true" />
-            <element signature="e#542#543#0" expanded="true" />
-            <element signature="e#585#586#0" expanded="true" />
-            <element signature="e#624#625#0" expanded="true" />
+            <element signature="e#1811#1864#0" expanded="true" />
+            <element signature="e#2111#2161#0" expanded="true" />
+            <element signature="e#2386#2440#0" expanded="true" />
+            <element signature="e#2662#2713#0" expanded="true" />
+            <element signature="e#5046#5100#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2229,8 +2223,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
           <folding>
-            <element signature="e#18645#18691#0" expanded="true" />
-            <element signature="e#18747#18795#0" expanded="true" />
+            <element signature="e#20120#20166#0" expanded="true" />
+            <element signature="e#20222#20270#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2259,6 +2253,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.79130435">
+          <caret line="307" column="4" selection-start-line="307" selection-start-column="4" selection-end-line="307" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="150" column="0" selection-start-line="150" selection-start-column="0" selection-end-line="150" selection-end-column="0" />
+          <folding>
+            <element signature="e#1422#2663#0" expanded="true" />
+            <element signature="e#2662#2663#0" expanded="true" />
+            <element signature="e#5365#5925#0" expanded="true" />
+            <element signature="e#5924#5925#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothListener.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2276,24 +2291,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.79130435">
-          <caret line="307" column="4" selection-start-line="307" selection-start-column="4" selection-end-line="307" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
-      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="331" column="45" selection-start-line="331" selection-start-column="45" selection-end-line="331" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="28" column="10" selection-start-line="28" selection-start-column="10" selection-end-line="28" selection-end-column="10" />
+          <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
           <folding />
         </state>
       </provider>
@@ -2310,26 +2309,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="13" column="78" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="78" />
-          <folding>
-            <element signature="e#513#514#0" expanded="true" />
-            <element signature="e#542#543#0" expanded="true" />
-            <element signature="e#585#586#0" expanded="true" />
-            <element signature="e#624#625#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="-3.4615386">
+          <caret line="12" column="59" selection-start-line="12" selection-start-column="59" selection-end-line="12" selection-end-column="59" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="506" column="69" selection-start-line="506" selection-start-column="69" selection-end-line="506" selection-end-column="69" />
+          <caret line="141" column="51" selection-start-line="141" selection-start-column="51" selection-end-line="141" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="67" column="40" selection-start-line="67" selection-start-column="40" selection-end-line="67" selection-end-column="40" />
           <folding>
-            <element signature="e#18645#18691#0" expanded="true" />
-            <element signature="e#18747#18795#0" expanded="true" />
+            <element signature="e#685#686#0" expanded="true" />
+            <element signature="e#715#716#0" expanded="true" />
+            <element signature="e#766#767#0" expanded="true" />
+            <element signature="e#804#805#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2337,24 +2341,26 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/ChatActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="21" column="33" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
+          <caret line="52" column="25" selection-start-line="52" selection-start-column="25" selection-end-line="52" selection-end-column="25" />
           <folding>
             <element signature="e#518#1533#0" expanded="true" />
             <element signature="e#1532#1533#0" expanded="true" />
-            <element signature="e#1808#1858#0" expanded="true" />
-            <element signature="e#2080#2131#0" expanded="true" />
-            <element signature="e#4464#4518#0" expanded="true" />
+            <element signature="e#1811#1864#0" expanded="true" />
+            <element signature="e#2111#2161#0" expanded="true" />
+            <element signature="e#2386#2440#0" expanded="true" />
+            <element signature="e#2662#2713#0" expanded="true" />
+            <element signature="e#5046#5100#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7304348">
-          <caret line="148" column="52" selection-start-line="148" selection-start-column="52" selection-end-line="148" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.80173916">
+          <caret line="373" column="12" selection-start-line="373" selection-start-column="12" selection-end-line="373" selection-end-column="12" />
           <folding>
-            <element signature="e#5307#5865#0" expanded="true" />
-            <element signature="e#5864#5865#0" expanded="true" />
+            <element signature="e#20120#20166#0" expanded="true" />
+            <element signature="e#20222#20270#0" expanded="true" />
           </folding>
         </state>
       </provider>

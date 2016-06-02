@@ -92,6 +92,9 @@ public class SPMAServiceConnector {
                 if(device!=null){
                     Log.i(LOG_TAG, "Added device with address "+address);
                     devices.add(device);
+                    Intent newDeviceBroadcast=new Intent(MainActivity.ACTION_NEW_MSG);
+                    newDeviceBroadcast.putExtra("msg",msgData.toString());
+                    parentActivity.sendBroadcast(newDeviceBroadcast);
                 }
             }else{
                 Log.w(LOG_TAG,"Adapter is null. Now this is bad");

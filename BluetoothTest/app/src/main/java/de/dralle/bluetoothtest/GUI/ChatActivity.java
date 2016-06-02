@@ -46,9 +46,20 @@ public class ChatActivity extends AppCompatActivity {
     private void handleBroadcast(String action, JSONObject msgData) {
 
         switch(action){
+            case "ConnectionShutdown":
+                if(mainTextView!=null){
+                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionshutdown));
+                }
+                finish();
+                break;
             case "ConnectionReady":
                 if(mainTextView!=null){
                     mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionReady));
+                }
+                break;
+            case "ConnectionRetrieved":
+                if(mainTextView!=null){
+                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionRetrieved));
                 }
                 break;
             case "ConnectionFailed":

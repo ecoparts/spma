@@ -10,5 +10,7 @@
     <string name="send">Send</string>
     <string name="connectionRequested">Connection requested</string>
     <string name="connectionFailed">Connection failed</string>
+    <string name="connectionRetrieved">Connection retrieved</string>
     <string name="connectionReady">Connection ready</string>
+    <string name="connectionshutdown">Connection shutdown</string>
 </resources>

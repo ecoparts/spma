@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -151,12 +149,12 @@ public class SPMAService extends IntentService {
      * Send a message that a connection is ready
      * @param con newly acquired connection
      */
-    private void sendNewConnectionReady(BluetoothConnection con) {
+    private void sendNewConnectionRetrieved(BluetoothConnection con) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
-            mdvCmd.put("Action", "ConnectionReady");
+            mdvCmd.put("Action", "ConnectionRetrieved");
             mdvCmd.put("Secure", con.isSecureConnection());
             mdvCmd.put("Address", con.getDevice().getAddress());
         } catch (JSONException e) {
@@ -190,7 +188,7 @@ public class SPMAService extends IntentService {
      *
      * @param msgData JSON formatted message to be checked
      */
-    private void parseMessageForAction(JSONObject msgData) {
+    public void parseMessageForAction(JSONObject msgData) {
         String action = "";
         try {
             action = msgData.getString("Action");
@@ -220,6 +218,14 @@ public class SPMAService extends IntentService {
             case "RequestConnection":
                 handleConnectionRequest(msgData);
                 break;
+            case "Ready":
+                sendConnectionReadyMessage(msgData);
+                break;
+            case "Shutdown":
+                sendConnectionShutdownMessage(msgData);
+                break;
+            case "NewMessage":
+                break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
@@ -244,7 +250,7 @@ public class SPMAService extends IntentService {
             BluetoothConnection connection=bco.getConnection(address);
             if(connection!=null){
                 Log.i(LOG_TAG,"Connection already there");
-                sendNewConnectionReady(connection);
+                sendNewConnectionRetrieved(connection);
             }else{
                 Log.i(LOG_TAG,"Connection needs to be made");
                 makeNewConnection(address);
@@ -279,7 +285,7 @@ public class SPMAService extends IntentService {
                 BluetoothConnectionObserver.getInstance().registerConnection(connection);
                 Thread t=new Thread(connection);
                 t.start();
-                sendNewConnectionReady(connection);
+                sendNewConnectionRetrieved(connection);
             }else{
                 sendNewConnectionFailed(device);
             }
@@ -335,6 +341,45 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         sendMessageForSPMAServiceConnector(mdvCmd.toString());
+    }
+    /**
+     * Send a message that a connection is ready
+     *
+     * @param msgData may contain additional data
+     */
+    private void sendConnectionReadyMessage(JSONObject msgData) {
+        JSONObject mdvCmd = new JSONObject();
+        String address="";
+        try {
+            address=msgData.getString("Address");
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ConnectionReady");
+            mdvCmd.put("Address", address);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendMessageForChatActivity(mdvCmd.toString(),address);
+    }
+    /**
+     * Send a message that a connection is shutdown
+     *
+     * @param msgData may contain additional data
+     */
+    private void sendConnectionShutdownMessage(JSONObject msgData) {
+        JSONObject mdvCmd = new JSONObject();
+        String address="";
+        try {
+            address=msgData.getString("Address");
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ConnectionShutdown");
+            mdvCmd.put("Address", address);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForChatActivity(mdvCmd.toString(),address);
     }
 
     /**
@@ -424,7 +469,7 @@ public class SPMAService extends IntentService {
      * @return true if valid
      */
 
-    private boolean checkMessage(JSONObject msgData) {
+    public boolean checkMessage(JSONObject msgData) {
         boolean b = false;
         try {
             b = (!msgData.getBoolean("Extern") && msgData.getInt("Level") == 0);
@@ -510,11 +555,6 @@ public class SPMAService extends IntentService {
 
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -563,6 +603,7 @@ public class SPMAService extends IntentService {
        devices=new ArrayList<>(); //initialize device list
         secureListener=new BluetoothListener(true,getResources().getString(R.string.uuid_secure));
         insecureListener=new BluetoothListener(false,getResources().getString(R.string.uuid_insecure));
+        BluetoothConnectionObserver.getInstance().setService(this);
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
