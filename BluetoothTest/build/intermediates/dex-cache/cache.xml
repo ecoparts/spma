@@ -2,46 +2,46 @@
 <items version="2" >
 
     <item
-        jar="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="9ea6da4e959153649580d4d7fef704c59b793124">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_5b659b993a0ebaf554dd31cc304e8d6554f2b8e2.jar" />
-    </item>
-    <item
-        jar="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/classes.jar"
+        jar="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/classes.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="6cbc7773921fcfedbe55657578f0cbfe614778dc">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.1.1_f961749660dd7b81e9338fef6ff93cf7c00f36ce.jar" />
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-23.1.1_7dfb2be2c7b961d424ba83b9d0e4f5b01512d813/classes.dex" />
     </item>
     <item
-        jar="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/jars/classes.jar"
+        jar="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.2"
-        sha1="5c5699834e9722f1c288fea2de82725d078ba127">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.1.1_b1c0791198ccbeaa3fb200d0db1b6efd1cde5c99.jar" />
+        sha1="54aaae0dac883c49d05875f4526b4d508e2d666e">
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_129165030089518d00801796eb15a516a4867bf2/classes.dex" />
     </item>
     <item
-        jar="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/libs/internal_impl-23.1.1.jar"
+        jar="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.1.1/jars/libs/internal_impl-23.1.1.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="a4de9c81ae239414e1ed0f86441b02abaf29bca9">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/internal_impl-23.1.1_3e5a0e56254ddf36b1b7afd93d5174db55a14a9c.jar" />
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.1.1_2e009c1a0b924ffbbc81723255d3d1d60035442a/classes.dex" />
     </item>
     <item
-        jar="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
-        jumboMode="true"
-        revision="23.0.2"
-        sha1="354e81e640cc930b507225a9f5effb8099976f16">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/instant-run_45e214c850fdc4571ac85c0e77ab8a72155395ca.jar" />
-    </item>
-    <item
-        jar="/Users/Niklas/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.1.1/support-annotations-23.1.1.jar"
+        jar="/home/nils/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.1.1/support-annotations-23.1.1.jar"
         jumboMode="true"
         revision="23.0.2"
         sha1="8d680ba5a623724d1fb0e81c36a790f023a6cede">
-        <dex dex="/Users/Niklas/spma2/BluetoothTest/app/build/intermediates/pre-dexed/debug/support-annotations-23.1.1_4cb549ab54051188d5c522e4799b410300b06991.jar" />
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.1.1_c5900b8c8423f7d9f7e22c1a679cb539a9f5ab39/classes.dex" />
+    </item>
+    <item
+        jar="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="8a1d50c04d447dd46546141b04ce50521ac5e56d">
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_159ed7bd4f76a0f21c7c5fe97325419bde17df6c/classes.dex" />
+    </item>
+    <item
+        jar="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="5c5699834e9722f1c288fea2de82725d078ba127">
+        <dex dex="/home/nils/Git/github.com/spma/BluetoothTest/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-23.1.1_4470cbd69ee1a97a1e74804d023406c8825fa160/classes.dex" />
     </item>
 
 </items>

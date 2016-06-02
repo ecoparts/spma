@@ -16,7 +16,15 @@ public class BluetoothConnection extends Observable implements Runnable{
     private BluetoothSocket socket;
     private BluetoothDevice device;
 
-    public BluetoothConnection(BluetoothSocket socket,   boolean secureConnection) {
+    public BluetoothDevice getDevice() {
+        return device;
+    }
+
+    public boolean isSecureConnection() {
+        return secureConnection;
+    }
+
+    public BluetoothConnection(BluetoothSocket socket, boolean secureConnection) {
         this.socket = socket;
         this.device = socket.getRemoteDevice();
         this.secureConnection = secureConnection;

@@ -78,8 +78,12 @@ public class BluetoothListener implements Runnable {
                 Log.w(LOG_TAG,"Listener stopped");
 
             }else{
+                continueListen=false;
                 Log.e(LOG_TAG,"Starting listener failed");
             }
+        }else{
+            continueListen=false;
+            Log.w(LOG_TAG,"Couldnt start Listener. No bluetooth");
         }
 
     }

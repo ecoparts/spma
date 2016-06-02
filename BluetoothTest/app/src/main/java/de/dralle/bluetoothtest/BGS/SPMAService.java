@@ -302,6 +302,7 @@ public class SPMAService extends IntentService {
 
             }
         }
+        Log.w(LOG_TAG,"No bluetooth. Cant scan");
         return false;
     }
 

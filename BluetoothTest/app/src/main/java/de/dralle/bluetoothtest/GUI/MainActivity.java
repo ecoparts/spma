@@ -23,13 +23,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import de.dralle.bluetoothtest.BGS.deprecated.BluetoothServerService;
 import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -191,24 +189,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void stopServers() {
-        JSONObject stopServerCmd = new JSONObject();
-        try {
-            stopServerCmd.put("Extern", false);
-            stopServerCmd.put("Level", 0);
-            stopServerCmd.put("Action", "StopListen");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        sendCommandToBackgroundService(stopServerCmd.toString());
-    }
 
-    private void sendCommandToBackgroundService(String command) {
-        Intent bgServiceIntent = new Intent(this, BluetoothServerService.class);
-        bgServiceIntent.putExtra("command", command);
-        startService(bgServiceIntent);
-    }
+
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
         if (remoteDevice != null) {
@@ -246,9 +229,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-
+        serviceConnector.stopListeners();
         serviceConnector.stopService();
-        stopServers();
+
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null && btAdapter.isEnabled()) {
             if (btAdapter.isDiscovering()) {

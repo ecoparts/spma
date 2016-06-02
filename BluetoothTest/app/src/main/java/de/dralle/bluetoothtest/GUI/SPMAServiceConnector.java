@@ -3,19 +3,14 @@ package de.dralle.bluetoothtest.GUI;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.IBinder;
-import android.os.Messenger;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -26,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
-import de.dralle.bluetoothtest.BGS.deprecated.BluetoothServerService;
 
 /**
  * Created by nils on 31.05.16.

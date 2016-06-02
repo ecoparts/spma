@@ -1,7 +1,12 @@
 package de.dralle.bluetoothtest.BGS;
 
+import android.bluetooth.BluetoothDevice;
+import android.util.Log;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -15,10 +20,11 @@ public class BluetoothConnectionObserver implements Observer {
     public static BluetoothConnectionObserver getInstance() {
         return ourInstance;
     }
-    private List<BluetoothConnection> btConnections;
+    private Map<String, BluetoothConnection> btConnectionMap;
 
     private BluetoothConnectionObserver() {
-        btConnections=new ArrayList<>();
+
+        btConnectionMap=new HashMap<>();
     }
 
     @Override
@@ -27,14 +33,22 @@ public class BluetoothConnectionObserver implements Observer {
     }
 
     public void registerConnection(BluetoothConnection btCon){
-        btConnections.add(btCon);
+        BluetoothDevice btDevice=btCon.getDevice();
+        btConnectionMap.put(btDevice.getAddress(),btCon);
+        Log.i(LOG_TAG,"New connection added. "+btDevice.getAddress());
     }
     public void removeConnection(BluetoothConnection btCon){
-       btConnections.remove(btCon);
+        BluetoothDevice btDevice=btCon.getDevice();
+        btConnectionMap.remove(btDevice.getAddress());
+        Log.i(LOG_TAG,"Connection removed. "+btDevice.getAddress());
     }
     public void disconnectAll(){
-       for (BluetoothConnection btCon:btConnections){
-           btCon.close();
+       for (String btAdr:btConnectionMap.keySet()){
+          BluetoothConnection btCon=btConnectionMap.get(btAdr);
+           if(btCon!=null){
+               btCon.close();
+           }
        }
+        Log.i(LOG_TAG,"Disconnect all");
     }
 }
