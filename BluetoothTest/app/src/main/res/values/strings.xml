@@ -8,4 +8,7 @@
     <string name="startBTserver">Start Bluetooth Server</string>
     <string name="stopBTserver">Stop Bluetooth listeners</string>
     <string name="send">Send</string>
+    <string name="connectionRequested">Connection requested</string>
+    <string name="connectionFailed">Connection failed</string>
+    <string name="connectionReady">Connection ready</string>
 </resources>

@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(LOG_TAG,"Clicked device "+id);
                 BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
                 if(btDevice!=null){
                     Log.i(LOG_TAG,"Starting new Chat activity for device "+btDevice.getAddress() + " ( "+btDevice.getName()+" ) ");

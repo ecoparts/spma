@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dralle.bluetoothtest.GUI.ChatActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 import de.dralle.bluetoothtest.R;
 
@@ -142,7 +143,44 @@ public class SPMAService extends IntentService {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            sendMessageForSPMAServiceConnector(mdvCmd.toString());
+
+
+    }
+    /**
+     * Send a message that a connection is ready
+     * @param con newly acquired connection
+     */
+    private void sendNewConnectionReady(BluetoothConnection con) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ConnectionReady");
+            mdvCmd.put("Secure", con.isSecureConnection());
+            mdvCmd.put("Address", con.getDevice().getAddress());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForChatActivity(mdvCmd.toString(),con.getDevice().getAddress());
+
+
+    }
+    /**
+     * Send a message that a connection failed
+     * @param device The RemoteDevice which this service couldnt make a connection to
+     */
+    private void sendNewConnectionFailed(BluetoothDevice device) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ConnectionFailed");
+            mdvCmd.put("Address", device.getAddress());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForChatActivity(mdvCmd.toString(),device.getAddress());
 
 
     }
@@ -179,11 +217,77 @@ public class SPMAService extends IntentService {
             case "StopListeners":
                 stopListeners(msgData);
                 break;
+            case "RequestConnection":
+                handleConnectionRequest(msgData);
+                break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
         }
     }
+    /**
+     * Request a connection
+     *
+     * @param msgData may contain additional data
+     * @return
+     */
+    private void handleConnectionRequest(JSONObject msgData) {
+        String address= null;
+        try {
+            address = msgData.getString("Address");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(address!=null){
+            Log.i(LOG_TAG,"Requesting new connection for address "+address);
+            BluetoothConnectionObserver bco=BluetoothConnectionObserver.getInstance();
+            BluetoothConnection connection=bco.getConnection(address);
+            if(connection!=null){
+                Log.i(LOG_TAG,"Connection already there");
+                sendNewConnectionReady(connection);
+            }else{
+                Log.i(LOG_TAG,"Connection needs to be made");
+                makeNewConnection(address);
+            }
+        }
+
+
+    }
+
+    private void makeNewConnection(String address) {
+        BluetoothDevice device=null;
+        for(BluetoothDevice d:devices) {
+            if (d.getAddress().equals(address)) {
+                device=d;
+                break;
+            }
+
+        }
+        if(device!=null){
+            Log.i(LOG_TAG,"Device known");
+        }else{
+            Log.i(LOG_TAG,"Device unknown. Creating new");
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if(adapter!=null){
+                device=adapter.getRemoteDevice(address);
+            }
+        }
+        if(device!=null){
+            BluetoothConnection connection = BluetoothConnectionMaker.createConnection(device,getResources());
+            if(connection!=null){
+                connection.addObserver(BluetoothConnectionObserver.getInstance());
+                BluetoothConnectionObserver.getInstance().registerConnection(connection);
+                Thread t=new Thread(connection);
+                t.start();
+                sendNewConnectionReady(connection);
+            }else{
+                sendNewConnectionFailed(device);
+            }
+
+        }
+
+    }
+
     /**
      * Starts the listeners
      *
@@ -230,7 +334,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessage(mdvCmd.toString());
+        sendMessageForSPMAServiceConnector(mdvCmd.toString());
     }
 
     /**
@@ -268,7 +372,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessage(mdvCmd.toString());
+        sendMessageForSPMAServiceConnector(mdvCmd.toString());
     }
 
     /**
@@ -384,13 +488,26 @@ public class SPMAService extends IntentService {
         super("SPMAService");
     }
 
-    public void sendMessage(String msg) {
-        Intent bgServiceIntent = new Intent(SPMAServiceConnector.ACTION_NEW_MSG);
+    public void sendMessageForSPMAServiceConnector(String msg) {
+       sendMessage(msg,SPMAServiceConnector.ACTION_NEW_MSG);
+
+
+
+    }
+    public void sendMessageForChatActivity(String msg,String btAddressRemoteDevice) {
+       sendMessage(msg, ChatActivity.ACTION_NEW_MSG+"_"+btAddressRemoteDevice);
+
+
+
+    }
+    private void sendMessage(String msg,String receiverBroadcastTag) {
+        Intent bgServiceIntent = new Intent(receiverBroadcastTag);
         bgServiceIntent.putExtra("msg", msg);
         sendBroadcast(bgServiceIntent);
+        Log.v(LOG_TAG,"Send new broadcast to "+receiverBroadcastTag);
 
 
-        //parentActivity.startService(bgServiceIntent);
+
     }
 
     @Nullable

@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class ChatActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (SPMAServiceConnector.ACTION_NEW_MSG.equals(action)) {
+            if (localBroadcastTag.equals(action)) {
                 String msg = intent.getStringExtra("msg");
                 Log.i(LOG_TAG, "New message");
                 Log.i(LOG_TAG, msg);
@@ -30,6 +31,9 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
+                        action=serviceConnector.getMessageAction(msgData);
+                        Log.i(LOG_TAG,"New message with action "+action);
+                        handleBroadcast(action,msgData);
 
                     }
                 } else {
@@ -39,8 +43,27 @@ public class ChatActivity extends AppCompatActivity {
         }
     };
 
+    private void handleBroadcast(String action, JSONObject msgData) {
+
+        switch(action){
+            case "ConnectionReady":
+                if(mainTextView!=null){
+                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionReady));
+                }
+                break;
+            case "ConnectionFailed":
+                if(mainTextView!=null){
+                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionFailed));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 
     private static final String LOG_TAG = ChatActivity.class.getName();
+    private TextView mainTextView=null;
     private SPMAServiceConnector serviceConnector;
     public static final String ACTION_NEW_MSG="ChatActivity.ACTION_NEW_MSG";
     private String localBroadcastTag=ACTION_NEW_MSG; //will listen for broadcasts with tag
@@ -58,6 +81,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        mainTextView=(TextView)findViewById(R.id.lblChatHistory);
 
         serviceConnector=new SPMAServiceConnector(this); //initialize a service connector
 
@@ -93,6 +118,9 @@ public class ChatActivity extends AppCompatActivity {
     private void requestNewConnection(String remoteBTDeviceAddress) {
         if(serviceConnector.requestNewConnection(remoteBTDeviceAddress)){
             Log.i(LOG_TAG,"Connection requested");
+            if(mainTextView!=null){
+                mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionRequested));
+            }
         }else{
             Log.w(LOG_TAG,"Connection not requested");
             finish();

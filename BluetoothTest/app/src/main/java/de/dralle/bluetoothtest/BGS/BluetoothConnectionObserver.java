@@ -26,6 +26,12 @@ public class BluetoothConnectionObserver implements Observer {
 
         btConnectionMap=new HashMap<>();
     }
+    public BluetoothConnection getConnection(String address){
+        if(btConnectionMap.containsKey(address)){
+            return btConnectionMap.get(address);
+        }
+        return null;
+    }
 
     @Override
     public void update(Observable observable, Object data) {
