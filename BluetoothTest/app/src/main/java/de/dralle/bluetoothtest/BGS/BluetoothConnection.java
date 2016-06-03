@@ -82,39 +82,47 @@ public class BluetoothConnection extends Observable implements Runnable{
                 Log.i(LOG_TAG,"Input and outputstreams retrieved");
                 notifyObserversAboutConnectionReady();
                 while(active){
-                    List<Byte> msgBytes=new ArrayList<>();
+                    List<Byte> msgBytesList=new ArrayList<>();
                     try {
                         while (in.available()>0) {
                             int received = -1;
                             try {
+                                
                                 received = in.read();
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 active=false;
                             }
                             if (received != -1){
-                                msgBytes.add((byte)received);
+                                msgBytesList.add((byte)received);
                             }
                         }
-                    } catch (IOException e) {
+
+                    } catch (Exception e) {
                         e.printStackTrace();
                         active=false;
                     }
-                    if(msgBytes.size()>0){
-                            byte[] msgBytesForRealThisTime=new byte[msgBytes.size()]; //TODO: rename
+                    if(msgBytesList.size()>0){
+                            byte[] msgBytes=new byte[msgBytesList.size()];
 
-                        for(int i=0;i<msgBytes.size();i++){
-                            msgBytesForRealThisTime[i]=msgBytes.get(i);
+                        for(int i=0;i<msgBytesList.size();i++){
+                            msgBytes[i]=msgBytesList.get(i);
                         }
-                        String message=new String(msgBytesForRealThisTime);
-                        Log.i(LOG_TAG,"New message"+message);
+                        String message=new String(msgBytes);
+                        Log.i(LOG_TAG,"New message "+message);
                         notifyObserversAboutNewMessage(message);
+
                     }else{
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(200); //wait a bit longer when no message was received
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                    }
+                    try {
+                        Thread.sleep(50); //Wait some time for a full message to be received
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -129,14 +137,23 @@ public class BluetoothConnection extends Observable implements Runnable{
         if(active){
             char[] msgChars=msg.toCharArray();
             for(int i=0;i<msgChars.length;i++){
+
                 try {
                     out.write((int)msgChars[i]);
                 } catch (IOException e) {
                     e.printStackTrace();
                     active=false;
                 }
+
             }
-        }else{
+            try {
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+                active=false;
+            }
+        }
+        if(!active){
             Log.i(LOG_TAG,"Write failed");
             notifyObserversAboutShutdown();
         }
