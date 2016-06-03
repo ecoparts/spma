@@ -6,9 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -57,7 +55,7 @@ public class BluetoothConnectionObserver implements Observer {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(jso!=null&&service.checkMessage(jso)){
+                if(jso!=null&&service.checkInternalMessage(jso)){
                     try {
                         if(jso.getString("Action").equals("Shutdown")){
                             BluetoothConnection con=(BluetoothConnection)observable;
@@ -67,7 +65,7 @@ public class BluetoothConnectionObserver implements Observer {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    service.parseMessageForAction(jso);
+                    service.parseInternalMessageForAction(jso);
                 }
 
             }

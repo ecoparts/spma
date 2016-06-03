@@ -25,15 +25,33 @@ import de.dralle.bluetoothtest.R;
 
 /**
  * Created by nils on 31.05.16.
+ * SPMAService is the background service of this app
  */
 public class SPMAService extends IntentService {
+    /**
+     * Local broadcast tag. Used to receive internal messages
+     */
     public static final String ACTION_NEW_MSG = "SPMAService.ACTION_NEW_MSG";
+    /**
+     * Log tag. Used to identify this´ class log messages in log output
+     */
     private static final String LOG_TAG = SPMAService.class.getName();
+    /**
+     * List of all nearby devices discovered during the last scanning round
+     */
     private List<BluetoothDevice> devices;
+    /**
+     * Secure listener. Secure connections are used for connections between already paired devices
+     */
     private BluetoothListener secureListener;
+    /**
+     * Insecure listener. Insecure connections are used for connections between non paired devices
+     */
     private BluetoothListener insecureListener;
 
-
+    /**
+     * Nested BroadcastReceiver. Receives some android system broadcasts and internal messages directed at the service
+     */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -43,7 +61,7 @@ public class SPMAService extends IntentService {
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (addNewDevice(device)) { //Only send message if device is new
-                    sendNewDeviceFoundMessage(device);
+                    sendNewDeviceFoundInternalMessage(device);
                 }
 
 
@@ -93,8 +111,8 @@ public class SPMAService extends IntentService {
                     e.printStackTrace();
                 }
                 if (msgData != null) {
-                    if (checkMessage(msgData)) {
-                        parseMessageForAction(msgData);
+                    if (checkInternalMessage(msgData)) {
+                        parseInternalMessageForAction(msgData);
                     }
                 } else {
                     Log.w(LOG_TAG, "Message not JSON");
@@ -106,7 +124,7 @@ public class SPMAService extends IntentService {
     };
 
     /**
-     * Adds a new device to the List of devices.
+     * Adds a new device to the list of devices.
      * Tries to ensure that every device is only added once by checking its address
      *
      * @param device Device to be added
@@ -130,7 +148,7 @@ public class SPMAService extends IntentService {
      *
      * @param device newly discovered device
      */
-    private void sendNewDeviceFoundMessage(BluetoothDevice device) {
+    private void sendNewDeviceFoundInternalMessage(BluetoothDevice device) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -143,17 +161,17 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
 
     }
 
     /**
-     * Send a message that a connection is ready
+     * Send a message that a connection is ready, either from a list of cached connection or newly created
      *
      * @param con newly acquired connection
      */
-    private void sendNewConnectionRetrieved(BluetoothConnection con) {
+    private void sendNewConnectionRetrievedInternalMessage(BluetoothConnection con) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -164,7 +182,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(), con.getDevice().getAddress());
+        sendInternalMessageForChatActivity(mdvCmd.toString(), con.getDevice().getAddress());
 
 
     }
@@ -174,7 +192,7 @@ public class SPMAService extends IntentService {
      *
      * @param device The RemoteDevice which this service couldnt make a connection to
      */
-    private void sendNewConnectionFailed(BluetoothDevice device) {
+    private void sendNewConnectionFailedInternalMessage(BluetoothDevice device) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -184,7 +202,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(), device.getAddress());
+        sendInternalMessageForChatActivity(mdvCmd.toString(), device.getAddress());
 
 
     }
@@ -194,7 +212,7 @@ public class SPMAService extends IntentService {
      *
      * @param msgData JSON formatted message to be checked
      */
-    public void parseMessageForAction(JSONObject msgData) {
+    public void parseInternalMessageForAction(JSONObject msgData) {
         String action = "";
         try {
             action = msgData.getString("Action");
@@ -222,19 +240,19 @@ public class SPMAService extends IntentService {
                 stopListeners(msgData);
                 break;
             case "RequestConnection":
-                handleConnectionRequest(msgData);
+                handleInternalConnectionRequest(msgData);
                 break;
             case "Ready":
-                sendConnectionReadyMessage(msgData);
+                sendConnectionReadyInternalMessage(msgData);
                 break;
             case "Shutdown":
-                sendConnectionShutdownMessage(msgData);
+                sendConnectionShutdownInternalMessage(msgData);
                 break;
             case "NewMessage":
-                handleNewMessage(msgData);
+                handleNewExternalMessage(msgData);
                 break;
             case "SendNewMessage":
-                handleSendNewMessage(msgData);
+                prepareNewExternalMessage(msgData);
                 break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
@@ -243,12 +261,12 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Request a connection
+     * Handle a internal connection request by performing a lookup on cached connections or creating a new one
      *
      * @param msgData may contain additional data
      * @return
      */
-    private void handleConnectionRequest(JSONObject msgData) {
+    private void handleInternalConnectionRequest(JSONObject msgData) {
         String address = null;
         try {
             address = msgData.getString("Address");
@@ -261,7 +279,7 @@ public class SPMAService extends IntentService {
             BluetoothConnection connection = bco.getConnection(address);
             if (connection != null) {
                 Log.i(LOG_TAG, "Connection already there");
-                sendNewConnectionRetrieved(connection);
+                sendNewConnectionRetrievedInternalMessage(connection);
             } else {
                 Log.i(LOG_TAG, "Connection needs to be made");
                 makeNewConnection(address);
@@ -272,12 +290,12 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Send a new external message
+     * Prepare a new external message and wrap it into a JSON string
      *
      * @param msgData may contain additional data
      * @return
      */
-    private void handleSendNewMessage(JSONObject msgData) {
+    private void prepareNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
         try {
@@ -332,12 +350,12 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Handle received new message
+     * Handle received new external message. Free it from its JSON container string and check some of the additional message attributes.
      *
      * @param msgData may contain additional data
      * @return
      */
-    private void handleNewMessage(JSONObject msgData) {
+    private void handleNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
         try {
@@ -389,7 +407,7 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Send a message that Listeners started
+     * Send a message that a new external message has arrived, directed at the GUI
      */
     private void sendNewMessageInternalMessage(String msg, String address) {
         JSONObject mdvCmd = new JSONObject();
@@ -404,10 +422,14 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(), address);
+        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
 
     }
 
+    /**
+     * Create a new connection
+     * @param address remote device address
+     */
     private void makeNewConnection(String address) {
         BluetoothDevice device = null;
         for (BluetoothDevice d : devices) {
@@ -433,9 +455,9 @@ public class SPMAService extends IntentService {
                 BluetoothConnectionObserver.getInstance().registerConnection(connection);
                 Thread t = new Thread(connection);
                 t.start();
-                sendNewConnectionRetrieved(connection);
+                sendNewConnectionRetrievedInternalMessage(connection);
             } else {
-                sendNewConnectionFailed(device);
+                sendNewConnectionFailedInternalMessage(device);
             }
 
         }
@@ -443,10 +465,10 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Starts the listeners
+     * Starts the 2 listeners, secure and insecure
      *
      * @param msgData may contain additional data
-     * @return scan was successfully initialized
+     *
      */
     private void startListeners(JSONObject msgData) {
         if (!secureListener.isListening()) {
@@ -472,14 +494,14 @@ public class SPMAService extends IntentService {
         }
 
 
-        sendListenerStartMessage();
+        sendListenerStartInternalMessage();
 
     }
 
     /**
      * Send a message that Listeners started
      */
-    private void sendListenerStartMessage() {
+    private void sendListenerStartInternalMessage() {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -489,15 +511,15 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
 
     /**
-     * Send a message that a connection is ready
+     * Send a internal message that a connection is ready
      *
      * @param msgData may contain additional data
      */
-    private void sendConnectionReadyMessage(JSONObject msgData) {
+    private void sendConnectionReadyInternalMessage(JSONObject msgData) {
         JSONObject mdvCmd = new JSONObject();
         String address = "";
         try {
@@ -509,16 +531,16 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForSPMAServiceConnector(mdvCmd.toString());
-        sendMessageForChatActivity(mdvCmd.toString(), address);
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
     }
 
     /**
-     * Send a message that a connection is shutdown
+     * Send a internal message that a connection is shutdown
      *
      * @param msgData may contain additional data
      */
-    private void sendConnectionShutdownMessage(JSONObject msgData) {
+    private void sendConnectionShutdownInternalMessage(JSONObject msgData) {
         JSONObject mdvCmd = new JSONObject();
         String address = "";
         try {
@@ -530,14 +552,13 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(), address);
+        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
     }
 
     /**
      * Stops the listeners
      *
      * @param msgData may contain additional data
-     * @return scan was successfully initialized
      */
     private void stopListeners(JSONObject msgData) {
         boolean stopped = true;
@@ -552,14 +573,14 @@ public class SPMAService extends IntentService {
         }
         if (stopped) {
             Log.i(LOG_TAG, "Listeners stopped");
-            sendListenerStopMessage();
+            sendListenerStopInternalMessage();
         }
     }
 
     /**
      * Send a message that Listeners stopped
      */
-    private void sendListenerStopMessage() {
+    private void sendListenerStopInternalMessage() {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -569,7 +590,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
 
     /**
@@ -621,7 +642,7 @@ public class SPMAService extends IntentService {
      * @return true if valid
      */
 
-    public boolean checkMessage(JSONObject msgData) {
+    public boolean checkInternalMessage(JSONObject msgData) {
         boolean b = false;
         try {
             b = (!msgData.getBoolean("Extern") && msgData.getInt("Level") == 0);
@@ -680,24 +701,43 @@ public class SPMAService extends IntentService {
         }
     }
 
-
+    /**
+     * Constructor. Gives a name this service. Initializes listeners and connection observer
+     */
     public SPMAService() {
         super("SPMAService");
+        devices = new ArrayList<>(); //initialize device list
+        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
+        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
+        BluetoothConnectionObserver.getInstance().setService(this);
     }
 
-    public void sendMessageForSPMAServiceConnector(String msg) {
-        sendMessage(msg, SPMAServiceConnector.ACTION_NEW_MSG);
+    /**
+     * Sends a message to the SPMAServiceConnector
+     * @param msg Internal message to be sent
+     */
+    public void sendInternalMessageForSPMAServiceConnector(String msg) {
+        sendInternalMessage(msg, SPMAServiceConnector.ACTION_NEW_MSG);
+
+
+    }
+    /**
+     * Sends a message to the ChatActivity
+     * @param msg Internal message to be sent
+     *            @param btAddressRemoteDevice Address of the remote device that particular ChatActivity handles
+     */
+    public void sendInternalMessageForChatActivity(String msg, String btAddressRemoteDevice) {
+        sendInternalMessage(msg, ChatActivity.ACTION_NEW_MSG + "_" + btAddressRemoteDevice);
 
 
     }
 
-    public void sendMessageForChatActivity(String msg, String btAddressRemoteDevice) {
-        sendMessage(msg, ChatActivity.ACTION_NEW_MSG + "_" + btAddressRemoteDevice);
-
-
-    }
-
-    private void sendMessage(String msg, String receiverBroadcastTag) {
+    /**
+     * Sends a new internal message. Despite the name broadcast its actually somewhat directed
+     * @param msg Message to be send
+     * @param receiverBroadcastTag Receivers´ broadcast tag
+     */
+    private void sendInternalMessage(String msg, String receiverBroadcastTag) {
         Intent bgServiceIntent = new Intent(receiverBroadcastTag);
         bgServiceIntent.putExtra("msg", msg);
         sendBroadcast(bgServiceIntent);
@@ -709,9 +749,7 @@ public class SPMAService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.i(LOG_TAG, "New work request");
-        String data = intent.getStringExtra("msg");
-        Log.i(LOG_TAG, "Data: " + data);
+
 
     }
 
@@ -748,14 +786,11 @@ public class SPMAService extends IntentService {
      * @param intent  The Starting intent
      * @param flags
      * @param startId
-     * @return
+     * @return START_STICKY, that android doesn´t remove this
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        devices = new ArrayList<>(); //initialize device list
-        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
-        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
-        BluetoothConnectionObserver.getInstance().setService(this);
+
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
