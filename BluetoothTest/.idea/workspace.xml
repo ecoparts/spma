@@ -62,15 +62,15 @@
       <file leaf-file-name="SPMAService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5669565">
-              <caret line="226" column="20" selection-start-line="226" selection-start-column="20" selection-end-line="226" selection-end-column="20" />
+            <state vertical-scroll-proportion="0.80173916">
+              <caret line="109" column="115" selection-start-line="109" selection-start-column="115" selection-end-line="109" selection-end-column="115" />
               <folding>
-                <element signature="e#6910#6956#0" expanded="true" />
-                <element signature="e#7079#7127#0" expanded="true" />
-                <element signature="e#15365#15411#0" expanded="true" />
-                <element signature="e#16986#17032#0" expanded="true" />
-                <element signature="e#22506#22552#0" expanded="true" />
-                <element signature="e#22611#22659#0" expanded="true" />
+                <element signature="e#6947#6993#0" expanded="true" />
+                <element signature="e#7116#7164#0" expanded="true" />
+                <element signature="e#15402#15448#0" expanded="true" />
+                <element signature="e#17023#17069#0" expanded="true" />
+                <element signature="e#22543#22589#0" expanded="true" />
+                <element signature="e#22648#22696#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2175,7 +2175,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2183,7 +2183,7 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32850778" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2248,12 +2248,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#6910#6956#0" expanded="true" />
-            <element signature="e#7079#7127#0" expanded="true" />
-            <element signature="e#15365#15411#0" expanded="true" />
-            <element signature="e#16986#17032#0" expanded="true" />
-            <element signature="e#22506#22552#0" expanded="true" />
-            <element signature="e#22611#22659#0" expanded="true" />
+            <element signature="e#6947#6993#0" expanded="true" />
+            <element signature="e#7116#7164#0" expanded="true" />
+            <element signature="e#15402#15448#0" expanded="true" />
+            <element signature="e#17023#17069#0" expanded="true" />
+            <element signature="e#22543#22589#0" expanded="true" />
+            <element signature="e#22648#22696#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2350,12 +2350,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#6910#6956#0" expanded="true" />
-            <element signature="e#7079#7127#0" expanded="true" />
-            <element signature="e#15365#15411#0" expanded="true" />
-            <element signature="e#16986#17032#0" expanded="true" />
-            <element signature="e#22506#22552#0" expanded="true" />
-            <element signature="e#22611#22659#0" expanded="true" />
+            <element signature="e#6947#6993#0" expanded="true" />
+            <element signature="e#7116#7164#0" expanded="true" />
+            <element signature="e#15402#15448#0" expanded="true" />
+            <element signature="e#17023#17069#0" expanded="true" />
+            <element signature="e#22543#22589#0" expanded="true" />
+            <element signature="e#22648#22696#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2436,12 +2436,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="364" column="7" selection-start-line="364" selection-start-column="7" selection-end-line="364" selection-end-column="7" />
           <folding>
-            <element signature="e#6910#6956#0" expanded="true" />
-            <element signature="e#7079#7127#0" expanded="true" />
-            <element signature="e#15365#15411#0" expanded="true" />
-            <element signature="e#16986#17032#0" expanded="true" />
-            <element signature="e#22506#22552#0" expanded="true" />
-            <element signature="e#22611#22659#0" expanded="true" />
+            <element signature="e#6947#6993#0" expanded="true" />
+            <element signature="e#7116#7164#0" expanded="true" />
+            <element signature="e#15402#15448#0" expanded="true" />
+            <element signature="e#17023#17069#0" expanded="true" />
+            <element signature="e#22543#22589#0" expanded="true" />
+            <element signature="e#22648#22696#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2467,12 +2467,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
           <folding>
-            <element signature="e#6910#6956#0" expanded="true" />
-            <element signature="e#7079#7127#0" expanded="true" />
-            <element signature="e#15365#15411#0" expanded="true" />
-            <element signature="e#16986#17032#0" expanded="true" />
-            <element signature="e#22506#22552#0" expanded="true" />
-            <element signature="e#22611#22659#0" expanded="true" />
+            <element signature="e#6947#6993#0" expanded="true" />
+            <element signature="e#7116#7164#0" expanded="true" />
+            <element signature="e#15402#15448#0" expanded="true" />
+            <element signature="e#17023#17069#0" expanded="true" />
+            <element signature="e#22543#22589#0" expanded="true" />
+            <element signature="e#22648#22696#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2588,15 +2588,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5669565">
-          <caret line="226" column="20" selection-start-line="226" selection-start-column="20" selection-end-line="226" selection-end-column="20" />
+        <state vertical-scroll-proportion="0.80173916">
+          <caret line="109" column="115" selection-start-line="109" selection-start-column="115" selection-end-line="109" selection-end-column="115" />
           <folding>
-            <element signature="e#6910#6956#0" expanded="true" />
-            <element signature="e#7079#7127#0" expanded="true" />
-            <element signature="e#15365#15411#0" expanded="true" />
-            <element signature="e#16986#17032#0" expanded="true" />
-            <element signature="e#22506#22552#0" expanded="true" />
-            <element signature="e#22611#22659#0" expanded="true" />
+            <element signature="e#6947#6993#0" expanded="true" />
+            <element signature="e#7116#7164#0" expanded="true" />
+            <element signature="e#15402#15448#0" expanded="true" />
+            <element signature="e#17023#17069#0" expanded="true" />
+            <element signature="e#22543#22589#0" expanded="true" />
+            <element signature="e#22648#22696#0" expanded="true" />
           </folding>
         </state>
       </provider>

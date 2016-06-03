@@ -95,7 +95,7 @@ public class SPMAService extends IntentService {
             if (BluetoothDevice.ACTION_UUID.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i(LOG_TAG, "Sdp scan for device " + device.getAddress());
-                ParcelUuid[] allUUIDs = device.getUuids();
+                ParcelUuid[] allUUIDs = intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID);
 
                 if (checkForSupportedUUIDs(allUUIDs)) {
                     Log.i(LOG_TAG,"Device "+device.getAddress()+" supported");
@@ -107,7 +107,7 @@ public class SPMAService extends IntentService {
                     devices.remove(0);
                     nextDeviceToScan.fetchUuidsWithSdp();
                 } else {
-                    Log.i(LOG_TAG, "Fetching UUIDs for all devices finished. Found " + supportedDevices.size() + "connect-worthy devices");
+                    Log.i(LOG_TAG, "Fetching UUIDs for all devices finished. Found " + supportedDevices.size() + " connect-worthy devices");
                 }
             }
 
