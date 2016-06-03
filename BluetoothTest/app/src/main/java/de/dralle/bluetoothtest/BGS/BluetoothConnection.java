@@ -7,6 +7,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,8 +24,8 @@ public class BluetoothConnection extends Observable implements Runnable{
 
     private BluetoothSocket socket;
     private BluetoothDevice device;
-    private InputStream in=null;
-    private OutputStream out=null;
+    private BufferedInputStream in=null;
+    private BufferedOutputStream out=null;
     private boolean active=false;
 
     public boolean isActive() {
@@ -65,13 +67,13 @@ public class BluetoothConnection extends Observable implements Runnable{
         Log.i(LOG_TAG,"Socket connected");
         if(socket!=null&&active){
             try {
-                in=socket.getInputStream();
+                in=new BufferedInputStream(socket.getInputStream());
             } catch (IOException e) {
                 e.printStackTrace();
                 active=false;
             }
             try {
-                out=socket.getOutputStream();
+                out=new BufferedOutputStream(socket.getOutputStream());
             } catch (IOException e) {
                 e.printStackTrace();
                 active=false;
