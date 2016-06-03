@@ -64,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
                             }
                             displayAdapter.notifyDataSetChanged();
                         }
+                        if (serviceConnector.getMessageAction(msgData).equals("ClearDevices")) {
+                            deviceNames.clear();
+                            displayAdapter.notifyDataSetChanged();
+                        }
                         if (serviceConnector.getMessageAction(msgData).equals("ConnectionReady")) {
                             String address=null;
                             try {
@@ -123,9 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 serviceConnector.makeDeviceVisible();
                 serviceConnector.scanForNearbyDevices();
 
-                deviceNames.clear(); //Clear current device name list
-                displayAdapter.notifyDataSetChanged();
-                //startDeviceScan();
+
 
             }
         });

@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
+import android.os.ParcelUuid;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -18,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import de.dralle.bluetoothtest.GUI.ChatActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
@@ -41,6 +44,10 @@ public class SPMAService extends IntentService {
      */
     private List<BluetoothDevice> devices;
     /**
+     * List of all nearby devices which support the chat service
+     */
+    private List<BluetoothDevice> supportedDevices;
+    /**
      * Secure listener. Secure connections are used for connections between already paired devices
      */
     private BluetoothListener secureListener;
@@ -53,6 +60,8 @@ public class SPMAService extends IntentService {
      * Nested BroadcastReceiver. Receives some android system broadcasts and internal messages directed at the service
      */
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        private BluetoothDevice nextDeviceToScan = null;
+
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -60,12 +69,48 @@ public class SPMAService extends IntentService {
                 Log.i(LOG_TAG, "New device found");
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (addNewDevice(device)) { //Only send message if device is new
+                ParcelUuid[] allUUIDs = device.getUuids();
+
+                addNewDevice(device);
+
+                if (checkForSupportedUUIDs(allUUIDs)) {
+
                     sendNewDeviceFoundInternalMessage(device);
                 }
 
 
             }
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                Log.i(LOG_TAG, "Discovery started");
+                sendClearDevicesInternalMessage();
+            }
+            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Log.i(LOG_TAG, "Discovery finished. " + devices.size() + " devices found");
+                if (devices.size() > 0) {
+                    nextDeviceToScan = devices.get(0);
+                    devices.remove(0);
+                    nextDeviceToScan.fetchUuidsWithSdp();
+                }
+            }
+            if (BluetoothDevice.ACTION_UUID.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Log.i(LOG_TAG, "Sdp scan for device " + device.getAddress());
+                ParcelUuid[] allUUIDs = device.getUuids();
+
+                if (checkForSupportedUUIDs(allUUIDs)) {
+                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supported");
+                    addNewSupportedDevice(device);
+                }
+                sendNewSupportedDeviceListInternalMessage();
+                if (devices.size() > 0) {
+                    nextDeviceToScan = devices.get(0);
+                    devices.remove(0);
+                    nextDeviceToScan.fetchUuidsWithSdp();
+                } else {
+                    Log.i(LOG_TAG, "Fetching UUIDs for all devices finished. Found " + supportedDevices.size() + "connect-worthy devices");
+                }
+            }
+
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
@@ -123,6 +168,26 @@ public class SPMAService extends IntentService {
         }
     };
 
+    private void sendNewSupportedDeviceListInternalMessage() {
+        sendClearDevicesInternalMessage();
+        for (BluetoothDevice device : supportedDevices)
+            sendNewDeviceFoundInternalMessage(device);
+    }
+
+    private boolean checkForSupportedUUIDs(ParcelUuid[] allUUIDs) {
+        if (allUUIDs != null) {
+            for (ParcelUuid uuid : allUUIDs) {
+                if (uuid.getUuid().compareTo(UUID.fromString(getResources().getString(R.string.uuid_secure))) == 0) {
+                    return true;
+                }
+                if (uuid.getUuid().compareTo(UUID.fromString(getResources().getString(R.string.uuid_insecure))) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Adds a new device to the list of devices.
      * Tries to ensure that every device is only added once by checking its address
@@ -140,6 +205,43 @@ public class SPMAService extends IntentService {
         }
         devices.add(device);
         return true;
+
+    }
+
+    /**
+     * Adds a new device to the list of supported devices.
+     * Tries to ensure that every device is only added once by checking its address
+     *
+     * @param device Device to be added
+     * @return True if the device is new
+     */
+    private boolean addNewSupportedDevice(BluetoothDevice device) {
+        for (BluetoothDevice d : supportedDevices) {
+            if (d.getAddress().equals(device.getAddress())) {
+                Log.w(LOG_TAG, device.getAddress() + " already known");
+                return false;
+            }
+
+        }
+        supportedDevices.add(device);
+        return true;
+
+    }
+
+    /**
+     * Send a message that the GUI should clear its device list
+     */
+    private void sendClearDevicesInternalMessage() {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ClearDevices");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+
 
     }
 
@@ -374,9 +476,9 @@ public class SPMAService extends IntentService {
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
-                String senderAppVersion=jsoIn.getString("SenderVersionApp");
-                if(!getResources().getString(R.string.app_version).equals(senderAppVersion)){
-                    Log.w(LOG_TAG,"App version mismatch. Things might go horribly wrong. You have been warned");
+                String senderAppVersion = jsoIn.getString("SenderVersionApp");
+                if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
+                    Log.w(LOG_TAG, "App version mismatch. Things might go horribly wrong. You have been warned");
                 }
                 String senderAddress = null;
                 if (senderAPIVersion < Build.VERSION_CODES.M) {
@@ -406,18 +508,19 @@ public class SPMAService extends IntentService {
 
     /**
      * Confirm the receiver of the message. Since Android 6 it isnt possible anymore to get the own device address. In that case the test is skipped.
+     *
      * @param receiverAddress The receivers´ hw address as reported by the message
      * @return true if test passed or android 6
      */
     private boolean confirmReceiver(String receiverAddress) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value.
-            Log.i(LOG_TAG,"Skipped receiver confirmation, because android 6");
+            Log.i(LOG_TAG, "Skipped receiver confirmation, because android 6");
             return true;
         } else {
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             if (adapter != null) {
-                if( adapter.getAddress().equals(receiverAddress)){
-                    Log.i(LOG_TAG,"Receiver confirmed");
+                if (adapter.getAddress().equals(receiverAddress)) {
+                    Log.i(LOG_TAG, "Receiver confirmed");
                     return true;
                 }
             }
@@ -427,17 +530,18 @@ public class SPMAService extends IntentService {
 
     /**
      * Confirm the sender of the message. Since Android 6 it isnt possible anymore to get the own device address. In that case the test is skipped.
-     * @param senderAddress The senders´ hw address as reported by the message
-     * @param address The senders´ hw address as reported by the receiving connection
+     *
+     * @param senderAddress    The senders´ hw address as reported by the message
+     * @param address          The senders´ hw address as reported by the receiving connection
      * @param senderAPIVersion The senders´ API version. If this indicates Android 6 or above, the test is skipped.
      * @return true if test passed or android 6
      */
     private boolean confirmSender(String senderAddress, String address, int senderAPIVersion) {
         if (senderAPIVersion >= Build.VERSION_CODES.M) { //if android 6, return true and ignore check, since the method to get the own hw address was removed
-            Log.i(LOG_TAG,"Skipped sender confirmation, because android 6");
+            Log.i(LOG_TAG, "Skipped sender confirmation, because android 6");
             return true;
         } else {
-            if( senderAddress.equals(address)) {
+            if (senderAddress.equals(address)) {
                 Log.i(LOG_TAG, "Sender confirmed");
                 return true;
             }
@@ -510,6 +614,8 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      */
     private void startListeners(JSONObject msgData) {
+        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
+        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
         if (!secureListener.isListening()) {
             Thread t = new Thread(secureListener);
             t.start();
@@ -654,6 +760,7 @@ public class SPMAService extends IntentService {
             if (btAdapter.isEnabled()) {
 
                 devices.clear(); //clear current device list
+                supportedDevices.clear();
                 if (btAdapter.isDiscovering()) {
                     Log.w(LOG_TAG, "Discovery running. Cancelling discovery");
                     btAdapter.cancelDiscovery();
@@ -661,6 +768,7 @@ public class SPMAService extends IntentService {
                 Log.i(LOG_TAG, "Starting discovery");
                 if (btAdapter.startDiscovery()) {
                     Log.i(LOG_TAG, "Started discovery");
+                    sendClearDevicesInternalMessage();
                     return true;
                 } else {
                     Log.i(LOG_TAG, "Failed to start discovery");
@@ -741,13 +849,12 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Constructor. Gives a name this service. Initializes listeners and connection observer
+     * Constructor. Gives a name this service. Initializes connection observer
      */
     public SPMAService() {
         super("SPMAService");
         devices = new ArrayList<>(); //initialize device list
-        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
-        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
+        supportedDevices = new ArrayList<>();
         BluetoothConnectionObserver.getInstance().setService(this);
     }
 
@@ -813,8 +920,19 @@ public class SPMAService extends IntentService {
         filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(broadcastReceiver, filter);
 
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        registerReceiver(broadcastReceiver, filter);
+
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(broadcastReceiver, filter);
+
+        filter = new IntentFilter(BluetoothDevice.ACTION_UUID);
+        registerReceiver(broadcastReceiver, filter);
+
         filter = new IntentFilter(SPMAService.ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
+
+
     }
 
     @Override
@@ -824,7 +942,7 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Called when the service is started
+     * Called when the service is started.
      *
      * @param intent  The Starting intent
      * @param flags
@@ -833,6 +951,7 @@ public class SPMAService extends IntentService {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
 
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;

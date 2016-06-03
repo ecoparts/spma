@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Messenger;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -50,7 +49,7 @@ public class SPMAServiceConnector {
             }
             if (msgData != null) {
                 if (checkMessage(msgData)) {
-                    parseMessageForAction(msgData);
+                    parseInternalMessageForAction(msgData);
                 }
             } else {
                 Log.w(LOG_TAG, "Message not JSON");
@@ -59,11 +58,15 @@ public class SPMAServiceConnector {
         }
     };
 
-    private void parseMessageForAction(JSONObject msgData) {
+    private void parseInternalMessageForAction(JSONObject msgData) {
         String action = getMessageAction(msgData);
         switch(action){
             case "NewDevice":
                 handleNewDevice(msgData);
+                break;
+            case "ClearDevices":
+                devices.clear();
+                broadcastToGUI(msgData.toString());
                 break;
             case "ListenersStarted":
                 listenersOnline=true;
