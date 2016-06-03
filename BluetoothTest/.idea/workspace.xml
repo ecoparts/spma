@@ -43,7 +43,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-0.5769231">
-              <caret line="2" column="36" selection-start-line="2" selection-start-column="36" selection-end-line="2" selection-end-column="36" />
+              <caret line="2" column="35" selection-start-line="2" selection-start-column="35" selection-end-line="2" selection-end-column="35" />
               <folding />
             </state>
           </provider>
@@ -62,13 +62,15 @@
       <file leaf-file-name="SPMAService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.73913044">
-              <caret line="325" column="96" selection-start-line="325" selection-start-column="96" selection-end-line="325" selection-end-column="96" />
+            <state vertical-scroll-proportion="2.027826">
+              <caret line="435" column="31" selection-start-line="435" selection-start-column="31" selection-end-line="435" selection-end-column="31" />
               <folding>
                 <element signature="e#1827#4574#0" expanded="true" />
                 <element signature="e#4573#4574#0" expanded="true" />
-                <element signature="e#25316#25362#0" expanded="true" />
-                <element signature="e#25421#25469#0" expanded="true" />
+                <element signature="e#11597#11643#0" expanded="true" />
+                <element signature="e#13215#13261#0" expanded="true" />
+                <element signature="e#26742#26788#0" expanded="true" />
+                <element signature="e#26847#26895#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -2274,8 +2276,10 @@
           <folding>
             <element signature="e#1827#4574#0" expanded="true" />
             <element signature="e#4573#4574#0" expanded="true" />
-            <element signature="e#25316#25362#0" expanded="true" />
-            <element signature="e#25421#25469#0" expanded="true" />
+            <element signature="e#11597#11643#0" expanded="true" />
+            <element signature="e#13215#13261#0" expanded="true" />
+            <element signature="e#26742#26788#0" expanded="true" />
+            <element signature="e#26847#26895#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2369,8 +2373,10 @@
           <folding>
             <element signature="e#1827#4574#0" expanded="true" />
             <element signature="e#4573#4574#0" expanded="true" />
-            <element signature="e#25316#25362#0" expanded="true" />
-            <element signature="e#25421#25469#0" expanded="true" />
+            <element signature="e#11597#11643#0" expanded="true" />
+            <element signature="e#13215#13261#0" expanded="true" />
+            <element signature="e#26742#26788#0" expanded="true" />
+            <element signature="e#26847#26895#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2398,8 +2404,10 @@
           <folding>
             <element signature="e#1827#4574#0" expanded="true" />
             <element signature="e#4573#4574#0" expanded="true" />
-            <element signature="e#25316#25362#0" expanded="true" />
-            <element signature="e#25421#25469#0" expanded="true" />
+            <element signature="e#11597#11643#0" expanded="true" />
+            <element signature="e#13215#13261#0" expanded="true" />
+            <element signature="e#26742#26788#0" expanded="true" />
+            <element signature="e#26847#26895#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2511,20 +2519,22 @@
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.5769231">
-          <caret line="2" column="36" selection-start-line="2" selection-start-column="36" selection-end-line="2" selection-end-column="36" />
+          <caret line="2" column="35" selection-start-line="2" selection-start-column="35" selection-end-line="2" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.73913044">
-          <caret line="325" column="96" selection-start-line="325" selection-start-column="96" selection-end-line="325" selection-end-column="96" />
+        <state vertical-scroll-proportion="2.027826">
+          <caret line="435" column="31" selection-start-line="435" selection-start-column="31" selection-end-line="435" selection-end-column="31" />
           <folding>
             <element signature="e#1827#4574#0" expanded="true" />
             <element signature="e#4573#4574#0" expanded="true" />
-            <element signature="e#25316#25362#0" expanded="true" />
-            <element signature="e#25421#25469#0" expanded="true" />
+            <element signature="e#11597#11643#0" expanded="true" />
+            <element signature="e#13215#13261#0" expanded="true" />
+            <element signature="e#26742#26788#0" expanded="true" />
+            <element signature="e#26847#26895#0" expanded="true" />
           </folding>
         </state>
       </provider>

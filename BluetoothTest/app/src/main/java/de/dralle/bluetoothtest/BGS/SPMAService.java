@@ -321,10 +321,12 @@ public class SPMAService extends IntentService {
                     jsoOut.put("Receiver", address);
                     jsoOut.put("Sender", adapter.getAddress());
                     jsoOut.put("ReceiverAddress", address);
-                    jsoOut.put("SenderAddress", adapter.getAddress());
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                        jsoOut.put("SenderAddress", adapter.getAddress());
+                    }
+
                     jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
                     jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
-                    jsoOut.put("SkipSenderAddressTest", Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);// WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value. Testing will therefore return wrong values.
 
 
                     jsoOut.put("Secure", connection.isSecureConnection());
@@ -371,33 +373,28 @@ public class SPMAService extends IntentService {
             Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
-                String senderAddress = jsoIn.getString("SenderAddress");
+                int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
+                String senderAppVersion=jsoIn.getString("SenderVersionApp");
+                if(!getResources().getString(R.string.app_version).equals(senderAppVersion)){
+                    Log.w(LOG_TAG,"App version mismatch. Things might go horribly wrong. You have been warned");
+                }
+                String senderAddress = null;
+                if (senderAPIVersion < Build.VERSION_CODES.M) {
+                    senderAddress = jsoIn.getString("SenderAddress");
+                }
                 String receiverAddress = jsoIn.getString("ReceiverAddress");
-                Boolean skipSenderTest = jsoIn.getBoolean("SkipSenderAddressTest");
                 msg = jsoIn.getString("Message");
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                if (senderAddress.equals(address)) {//does the message come from where it says it comes from?
-                    Log.i(LOG_TAG, "Sender confirmed");
-                    if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
-                        Log.i(LOG_TAG, "Content confirmed");
+                if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
+                    Log.i(LOG_TAG, "Content confirmed");
+                    if (confirmSender(senderAddress, address, senderAPIVersion)) {
+                        if (confirmReceiver(receiverAddress)) {
 
-
-                        if (adapter != null) {
-
-                            if (receiverAddress.equals(adapter.getAddress())) { //is this message even for me?
-                                Log.i(LOG_TAG, "Me confirmed");
-                                sendNewMessageInternalMessage(msg, address);
-                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value.
-                                Log.i(LOG_TAG, "Me not confirmed. But Android 6");
-                                sendNewMessageInternalMessage(msg, address);
-                            } else if (skipSenderTest) {
-                                Log.i(LOG_TAG, "Me not confirmed. Skipping test");
-                                sendNewMessageInternalMessage(msg, address);
-                            }
+                            sendNewMessageInternalMessage(msg, address);
                         }
                     }
-
                 }
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -405,6 +402,47 @@ public class SPMAService extends IntentService {
         }
 
 
+    }
+
+    /**
+     * Confirm the receiver of the message. Since Android 6 it isnt possible anymore to get the own device address. In that case the test is skipped.
+     * @param receiverAddress The receivers´ hw address as reported by the message
+     * @return true if test passed or android 6
+     */
+    private boolean confirmReceiver(String receiverAddress) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value.
+            Log.i(LOG_TAG,"Skipped receiver confirmation, because android 6");
+            return true;
+        } else {
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if (adapter != null) {
+                if( adapter.getAddress().equals(receiverAddress)){
+                    Log.i(LOG_TAG,"Receiver confirmed");
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Confirm the sender of the message. Since Android 6 it isnt possible anymore to get the own device address. In that case the test is skipped.
+     * @param senderAddress The senders´ hw address as reported by the message
+     * @param address The senders´ hw address as reported by the receiving connection
+     * @param senderAPIVersion The senders´ API version. If this indicates Android 6 or above, the test is skipped.
+     * @return true if test passed or android 6
+     */
+    private boolean confirmSender(String senderAddress, String address, int senderAPIVersion) {
+        if (senderAPIVersion >= Build.VERSION_CODES.M) { //if android 6, return true and ignore check, since the method to get the own hw address was removed
+            Log.i(LOG_TAG,"Skipped sender confirmation, because android 6");
+            return true;
+        } else {
+            if( senderAddress.equals(address)) {
+                Log.i(LOG_TAG, "Sender confirmed");
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
@@ -429,6 +467,7 @@ public class SPMAService extends IntentService {
 
     /**
      * Create a new connection
+     *
      * @param address remote device address
      */
     private void makeNewConnection(String address) {
@@ -469,7 +508,6 @@ public class SPMAService extends IntentService {
      * Starts the 2 listeners, secure and insecure
      *
      * @param msgData may contain additional data
-     *
      */
     private void startListeners(JSONObject msgData) {
         if (!secureListener.isListening()) {
@@ -715,6 +753,7 @@ public class SPMAService extends IntentService {
 
     /**
      * Sends a message to the SPMAServiceConnector
+     *
      * @param msg Internal message to be sent
      */
     public void sendInternalMessageForSPMAServiceConnector(String msg) {
@@ -722,10 +761,12 @@ public class SPMAService extends IntentService {
 
 
     }
+
     /**
      * Sends a message to the ChatActivity
-     * @param msg Internal message to be sent
-     *            @param btAddressRemoteDevice Address of the remote device that particular ChatActivity handles
+     *
+     * @param msg                   Internal message to be sent
+     * @param btAddressRemoteDevice Address of the remote device that particular ChatActivity handles
      */
     public void sendInternalMessageForChatActivity(String msg, String btAddressRemoteDevice) {
         sendInternalMessage(msg, ChatActivity.ACTION_NEW_MSG + "_" + btAddressRemoteDevice);
@@ -735,7 +776,8 @@ public class SPMAService extends IntentService {
 
     /**
      * Sends a new internal message. Despite the name broadcast its actually somewhat directed
-     * @param msg Message to be send
+     *
+     * @param msg                  Message to be send
      * @param receiverBroadcastTag Receivers´ broadcast tag
      */
     private void sendInternalMessage(String msg, String receiverBroadcastTag) {
