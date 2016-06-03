@@ -12,12 +12,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.ParcelUuid;
+import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -95,11 +97,21 @@ public class SPMAService extends IntentService {
             if (BluetoothDevice.ACTION_UUID.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i(LOG_TAG, "Sdp scan for device " + device.getAddress());
-                ParcelUuid[] allUUIDs = intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID);
+                ParcelUuid[] allUUIDs=device.getUuids();
 
+                if(allUUIDs==null){
+                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supports null UUIDs");
+                }else{
+                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supports "+allUUIDs.length+" UUIDs");
+                    for(ParcelUuid uuid:allUUIDs){
+                        Log.v(LOG_TAG,"Device "+device.getAddress()+" supports UUID "+uuid.getUuid().toString());
+                    }
+                }
                 if (checkForSupportedUUIDs(allUUIDs)) {
                     Log.i(LOG_TAG,"Device "+device.getAddress()+" supported");
                     addNewSupportedDevice(device);
+                }else{
+                    Log.i(LOG_TAG,"Device "+device.getAddress()+" not supported");
                 }
                 sendNewSupportedDeviceListInternalMessage();
                 if (devices.size() > 0) {
@@ -174,6 +186,7 @@ public class SPMAService extends IntentService {
             sendNewDeviceFoundInternalMessage(device);
     }
 
+
     private boolean checkForSupportedUUIDs(ParcelUuid[] allUUIDs) {
         if (allUUIDs != null) {
             for (ParcelUuid uuid : allUUIDs) {
@@ -183,9 +196,31 @@ public class SPMAService extends IntentService {
                 if (uuid.getUuid().compareTo(UUID.fromString(getResources().getString(R.string.uuid_insecure))) == 0) {
                     return true;
                 }
+                
+                UUID reversed=reverseUuid(uuid.getUuid()); //https://code.google.com/p/android/issues/detail?id=198238
+                if (reversed.compareTo(UUID.fromString(getResources().getString(R.string.uuid_secure))) == 0) {
+                    return true;
+                }
+                if (reversed.compareTo(UUID.fromString(getResources().getString(R.string.uuid_insecure))) == 0) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    private UUID reverseUuid(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        byte[] uuidBytes = bb.array();
+
+        byte[] uuidNewBytes=new byte[uuidBytes.length];
+        for (int i=0;i<uuidBytes.length;i++){
+            uuidNewBytes[i]=uuidBytes[uuidBytes.length-i-1];
+        }
+        ByteBuffer bb2 = ByteBuffer.wrap(uuidNewBytes);
+        return new UUID(bb2.getLong(), bb2.getLong());
     }
 
     /**
@@ -705,7 +740,7 @@ public class SPMAService extends IntentService {
      *
      * @param msgData may contain additional data
      */
-    private void stopListeners(JSONObject msgData) {
+    private void stopListeners(JSONObject msgData) { //TODO: null check
         boolean stopped = true;
         if (secureListener.isListening()) {
             stopped = stopped && secureListener.stopListener();
