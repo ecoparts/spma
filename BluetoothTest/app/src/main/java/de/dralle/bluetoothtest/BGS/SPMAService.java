@@ -322,7 +322,8 @@ public class SPMAService extends IntentService {
                     jsoOut.put("Sender", adapter.getAddress());
                     jsoOut.put("ReceiverAddress", address);
                     jsoOut.put("SenderAddress", adapter.getAddress());
-                    jsoOut.put("SenderAPIVersion", Build.VERSION.SDK_INT);
+                    jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
+                    jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
                     jsoOut.put("SkipSenderAddressTest", Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);// WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value. Testing will therefore return wrong values.
 
 

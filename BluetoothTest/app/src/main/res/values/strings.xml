@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
+    <string name="app_version">0.01a</string>
     <string name="scan">Scan</string>
     <string name="btNotSupported">Bluetooth not supported</string>
     <string name="btNotEnabled">Bluetooth not enabled</string>
