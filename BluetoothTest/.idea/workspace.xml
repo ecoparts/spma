@@ -69,8 +69,8 @@
       <file leaf-file-name="SPMAService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6869565">
-              <caret line="788" column="61" selection-start-line="788" selection-start-column="61" selection-end-line="788" selection-end-column="61" />
+            <state vertical-scroll-proportion="12.608696">
+              <caret line="786" column="19" selection-start-line="786" selection-start-column="19" selection-end-line="786" selection-end-column="19" />
               <folding>
                 <element signature="e#1827#4574#0" expanded="true" />
                 <element signature="e#4573#4574#0" expanded="true" />
@@ -123,7 +123,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="369" column="16" selection-start-line="369" selection-start-column="16" selection-end-line="369" selection-end-column="16" />
+              <caret line="168" column="54" selection-start-line="168" selection-start-column="23" selection-end-line="168" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -2476,14 +2476,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="369" column="16" selection-start-line="369" selection-start-column="16" selection-end-line="369" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/BluetoothConnectionObserver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2500,10 +2492,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/GUI/SPMAServiceConnector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="168" column="54" selection-start-line="168" selection-start-column="23" selection-end-line="168" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/de/dralle/bluetoothtest/BGS/SPMAService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6869565">
-          <caret line="788" column="61" selection-start-line="788" selection-start-column="61" selection-end-line="788" selection-end-column="61" />
+        <state vertical-scroll-proportion="12.608696">
+          <caret line="786" column="19" selection-start-line="786" selection-start-column="19" selection-end-line="786" selection-end-column="19" />
           <folding>
             <element signature="e#1827#4574#0" expanded="true" />
             <element signature="e#4573#4574#0" expanded="true" />
