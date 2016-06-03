@@ -81,22 +81,30 @@ public class BluetoothConnection extends Observable implements Runnable{
             if(in!=null&&out!=null){
                 Log.i(LOG_TAG,"Input and outputstreams retrieved");
                 notifyObserversAboutConnectionReady();
-                while(active){
+                while(active){//the next section (controlled by while(active)) receives messages and forwards them.
+                    //its ugly and overly complicated and seems to be partly unnecessary
+                    //this is because inputstream.available() return always 1 if something is available on some devices
+                    //its also because bluetooth tends to hang sometimes and split 1 message into 2 at will
                     List<Byte> msgBytesList=new ArrayList<>();
                     try {
-                        while (in.available()>0) {
-                            int received = -1;
-                            try {
-                                
-                                received = in.read();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                active=false;
+                        do{
+                            int avail=in.available();
+                            byte[] buffer=null;
+                            if(avail>0){
+                                buffer=new byte[avail];
+                                in.read(buffer,0,avail);
                             }
-                            if (received != -1){
-                                msgBytesList.add((byte)received);
+                            if(buffer!=null){
+                                for(byte b:buffer){
+                                    msgBytesList.add(b);
+                                }
                             }
-                        }
+
+                            Thread.sleep(50);
+                        }while(in.available()>0);
+
+
+
 
                     } catch (Exception e) {
                         e.printStackTrace();
