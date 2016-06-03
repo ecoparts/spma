@@ -42,9 +42,9 @@ public class SPMAService extends IntentService {
                 Log.i(LOG_TAG, "New device found");
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-               if(addNewDevice(device)){ //Only send message if device is new
-                   sendNewDeviceFoundMessage(device);
-               }
+                if (addNewDevice(device)) { //Only send message if device is new
+                    sendNewDeviceFoundMessage(device);
+                }
 
 
             }
@@ -108,11 +108,12 @@ public class SPMAService extends IntentService {
     /**
      * Adds a new device to the List of devices.
      * Tries to ensure that every device is only added once by checking its address
+     *
      * @param device Device to be added
      * @return True if the device is new
      */
     private boolean addNewDevice(BluetoothDevice device) {
-        for(BluetoothDevice d:devices) {
+        for (BluetoothDevice d : devices) {
             if (d.getAddress().equals(device.getAddress())) {
                 Log.w(LOG_TAG, device.getAddress() + " already known");
                 return false;
@@ -126,27 +127,30 @@ public class SPMAService extends IntentService {
 
     /**
      * Send a message that a new device was discovered
+     *
      * @param device newly discovered device
      */
     private void sendNewDeviceFoundMessage(BluetoothDevice device) {
-            JSONObject mdvCmd = new JSONObject();
-            try {
-                mdvCmd.put("Extern", false);
-                mdvCmd.put("Level", 0);
-                mdvCmd.put("Action", "NewDevice");
-                mdvCmd.put("Name", device.getName());
-                mdvCmd.put("Address", device.getAddress());
-                boolean bonded=device.getBondState()==BluetoothDevice.BOND_BONDED;
-                mdvCmd.put("Paired",bonded);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            sendMessageForSPMAServiceConnector(mdvCmd.toString());
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "NewDevice");
+            mdvCmd.put("Name", device.getName());
+            mdvCmd.put("Address", device.getAddress());
+            boolean bonded = device.getBondState() == BluetoothDevice.BOND_BONDED;
+            mdvCmd.put("Paired", bonded);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageForSPMAServiceConnector(mdvCmd.toString());
 
 
     }
+
     /**
      * Send a message that a connection is ready
+     *
      * @param con newly acquired connection
      */
     private void sendNewConnectionRetrieved(BluetoothConnection con) {
@@ -160,12 +164,14 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(),con.getDevice().getAddress());
+        sendMessageForChatActivity(mdvCmd.toString(), con.getDevice().getAddress());
 
 
     }
+
     /**
      * Send a message that a connection failed
+     *
      * @param device The RemoteDevice which this service couldnt make a connection to
      */
     private void sendNewConnectionFailed(BluetoothDevice device) {
@@ -178,7 +184,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(),device.getAddress());
+        sendMessageForChatActivity(mdvCmd.toString(), device.getAddress());
 
 
     }
@@ -235,6 +241,7 @@ public class SPMAService extends IntentService {
                 break;
         }
     }
+
     /**
      * Request a connection
      *
@@ -242,27 +249,28 @@ public class SPMAService extends IntentService {
      * @return
      */
     private void handleConnectionRequest(JSONObject msgData) {
-        String address= null;
+        String address = null;
         try {
             address = msgData.getString("Address");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(address!=null){
-            Log.i(LOG_TAG,"Requesting new connection for address "+address);
-            BluetoothConnectionObserver bco=BluetoothConnectionObserver.getInstance();
-            BluetoothConnection connection=bco.getConnection(address);
-            if(connection!=null){
-                Log.i(LOG_TAG,"Connection already there");
+        if (address != null) {
+            Log.i(LOG_TAG, "Requesting new connection for address " + address);
+            BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
+            BluetoothConnection connection = bco.getConnection(address);
+            if (connection != null) {
+                Log.i(LOG_TAG, "Connection already there");
                 sendNewConnectionRetrieved(connection);
-            }else{
-                Log.i(LOG_TAG,"Connection needs to be made");
+            } else {
+                Log.i(LOG_TAG, "Connection needs to be made");
                 makeNewConnection(address);
             }
         }
 
 
     }
+
     /**
      * Send a new external message
      *
@@ -270,28 +278,59 @@ public class SPMAService extends IntentService {
      * @return
      */
     private void handleSendNewMessage(JSONObject msgData) {
-        String address= null;
-        String msg="";
+        String address = null;
+        String msg = "";
         try {
             address = msgData.getString("Address");
-            msg=msgData.getString("Message");
+            msg = msgData.getString("Message");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(address!=null){
-            Log.i(LOG_TAG,"Sending new message to "+address);
-            BluetoothConnectionObserver bco=BluetoothConnectionObserver.getInstance();
-            BluetoothConnection connection=bco.getConnection(address);
-            if(connection!=null){
-                connection.sendExternalMessage(msg);
-            }else{
-                Log.i(LOG_TAG,"No suitable connection found");
+        if (address != null) {
+            Log.i(LOG_TAG, "Sending new message to " + address);
 
+            BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
+            BluetoothConnection connection = bco.getConnection(address);
+
+            BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+            if (adapter != null) {
+                JSONObject jsoOut = new JSONObject();
+                try {
+
+                    jsoOut.put("Extern", true);
+                    jsoOut.put("Level", 0);
+                    jsoOut.put("Content", "Text");
+                    jsoOut.put("Receiver", address);
+                    jsoOut.put("Sender", adapter.getAddress());
+                    jsoOut.put("ReceiverAddress", address);
+                    jsoOut.put("SenderAddress", adapter.getAddress());
+                    jsoOut.put("SenderAPIVersion", Build.VERSION.SDK_INT);
+                    jsoOut.put("SkipSenderAddressTest", Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);// WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value. Testing will therefore return wrong values.
+
+
+                    jsoOut.put("Secure", connection.isSecureConnection());
+                    jsoOut.put("Message", msg);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (connection != null) {
+                    connection.sendExternalMessage(jsoOut.toString());
+                } else {
+                    Log.i(LOG_TAG, "No suitable connection found");
+
+                }
+            } else {
+                Log.w(LOG_TAG, "No bluetooth. Cant send.");
             }
+
+
         }
 
 
     }
+
     /**
      * Handle received new message
      *
@@ -299,20 +338,56 @@ public class SPMAService extends IntentService {
      * @return
      */
     private void handleNewMessage(JSONObject msgData) {
-        String address= null;
-        String msg="";
+        String address = null;
+        String msg = "";
         try {
             address = msgData.getString("Address");
-            msg=msgData.getString("Message");
+            msg = msgData.getString("Message");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(address!=null){
-            sendNewMessageInternalMessage(msg,address);
+        JSONObject jsoIn = null;
+        try {
+            jsoIn = new JSONObject(msg);
+            Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
+            if (jsoIn.getBoolean("Extern")) { //is this an external message?
+                String content = jsoIn.getString("Content");
+                String senderAddress = jsoIn.getString("SenderAddress");
+                String receiverAddress = jsoIn.getString("ReceiverAddress");
+                Boolean skipSenderTest = jsoIn.getBoolean("SkipSenderAddressTest");
+                msg = jsoIn.getString("Message");
+                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+                if (senderAddress.equals(address)) {//does the message come from where it says it comes from?
+                    Log.i(LOG_TAG, "Sender confirmed");
+                    if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
+                        Log.i(LOG_TAG, "Content confirmed");
+
+
+                        if (adapter != null) {
+
+                            if (receiverAddress.equals(adapter.getAddress())) { //is this message even for me?
+                                Log.i(LOG_TAG, "Me confirmed");
+                                sendNewMessageInternalMessage(msg, address);
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // WifiInfo.getMacAddress() and the BluetoothAdapter.getAddress() were "removed" in Android 6. They now return a constant value.
+                                Log.i(LOG_TAG, "Me not confirmed. But Android 6");
+                                sendNewMessageInternalMessage(msg, address);
+                            } else if (skipSenderTest) {
+                                Log.i(LOG_TAG, "Me not confirmed. Skipping test");
+                                sendNewMessageInternalMessage(msg, address);
+                            }
+                        }
+                    }
+
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.w(LOG_TAG, "Couldnt parse message");
         }
 
 
     }
+
     /**
      * Send a message that Listeners started
      */
@@ -322,44 +397,44 @@ public class SPMAService extends IntentService {
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "NewMessage");
-            mdvCmd.put("Address",address);
-            mdvCmd.put("Sender",address);
-            mdvCmd.put("Message",msg);
+            mdvCmd.put("Address", address);
+            mdvCmd.put("Sender", address);
+            mdvCmd.put("Message", msg);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(),address);
+        sendMessageForChatActivity(mdvCmd.toString(), address);
 
     }
 
     private void makeNewConnection(String address) {
-        BluetoothDevice device=null;
-        for(BluetoothDevice d:devices) {
+        BluetoothDevice device = null;
+        for (BluetoothDevice d : devices) {
             if (d.getAddress().equals(address)) {
-                device=d;
+                device = d;
                 break;
             }
 
         }
-        if(device!=null){
-            Log.i(LOG_TAG,"Device known");
-        }else{
-            Log.i(LOG_TAG,"Device unknown. Creating new");
+        if (device != null) {
+            Log.i(LOG_TAG, "Device known");
+        } else {
+            Log.i(LOG_TAG, "Device unknown. Creating new");
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-            if(adapter!=null){
-                device=adapter.getRemoteDevice(address);
+            if (adapter != null) {
+                device = adapter.getRemoteDevice(address);
             }
         }
-        if(device!=null){
-            BluetoothConnection connection = BluetoothConnectionMaker.createConnection(device,getResources());
-            if(connection!=null){
+        if (device != null) {
+            BluetoothConnection connection = BluetoothConnectionMaker.createConnection(device, getResources());
+            if (connection != null) {
                 connection.addObserver(BluetoothConnectionObserver.getInstance());
                 BluetoothConnectionObserver.getInstance().registerConnection(connection);
-                Thread t=new Thread(connection);
+                Thread t = new Thread(connection);
                 t.start();
                 sendNewConnectionRetrieved(connection);
-            }else{
+            } else {
                 sendNewConnectionFailed(device);
             }
 
@@ -374,32 +449,33 @@ public class SPMAService extends IntentService {
      * @return scan was successfully initialized
      */
     private void startListeners(JSONObject msgData) {
-        if(!secureListener.isListening()){
-            Thread t=new Thread(secureListener);
+        if (!secureListener.isListening()) {
+            Thread t = new Thread(secureListener);
             t.start();
-            Log.i(LOG_TAG,"Secure listener started");
-        }else{
+            Log.i(LOG_TAG, "Secure listener started");
+        } else {
             secureListener.stopListener();
-            Thread t=new Thread(secureListener);
+            Thread t = new Thread(secureListener);
             t.start();
-            Log.i(LOG_TAG,"Secure listener restarted");
+            Log.i(LOG_TAG, "Secure listener restarted");
         }
 
-        if(!insecureListener.isListening()){
-            Thread t=new Thread(insecureListener);
+        if (!insecureListener.isListening()) {
+            Thread t = new Thread(insecureListener);
             t.start();
-            Log.i(LOG_TAG,"Insecure listener started");
-        }else{
+            Log.i(LOG_TAG, "Insecure listener started");
+        } else {
             insecureListener.stopListener();
-            Thread t=new Thread(insecureListener);
+            Thread t = new Thread(insecureListener);
             t.start();
-            Log.i(LOG_TAG,"Insecure listener restarted");
+            Log.i(LOG_TAG, "Insecure listener restarted");
         }
 
 
-            sendListenerStartMessage();
+        sendListenerStartMessage();
 
     }
+
     /**
      * Send a message that Listeners started
      */
@@ -415,6 +491,7 @@ public class SPMAService extends IntentService {
         }
         sendMessageForSPMAServiceConnector(mdvCmd.toString());
     }
+
     /**
      * Send a message that a connection is ready
      *
@@ -422,9 +499,9 @@ public class SPMAService extends IntentService {
      */
     private void sendConnectionReadyMessage(JSONObject msgData) {
         JSONObject mdvCmd = new JSONObject();
-        String address="";
+        String address = "";
         try {
-            address=msgData.getString("Address");
+            address = msgData.getString("Address");
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "ConnectionReady");
@@ -433,8 +510,9 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         sendMessageForSPMAServiceConnector(mdvCmd.toString());
-        sendMessageForChatActivity(mdvCmd.toString(),address);
+        sendMessageForChatActivity(mdvCmd.toString(), address);
     }
+
     /**
      * Send a message that a connection is shutdown
      *
@@ -442,9 +520,9 @@ public class SPMAService extends IntentService {
      */
     private void sendConnectionShutdownMessage(JSONObject msgData) {
         JSONObject mdvCmd = new JSONObject();
-        String address="";
+        String address = "";
         try {
-            address=msgData.getString("Address");
+            address = msgData.getString("Address");
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "ConnectionShutdown");
@@ -452,7 +530,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendMessageForChatActivity(mdvCmd.toString(),address);
+        sendMessageForChatActivity(mdvCmd.toString(), address);
     }
 
     /**
@@ -462,21 +540,22 @@ public class SPMAService extends IntentService {
      * @return scan was successfully initialized
      */
     private void stopListeners(JSONObject msgData) {
-        boolean stopped=true;
-        if(secureListener.isListening()){
-            stopped = stopped&&secureListener.stopListener();
-            Log.i(LOG_TAG,"Secure listener stopped");
+        boolean stopped = true;
+        if (secureListener.isListening()) {
+            stopped = stopped && secureListener.stopListener();
+            Log.i(LOG_TAG, "Secure listener stopped");
         }
 
-        if(insecureListener.isListening()){
-            stopped = stopped&&insecureListener.stopListener();
-            Log.i(LOG_TAG,"Insecure listener stopped");
+        if (insecureListener.isListening()) {
+            stopped = stopped && insecureListener.stopListener();
+            Log.i(LOG_TAG, "Insecure listener stopped");
         }
-        if(stopped){
-            Log.i(LOG_TAG,"Listeners stopped");
+        if (stopped) {
+            Log.i(LOG_TAG, "Listeners stopped");
             sendListenerStopMessage();
         }
     }
+
     /**
      * Send a message that Listeners stopped
      */
@@ -531,7 +610,7 @@ public class SPMAService extends IntentService {
 
             }
         }
-        Log.w(LOG_TAG,"No bluetooth. Cant scan");
+        Log.w(LOG_TAG, "No bluetooth. Cant scan");
         return false;
     }
 
@@ -607,23 +686,22 @@ public class SPMAService extends IntentService {
     }
 
     public void sendMessageForSPMAServiceConnector(String msg) {
-       sendMessage(msg,SPMAServiceConnector.ACTION_NEW_MSG);
-
-
-
-    }
-    public void sendMessageForChatActivity(String msg,String btAddressRemoteDevice) {
-       sendMessage(msg, ChatActivity.ACTION_NEW_MSG+"_"+btAddressRemoteDevice);
-
+        sendMessage(msg, SPMAServiceConnector.ACTION_NEW_MSG);
 
 
     }
-    private void sendMessage(String msg,String receiverBroadcastTag) {
+
+    public void sendMessageForChatActivity(String msg, String btAddressRemoteDevice) {
+        sendMessage(msg, ChatActivity.ACTION_NEW_MSG + "_" + btAddressRemoteDevice);
+
+
+    }
+
+    private void sendMessage(String msg, String receiverBroadcastTag) {
         Intent bgServiceIntent = new Intent(receiverBroadcastTag);
         bgServiceIntent.putExtra("msg", msg);
         sendBroadcast(bgServiceIntent);
-        Log.v(LOG_TAG,"Send new broadcast to "+receiverBroadcastTag);
-
+        Log.v(LOG_TAG, "Send new broadcast to " + receiverBroadcastTag);
 
 
     }
@@ -666,16 +744,17 @@ public class SPMAService extends IntentService {
 
     /**
      * Called when the service is started
-     * @param intent The Starting intent
+     *
+     * @param intent  The Starting intent
      * @param flags
      * @param startId
      * @return
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-       devices=new ArrayList<>(); //initialize device list
-        secureListener=new BluetoothListener(true,getResources().getString(R.string.uuid_secure));
-        insecureListener=new BluetoothListener(false,getResources().getString(R.string.uuid_insecure));
+        devices = new ArrayList<>(); //initialize device list
+        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
+        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
         BluetoothConnectionObserver.getInstance().setService(this);
         //return super.onStartCommand(intent, flags, startId);
         return START_STICKY;

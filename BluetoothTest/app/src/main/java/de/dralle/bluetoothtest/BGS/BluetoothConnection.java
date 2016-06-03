@@ -36,6 +36,8 @@ public class BluetoothConnection extends Observable implements Runnable{
         return device;
     }
 
+
+
     public boolean isSecureConnection() {
         return secureConnection;
     }
