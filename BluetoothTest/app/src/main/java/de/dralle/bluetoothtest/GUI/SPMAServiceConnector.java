@@ -125,6 +125,7 @@ public class SPMAServiceConnector {
                 }
                 break;
             case "NewExternalMessage":
+                broadcastToGUI(msgData.toString());
                 address=null;
                 try {
                     address=msgData.getString("Address");
