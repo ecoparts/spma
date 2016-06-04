@@ -681,9 +681,9 @@ public class SPMAService extends IntentService {
             secureListener.addObserver(BluetoothListenerObserver.getInstance());
             BluetoothListenerObserver.getInstance().addListener(secureListener);
         }
-        insecureListener=BluetoothListenerObserver.getInstance().getSecureListener();
+        insecureListener=BluetoothListenerObserver.getInstance().getInsecureListener();
         if(insecureListener==null) {
-            insecureListener = BluetoothListenerMaker.getInstance().createListener(true);
+            insecureListener = BluetoothListenerMaker.getInstance().createListener(false);
             insecureListener.addObserver(BluetoothListenerObserver.getInstance());
             BluetoothListenerObserver.getInstance().addListener(insecureListener);
         }
@@ -912,7 +912,8 @@ public class SPMAService extends IntentService {
         super("SPMAService");
         devices = new ArrayList<>(); //initialize device list
         supportedDevices = new ArrayList<>();
-        BluetoothConnectionObserver.getInstance().setService(this);
+        BluetoothConnectionObserver.getInstance().setService(this); //prepare observer for later use
+        BluetoothListenerObserver.getInstance().setService(this);//prepare observer for later use
     }
 
     /**

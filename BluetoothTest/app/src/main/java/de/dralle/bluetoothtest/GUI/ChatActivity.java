@@ -51,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
         switch(action){
             case "ConnectionShutdown":
                 if(mainTextView!=null){
-                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionshutdown));
+                    mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionShutdown));
                 }
                 finish();
                 break;

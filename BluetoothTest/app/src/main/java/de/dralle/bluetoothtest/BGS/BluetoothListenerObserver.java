@@ -38,7 +38,7 @@ public class BluetoothListenerObserver implements Observer {
     }
 
     public void setSecureListener(BluetoothListener secureListener) {
-        if(this.secureListener.isListening()){
+        if(this.secureListener!=null&&this.secureListener.isListening()){
             this.secureListener.stopListener();
         }
         this.secureListener = secureListener;
@@ -49,7 +49,7 @@ public class BluetoothListenerObserver implements Observer {
     }
 
     public void setInsecureListener(BluetoothListener insecureListener) {
-        if(this.insecureListener.isListening()){
+        if(this.insecureListener!=null&&this.insecureListener.isListening()){
             this.insecureListener.stopListener();
         }
         this.insecureListener = insecureListener;
@@ -76,9 +76,14 @@ public class BluetoothListenerObserver implements Observer {
                 if(jso!=null&&service.checkInternalMessage(jso)){
                     try {
                         if(jso.getString("Action").equals("Shutdown")){
-                            secureListener.stopListener();
+                            if(secureListener!=null){
+                                secureListener.stopListener();
+                            }
                             secureListener=null;
-                            insecureListener.stopListener();
+                            if(insecureListener!=null){
+                                insecureListener.stopListener();
+                            }
+
                             insecureListener=null;
                         }
                     } catch (JSONException e) {
@@ -102,9 +107,13 @@ public class BluetoothListenerObserver implements Observer {
 
 
     public void shutdownAll(){
-       secureListener.stopListener();
+       if(secureListener!=null){
+           secureListener.stopListener();
+       }
         secureListener=null;
-        insecureListener.stopListener();
+        if(insecureListener!=null){
+            insecureListener.stopListener();
+        }
         insecureListener=null;
         Log.i(LOG_TAG,"Disconnect all");
     }
