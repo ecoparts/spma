@@ -9,10 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.ParcelUuid;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -396,6 +394,34 @@ public class SPMAService extends IntentService {
                 break;
         }
     }
+    /**
+     * Checks the message action attribute and executes the appropriate action
+     *
+     * @param msgData JSON formatted message to be checked
+     */
+    public void parseInternalListenerMessageForAction(JSONObject msgData) {
+        String action = "";
+        try {
+            action = msgData.getString("Action");
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+        }
+        if (action == null) {
+            action = "";
+        }
+        switch (action) {
+            case "Startup":
+                sendListenerStartInternalMessage();
+                break;
+            case "Shutdown":
+                sendListenerStopInternalMessage();
+                break;
+            default:
+                Log.w(LOG_TAG, "Action not recognized: " + action);
+                break;
+        }
+    }
 
     /**
      * Handle a internal connection request by performing a lookup on cached connections or creating a new one
@@ -649,8 +675,18 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      */
     private void startListeners(JSONObject msgData) {
-        secureListener = new BluetoothListener(true, getResources().getString(R.string.uuid_secure));
-        insecureListener = new BluetoothListener(false, getResources().getString(R.string.uuid_insecure));
+        secureListener=BluetoothListenerObserver.getInstance().getSecureListener();
+        if(secureListener==null) {
+            secureListener = BluetoothListenerMaker.getInstance().createListener(true);
+            secureListener.addObserver(BluetoothListenerObserver.getInstance());
+            BluetoothListenerObserver.getInstance().addListener(secureListener);
+        }
+        insecureListener=BluetoothListenerObserver.getInstance().getSecureListener();
+        if(insecureListener==null) {
+            insecureListener = BluetoothListenerMaker.getInstance().createListener(true);
+            insecureListener.addObserver(BluetoothListenerObserver.getInstance());
+            BluetoothListenerObserver.getInstance().addListener(insecureListener);
+        }
         if (!secureListener.isListening()) {
             Thread t = new Thread(secureListener);
             t.start();
@@ -672,9 +708,6 @@ public class SPMAService extends IntentService {
             t.start();
             Log.i(LOG_TAG, "Insecure listener restarted");
         }
-
-
-        sendListenerStartInternalMessage();
 
     }
 
@@ -741,20 +774,9 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      */
     private void stopListeners(JSONObject msgData) {
-        boolean stopped = true;
-        if (secureListener!=null&&secureListener.isListening()) {
-            stopped = stopped && secureListener.stopListener();
-            Log.i(LOG_TAG, "Secure listener stopped");
-        }
+        BluetoothListenerObserver.getInstance().shutdownAll();
+        Log.i(LOG_TAG, "Listeners stopped");
 
-        if (insecureListener!=null&&insecureListener.isListening()) {
-            stopped = stopped && insecureListener.stopListener();
-            Log.i(LOG_TAG, "Insecure listener stopped");
-        }
-        if (stopped) {
-            Log.i(LOG_TAG, "Listeners stopped");
-            sendListenerStopInternalMessage();
-        }
     }
 
     /**
@@ -968,6 +990,7 @@ public class SPMAService extends IntentService {
         registerReceiver(broadcastReceiver, filter);
 
         BluetoothConnectionMaker.getInstance(getResources()); //prepare BluetoothConnectionMaker for later use
+        BluetoothListenerMaker.getInstance(getResources());//prepare BluetoothListenerMaker for later use
 
 
     }
