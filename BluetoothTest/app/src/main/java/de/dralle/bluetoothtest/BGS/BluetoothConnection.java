@@ -80,7 +80,7 @@ public class BluetoothConnection extends Observable implements Runnable{
             if(in!=null&&out!=null){
                 Log.i(LOG_TAG,"Input and outputstreams retrieved");
                 notifyObserversAboutConnectionReady();
-                while(socket.isConnected()){//the next section (controlled by while(active)) receives messages and forwards them.
+                while(socket!=null&&socket.isConnected()){//the next section (controlled by while(active)) receives messages and forwards them.
                     //its ugly and overly complicated and seems to be partly unnecessary
                     //this is because inputstream.available() return always 1 if something is available on some devices
                     //its also because bluetooth tends to hang sometimes and split 1 message into 2 at will
@@ -149,6 +149,8 @@ public class BluetoothConnection extends Observable implements Runnable{
                     out.write((int)msgChars[i]);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Log.i(LOG_TAG,"Write failed");
+                    notifyObserversAboutShutdown();
 
                 }
 
@@ -157,10 +159,12 @@ public class BluetoothConnection extends Observable implements Runnable{
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.i(LOG_TAG,"Write/Flush failed");
+                notifyObserversAboutShutdown();
             }
         }
         else{
-            Log.i(LOG_TAG,"Write failed");
+            Log.i(LOG_TAG,"Write/Complete failed");
             notifyObserversAboutShutdown();
         }
 
