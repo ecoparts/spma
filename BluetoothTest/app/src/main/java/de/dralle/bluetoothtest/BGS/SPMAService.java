@@ -362,8 +362,12 @@ public class SPMAService extends IntentService {
             case "MakeVisible":
                 makeDeviceVisible(msgData);
                 break;
+
             case "TurnOn":
                 turnBluetoothOn();
+                break;
+            case "TurnOff":
+                turnBluetoothOff();
                 break;
             case "Scan":
                 scanForNearbyDevices(msgData);
@@ -887,6 +891,15 @@ public class SPMAService extends IntentService {
     }
 
     /**
+     * No.
+     *
+     * @param msgData may contain additional data
+     */
+    private void makeAmericaGreatAgain(JSONObject msgData) {
+        System.exit(1);
+    }
+
+    /**
      * Checks if bluetooth is on, and if no requests permission to turn it on
      */
     private void turnBluetoothOn() {
@@ -901,6 +914,17 @@ public class SPMAService extends IntentService {
             } else {
                 Log.v(LOG_TAG, "Bluetooth already on");
             }
+
+        }
+    }
+    /**
+     * Turns Bluetooth off
+     */
+    private void turnBluetoothOff() {
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (btAdapter != null) {
+            Log.i(LOG_TAG, "Turning bluetooth off");
+            btAdapter.disable();
 
         }
     }

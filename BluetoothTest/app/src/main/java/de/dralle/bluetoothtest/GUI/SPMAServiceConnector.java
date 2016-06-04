@@ -122,15 +122,18 @@ public class SPMAServiceConnector {
 
 
     public void startService(){
-        Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
-        parentActivity.startService(bgServiceIntent);
+        if(!isServiceRunning()){
+            Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
+            parentActivity.startService(bgServiceIntent);
 
-        //register broadcast receiver for messages from the service
-        IntentFilter filter=new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
-        try {
-            parentActivity.registerReceiver(broadcastReceiver, filter);
-        }catch(Exception e){
-            e.printStackTrace();
+            //register broadcast receiver for messages from the service
+            IntentFilter filter=new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
+            try {
+                parentActivity.registerReceiver(broadcastReceiver, filter);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            Log.i(LOG_TAG,"Service started");
         }
     }
 
@@ -138,6 +141,7 @@ public class SPMAServiceConnector {
      * Sends a message to the service to make the device visible
      * @return true if service is running and message was sent
      */
+    @Deprecated
     public boolean makeDeviceVisible(){
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending MakeVisible");
@@ -157,6 +161,38 @@ public class SPMAServiceConnector {
 
 
     }
+    /**
+     * Sends a message to the service to make the device visible
+     * @return true if service is running and message was sent
+     */
+    public boolean makeDeviceVisible(int duration){
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending MakeVisible");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "MakeVisible");
+                mdvCmd.put("Duration",duration);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+
+
+    }
+    public boolean isBtVisible(){
+        BluetoothAdapter adaper=BluetoothAdapter.getDefaultAdapter();
+        if(adaper!=null){
+            return adaper.getScanMode()==BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE;
+        }
+        return false;
+    }
+
 
     public void sendMessage(String msg){
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
@@ -180,6 +216,7 @@ public class SPMAServiceConnector {
 
         //unregister receiver
         parentActivity.unregisterReceiver(broadcastReceiver);
+        Log.i(LOG_TAG,"Stopped service");
     }
 
     /**
@@ -210,6 +247,27 @@ public class SPMAServiceConnector {
                 mdvCmd.put("Extern", false);
                 mdvCmd.put("Level", 0);
                 mdvCmd.put("Action", "TurnOn");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendMessage(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
+    /**
+     * Sends a message to the service to turn bluetooth off
+     * @return true if service is running and message was sent
+     */
+    public boolean turnBluetoothOff() {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending TurnOff");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "TurnOff");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
