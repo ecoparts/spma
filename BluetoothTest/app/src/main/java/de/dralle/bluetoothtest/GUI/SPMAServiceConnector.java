@@ -415,7 +415,6 @@ public class SPMAServiceConnector {
     public boolean startListeners() {
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending startListeners");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
@@ -438,7 +437,6 @@ public class SPMAServiceConnector {
     public boolean stopListeners() {
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending StopListeners");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
@@ -472,7 +470,6 @@ public class SPMAServiceConnector {
     public boolean requestNewConnection(String address) {
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending RequestConnection");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
@@ -495,7 +492,6 @@ public class SPMAServiceConnector {
     public boolean sendExternalMessage(String msg, String deviceAddress) {
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending SendNewMessage");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
