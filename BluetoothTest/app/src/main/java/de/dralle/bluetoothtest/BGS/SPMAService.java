@@ -628,7 +628,7 @@ public class SPMAService extends IntentService {
             }
         }
         if (device != null) {
-            BluetoothConnection connection = BluetoothConnectionMaker.createConnection(device, getResources());
+            BluetoothConnection connection = BluetoothConnectionMaker.getInstance().createConnection(device);
             if (connection != null) {
                 connection.addObserver(BluetoothConnectionObserver.getInstance());
                 BluetoothConnectionObserver.getInstance().registerConnection(connection);
@@ -740,14 +740,14 @@ public class SPMAService extends IntentService {
      *
      * @param msgData may contain additional data
      */
-    private void stopListeners(JSONObject msgData) { //TODO: null check
+    private void stopListeners(JSONObject msgData) {
         boolean stopped = true;
-        if (secureListener.isListening()) {
+        if (secureListener!=null&&secureListener.isListening()) {
             stopped = stopped && secureListener.stopListener();
             Log.i(LOG_TAG, "Secure listener stopped");
         }
 
-        if (insecureListener.isListening()) {
+        if (insecureListener!=null&&insecureListener.isListening()) {
             stopped = stopped && insecureListener.stopListener();
             Log.i(LOG_TAG, "Insecure listener stopped");
         }
@@ -966,6 +966,8 @@ public class SPMAService extends IntentService {
 
         filter = new IntentFilter(SPMAService.ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
+
+        BluetoothConnectionMaker.getInstance(getResources()); //prepare BluetoothConnectionMaker for later use
 
 
     }
