@@ -1,3 +1,5 @@
+android 4.4 (API Level 19)
+Texte bitte nich hardcoded, sondern in die strings.xml + verweis von der GUI (sowohl xml + code)(default ist englisch)
 GUI
 -app name
 -login screen (user , password ; for local encryption)
