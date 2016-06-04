@@ -26,10 +26,9 @@ public class BluetoothConnection extends Observable implements Runnable{
     private BluetoothDevice device;
     private BufferedInputStream in=null;
     private BufferedOutputStream out=null;
-    private boolean active=false;
 
     public boolean isActive() {
-        return active;
+        return socket.isConnected();
     }
 
     public BluetoothDevice getDevice() {
@@ -55,35 +54,33 @@ public class BluetoothConnection extends Observable implements Runnable{
         if(!socket.isConnected()){
             try {
                 socket.connect();
-                active=true;
+
             } catch (IOException e) {
                 e.printStackTrace();
-                active=false;
+
                 Log.w(LOG_TAG,"Connection to "+device.getAddress()+" failed"+countObservers());
 
             }
 
-        }else{
-            active=true;
         }
         Log.i(LOG_TAG,"Socket connected");
-        if(socket!=null&&active){
+        if(socket!=null&&socket.isConnected()){
             try {
                 in=new BufferedInputStream(socket.getInputStream());
             } catch (IOException e) {
                 e.printStackTrace();
-                active=false;
+
             }
             try {
                 out=new BufferedOutputStream(socket.getOutputStream());
             } catch (IOException e) {
                 e.printStackTrace();
-                active=false;
+
             }
             if(in!=null&&out!=null){
                 Log.i(LOG_TAG,"Input and outputstreams retrieved");
                 notifyObserversAboutConnectionReady();
-                while(active){//the next section (controlled by while(active)) receives messages and forwards them.
+                while(socket.isConnected()){//the next section (controlled by while(active)) receives messages and forwards them.
                     //its ugly and overly complicated and seems to be partly unnecessary
                     //this is because inputstream.available() return always 1 if something is available on some devices
                     //its also because bluetooth tends to hang sometimes and split 1 message into 2 at will
@@ -110,7 +107,7 @@ public class BluetoothConnection extends Observable implements Runnable{
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        active=false;
+
                     }
                     if(msgBytesList.size()>0){
                             byte[] msgBytes=new byte[msgBytesList.size()];
@@ -144,7 +141,7 @@ public class BluetoothConnection extends Observable implements Runnable{
     }
     public void sendExternalMessage(String msg){
         Log.i(LOG_TAG,"Writing message");
-        if(active){
+        if(socket!=null&&socket.isConnected()){
             char[] msgChars=msg.toCharArray();
             for(int i=0;i<msgChars.length;i++){
 
@@ -152,7 +149,7 @@ public class BluetoothConnection extends Observable implements Runnable{
                     out.write((int)msgChars[i]);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    active=false;
+
                 }
 
             }
@@ -160,10 +157,9 @@ public class BluetoothConnection extends Observable implements Runnable{
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
-                active=false;
             }
         }
-        if(!active){
+        else{
             Log.i(LOG_TAG,"Write failed");
             notifyObserversAboutShutdown();
         }
@@ -219,7 +215,6 @@ jso.put("Address",device.getAddress());
             e.printStackTrace();
         }
         socket=null;
-        active=false;
         Log.i(LOG_TAG,"Socket removed");
     }
 }
