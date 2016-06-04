@@ -28,7 +28,7 @@ import de.dralle.bluetoothtest.R;
 
 /**
  * Created by nils on 31.05.16.
- * SPMAService is the background service of this app
+ * SPMAService is the background service of this app TODO: maybe merge liistener classes with connection classes through inheritance
  */
 public class SPMAService extends IntentService {
     /**
