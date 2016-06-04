@@ -153,7 +153,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -177,7 +177,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -192,9 +192,16 @@ public class SPMAServiceConnector {
         }
         return false;
     }
+    public boolean isBtOn(){
+        BluetoothAdapter adaper=BluetoothAdapter.getDefaultAdapter();
+        if(adaper!=null){
+            return adaper.isEnabled();
+        }
+        return false;
+    }
 
 
-    public void sendMessage(String msg){
+    public void broadcastInternalMessageToService(String msg){
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
@@ -250,7 +257,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -271,7 +278,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -302,7 +309,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -351,7 +358,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -374,7 +381,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -409,7 +416,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");
@@ -433,7 +440,7 @@ public class SPMAServiceConnector {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            sendMessage(mdvCmd.toString());
+            broadcastInternalMessageToService(mdvCmd.toString());
             return true;
         }
         Log.w(LOG_TAG,"Service not running");

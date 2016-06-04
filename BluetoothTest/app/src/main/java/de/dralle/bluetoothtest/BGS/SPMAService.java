@@ -893,9 +893,9 @@ public class SPMAService extends IntentService {
     /**
      * No.
      *
-     * @param msgData may contain additional data
+     *
      */
-    private void makeAmericaGreatAgain(JSONObject msgData) {
+    private void makeAmericaGreatAgain(){
         System.exit(1);
     }
 
