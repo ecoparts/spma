@@ -40,7 +40,7 @@ public class SPMAService extends IntentService {
     /**
      * Notification id for the main notification
      */
-    private static final int SPMA_NOTIFICATION_ID=91;
+    private static final int SPMA_NOTIFICATION_ID = 91;
     /**
      * Local broadcast tag. Used to receive internal messages
      */
@@ -505,7 +505,7 @@ public class SPMAService extends IntentService {
 
                     jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
                     jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
-                    jsoOut.put("Timestamp", System.currentTimeMillis()/1000);
+                    jsoOut.put("Timestamp", System.currentTimeMillis() / 1000);
 
                     jsoOut.put("Secure", connection.isSecureConnection());
                     jsoOut.put("Message", msg);
@@ -636,7 +636,7 @@ public class SPMAService extends IntentService {
             mdvCmd.put("Action", "NewExternalMessage");
             mdvCmd.put("Address", address);
             mdvCmd.put("Sender", address); //sendername
-            mdvCmd.put("Timestamp", System.currentTimeMillis()/1000);
+            mdvCmd.put("Timestamp", System.currentTimeMillis() / 1000);
             mdvCmd.put("Message", msg);
 
         } catch (JSONException e) {
@@ -693,36 +693,44 @@ public class SPMAService extends IntentService {
     private void startListeners(JSONObject msgData) {
         secureListener = BluetoothListenerObserver.getInstance().getSecureListener();
         if (secureListener == null) {
-            secureListener = BluetoothListenerMaker.getInstance().createListener(true);
-            secureListener.addObserver(BluetoothListenerObserver.getInstance());
-            BluetoothListenerObserver.getInstance().addListener(secureListener);
+            secureListener = BluetoothListenerMaker.getInstance().createListener(true); //can return null in case BT is off
+            if (secureListener != null) {
+                secureListener.addObserver(BluetoothListenerObserver.getInstance());
+                BluetoothListenerObserver.getInstance().addListener(secureListener);
+            }
+
         }
         insecureListener = BluetoothListenerObserver.getInstance().getInsecureListener();
         if (insecureListener == null) {
-            insecureListener = BluetoothListenerMaker.getInstance().createListener(false);
-            insecureListener.addObserver(BluetoothListenerObserver.getInstance());
-            BluetoothListenerObserver.getInstance().addListener(insecureListener);
+            insecureListener = BluetoothListenerMaker.getInstance().createListener(false);//can return null in case BT is off
+            if (insecureListener != null) {
+                insecureListener.addObserver(BluetoothListenerObserver.getInstance());
+                BluetoothListenerObserver.getInstance().addListener(insecureListener);
+            }
         }
-        if (!secureListener.isListening()) {
-            Thread t = new Thread(secureListener);
-            t.start();
-            Log.i(LOG_TAG, "Secure listener started");
-        } else {
-            secureListener.stopListener();
-            Thread t = new Thread(secureListener);
-            t.start();
-            Log.i(LOG_TAG, "Secure listener restarted");
+        if (secureListener != null) {
+            if (!secureListener.isListening()) {
+                Thread t = new Thread(secureListener);
+                t.start();
+                Log.i(LOG_TAG, "Secure listener started");
+            } else {
+                secureListener.stopListener();
+                Thread t = new Thread(secureListener);
+                t.start();
+                Log.i(LOG_TAG, "Secure listener restarted");
+            }
         }
-
-        if (!insecureListener.isListening()) {
-            Thread t = new Thread(insecureListener);
-            t.start();
-            Log.i(LOG_TAG, "Insecure listener started");
-        } else {
-            insecureListener.stopListener();
-            Thread t = new Thread(insecureListener);
-            t.start();
-            Log.i(LOG_TAG, "Insecure listener restarted");
+        if (insecureListener != null) {
+            if (!insecureListener.isListening()) {
+                Thread t = new Thread(insecureListener);
+                t.start();
+                Log.i(LOG_TAG, "Insecure listener started");
+            } else {
+                insecureListener.stopListener();
+                Thread t = new Thread(insecureListener);
+                t.start();
+                Log.i(LOG_TAG, "Insecure listener restarted");
+            }
         }
 
     }
@@ -1039,7 +1047,7 @@ public class SPMAService extends IntentService {
         //set intent
         notificationBuilder.setContentIntent(pInten);
         //send
-        notificationManager.notify(SPMA_NOTIFICATION_ID,notificationBuilder.build());
+        notificationManager.notify(SPMA_NOTIFICATION_ID, notificationBuilder.build());
     }
 
     @Override
