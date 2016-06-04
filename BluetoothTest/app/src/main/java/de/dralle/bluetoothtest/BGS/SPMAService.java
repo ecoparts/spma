@@ -13,6 +13,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -325,7 +327,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendInternalMessageForChatActivity(mdvCmd.toString(), con.getDevice().getAddress());
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
 
     }
@@ -345,7 +347,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendInternalMessageForChatActivity(mdvCmd.toString(), device.getAddress());
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
 
     }
@@ -503,7 +505,7 @@ public class SPMAService extends IntentService {
 
                     jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
                     jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
-
+                    jsoOut.put("Timestamp", System.currentTimeMillis()/1000);
 
                     jsoOut.put("Secure", connection.isSecureConnection());
                     jsoOut.put("Message", msg);
@@ -631,15 +633,16 @@ public class SPMAService extends IntentService {
         try {
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
-            mdvCmd.put("Action", "NewMessage");
+            mdvCmd.put("Action", "NewExternalMessage");
             mdvCmd.put("Address", address);
-            mdvCmd.put("Sender", address);
+            mdvCmd.put("Sender", address); //sendername
+            mdvCmd.put("Timestamp", System.currentTimeMillis()/1000);
             mdvCmd.put("Message", msg);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
     }
 
@@ -758,7 +761,7 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
-        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
+
     }
 
     /**
@@ -778,7 +781,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        sendInternalMessageForChatActivity(mdvCmd.toString(), address);
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
 
     /**
@@ -955,18 +958,6 @@ public class SPMAService extends IntentService {
      */
     public void sendInternalMessageForSPMAServiceConnector(String msg) {
         sendInternalMessage(msg, SPMAServiceConnector.ACTION_NEW_MSG);
-
-
-    }
-
-    /**
-     * Sends a message to the ChatActivity TODO: use service connector
-     *
-     * @param msg                   Internal message to be sent
-     * @param btAddressRemoteDevice Address of the remote device that particular ChatActivity handles
-     */
-    public void sendInternalMessageForChatActivity(String msg, String btAddressRemoteDevice) {
-        sendInternalMessage(msg, ChatActivity.ACTION_NEW_MSG + "_" + btAddressRemoteDevice);
 
 
     }

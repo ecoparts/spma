@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
+import de.dralle.bluetoothtest.R;
 
 /**
  * Created by nils on 31.05.16.
@@ -60,6 +61,7 @@ public class SPMAServiceConnector {
 
     private void parseInternalMessageForAction(JSONObject msgData) {
         String action = getMessageAction(msgData);
+        String address=null;
         switch(action){
             case "NewDevice":
                 handleNewDevice(msgData);
@@ -76,6 +78,62 @@ public class SPMAServiceConnector {
                 break;
             case "ConnectionReady":
                 broadcastToGUI(msgData.toString());
+                address=null;
+                try {
+                    address=msgData.getString("Address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(address!=null){
+                    broadcastToChatGUI(msgData.toString(),address);
+                }
+                break;
+            case "ConnectionShutdown":
+                broadcastToGUI(msgData.toString());
+                address=null;
+                try {
+                    address=msgData.getString("Address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(address!=null){
+                    broadcastToChatGUI(msgData.toString(),address);
+                }
+                break;
+            case "ConnectionRetrieved":
+                broadcastToGUI(msgData.toString());
+                address=null;
+                try {
+                    address=msgData.getString("Address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(address!=null){
+                    broadcastToChatGUI(msgData.toString(),address);
+                }
+                break;
+            case "ConnectionFailed":
+                broadcastToGUI(msgData.toString());
+                address=null;
+                try {
+                    address=msgData.getString("Address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(address!=null){
+                    broadcastToChatGUI(msgData.toString(),address);
+                }
+                break;
+            case "NewExternalMessage":
+                address=null;
+                try {
+                    address=msgData.getString("Address");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(address!=null){
+                    broadcastToChatGUI(msgData.toString(),address);
+                }
                 break;
             default:
                 break;
@@ -211,6 +269,14 @@ public class SPMAServiceConnector {
     }
     public void broadcastToGUI(String msg){
         Intent bgServiceIntent = new Intent(MainActivity.ACTION_NEW_MSG);
+        bgServiceIntent.putExtra("msg", msg);
+        parentActivity.sendBroadcast(bgServiceIntent);
+
+
+        //parentActivity.startService(bgServiceIntent);
+    }
+    public void broadcastToChatGUI(String msg,String address){
+        Intent bgServiceIntent = new Intent(ChatActivity.ACTION_NEW_MSG+"_"+address);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
 
