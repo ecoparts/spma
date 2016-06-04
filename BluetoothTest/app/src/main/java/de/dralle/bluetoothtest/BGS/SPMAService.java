@@ -2,6 +2,8 @@ package de.dralle.bluetoothtest.BGS;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -12,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -23,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.dralle.bluetoothtest.GUI.ChatActivity;
+import de.dralle.bluetoothtest.GUI.MainActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 import de.dralle.bluetoothtest.R;
 
@@ -31,6 +35,10 @@ import de.dralle.bluetoothtest.R;
  * SPMAService is the background service of this app TODO: maybe merge liistener classes with connection classes through inheritance
  */
 public class SPMAService extends IntentService {
+    /**
+     * Notification id for the main notification
+     */
+    private static final int SPMA_NOTIFICATION_ID=91;
     /**
      * Local broadcast tag. Used to receive internal messages
      */
@@ -95,21 +103,21 @@ public class SPMAService extends IntentService {
             if (BluetoothDevice.ACTION_UUID.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i(LOG_TAG, "Sdp scan for device " + device.getAddress());
-                ParcelUuid[] allUUIDs=device.getUuids();
+                ParcelUuid[] allUUIDs = device.getUuids();
 
-                if(allUUIDs==null){
-                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supports null UUIDs");
-                }else{
-                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supports "+allUUIDs.length+" UUIDs");
-                    for(ParcelUuid uuid:allUUIDs){
-                        Log.v(LOG_TAG,"Device "+device.getAddress()+" supports UUID "+uuid.getUuid().toString());
+                if (allUUIDs == null) {
+                    Log.i(LOG_TAG, "Device " + device.getAddress() + " supports null UUIDs");
+                } else {
+                    Log.i(LOG_TAG, "Device " + device.getAddress() + " supports " + allUUIDs.length + " UUIDs");
+                    for (ParcelUuid uuid : allUUIDs) {
+                        Log.v(LOG_TAG, "Device " + device.getAddress() + " supports UUID " + uuid.getUuid().toString());
                     }
                 }
                 if (checkForSupportedUUIDs(allUUIDs)) {
-                    Log.i(LOG_TAG,"Device "+device.getAddress()+" supported");
+                    Log.i(LOG_TAG, "Device " + device.getAddress() + " supported");
                     addNewSupportedDevice(device);
-                }else{
-                    Log.i(LOG_TAG,"Device "+device.getAddress()+" not supported");
+                } else {
+                    Log.i(LOG_TAG, "Device " + device.getAddress() + " not supported");
                 }
                 sendNewSupportedDeviceListInternalMessage();
                 if (devices.size() > 0) {
@@ -194,8 +202,8 @@ public class SPMAService extends IntentService {
                 if (uuid.getUuid().compareTo(UUID.fromString(getResources().getString(R.string.uuid_insecure))) == 0) {
                     return true;
                 }
-                
-                UUID reversed=reverseUuid(uuid.getUuid()); //https://code.google.com/p/android/issues/detail?id=198238
+
+                UUID reversed = reverseUuid(uuid.getUuid()); //https://code.google.com/p/android/issues/detail?id=198238
                 if (reversed.compareTo(UUID.fromString(getResources().getString(R.string.uuid_secure))) == 0) {
                     return true;
                 }
@@ -213,9 +221,9 @@ public class SPMAService extends IntentService {
         bb.putLong(uuid.getLeastSignificantBits());
         byte[] uuidBytes = bb.array();
 
-        byte[] uuidNewBytes=new byte[uuidBytes.length];
-        for (int i=0;i<uuidBytes.length;i++){
-            uuidNewBytes[i]=uuidBytes[uuidBytes.length-i-1];
+        byte[] uuidNewBytes = new byte[uuidBytes.length];
+        for (int i = 0; i < uuidBytes.length; i++) {
+            uuidNewBytes[i] = uuidBytes[uuidBytes.length - i - 1];
         }
         ByteBuffer bb2 = ByteBuffer.wrap(uuidNewBytes);
         return new UUID(bb2.getLong(), bb2.getLong());
@@ -398,6 +406,7 @@ public class SPMAService extends IntentService {
                 break;
         }
     }
+
     /**
      * Checks the message action attribute and executes the appropriate action
      *
@@ -679,14 +688,14 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      */
     private void startListeners(JSONObject msgData) {
-        secureListener=BluetoothListenerObserver.getInstance().getSecureListener();
-        if(secureListener==null) {
+        secureListener = BluetoothListenerObserver.getInstance().getSecureListener();
+        if (secureListener == null) {
             secureListener = BluetoothListenerMaker.getInstance().createListener(true);
             secureListener.addObserver(BluetoothListenerObserver.getInstance());
             BluetoothListenerObserver.getInstance().addListener(secureListener);
         }
-        insecureListener=BluetoothListenerObserver.getInstance().getInsecureListener();
-        if(insecureListener==null) {
+        insecureListener = BluetoothListenerObserver.getInstance().getInsecureListener();
+        if (insecureListener == null) {
             insecureListener = BluetoothListenerMaker.getInstance().createListener(false);
             insecureListener.addObserver(BluetoothListenerObserver.getInstance());
             BluetoothListenerObserver.getInstance().addListener(insecureListener);
@@ -892,10 +901,8 @@ public class SPMAService extends IntentService {
 
     /**
      * No.
-     *
-     *
      */
-    private void makeAmericaGreatAgain(){
+    private void makeAmericaGreatAgain() {
         System.exit(1);
     }
 
@@ -917,6 +924,7 @@ public class SPMAService extends IntentService {
 
         }
     }
+
     /**
      * Turns Bluetooth off
      */
@@ -952,7 +960,7 @@ public class SPMAService extends IntentService {
     }
 
     /**
-     * Sends a message to the ChatActivity
+     * Sends a message to the ChatActivity TODO: use service connector
      *
      * @param msg                   Internal message to be sent
      * @param btAddressRemoteDevice Address of the remote device that particular ChatActivity handles
@@ -1017,13 +1025,42 @@ public class SPMAService extends IntentService {
         BluetoothConnectionMaker.getInstance(getResources()); //prepare BluetoothConnectionMaker for later use
         BluetoothListenerMaker.getInstance(getResources());//prepare BluetoothListenerMaker for later use
 
+        startNotification();
 
+
+    }
+
+    /**
+     * Shows a notification, which informs the user about this service running
+     */
+    private void startNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        //Prepare intent
+        Intent intent = new Intent(this, MainActivity.class);
+        //Wrap into pending intent
+        PendingIntent pInten = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Create Notification
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.n_icon_test)
+                .setContentTitle(getResources().getString(R.string.BGSNotificationTitle))
+                .setContentText(getResources().getString(R.string.BGSNotificationText))
+                .setOngoing(true);
+        //set intent
+        notificationBuilder.setContentIntent(pInten);
+        //send
+        notificationManager.notify(SPMA_NOTIFICATION_ID,notificationBuilder.build());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        endNotification();
+    }
+
+    private void endNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(SPMA_NOTIFICATION_ID);
     }
 
     /**

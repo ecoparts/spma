@@ -14,4 +14,6 @@
     <string name="connectionRetrieved">Connection retrieved</string>
     <string name="connectionReady">Connection ready</string>
     <string name="connectionShutdown">Connection shutdown</string>
+    <string name="BGSNotificationTitle">SPMA Service</string>
+    <string name="BGSNotificationText">Service is currently running</string>
 </resources>
