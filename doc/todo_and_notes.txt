@@ -1,12 +1,14 @@
 android 4.4 (API Level 19)
-Texte bitte nich hardcoded, sondern in die strings.xml + verweis von der GUI (sowohl xml + code)(default ist englisch)
+please dont farcode text, instead place them inside the strings.xml file (and reference them from GUI/Code)(default language is english)
 GUI
 -app name
--login screen (user , password ; for local encryption)
+-(login screen (user , password ; for local encryption))
 -Show nearby devices screen (listview)
 -p2p chat screen (like sms/mms app or whatsapp?)
 -settings
---make device discoverable/not discoverable
+--start/stop BGS
+--make device discoverable (Button)
+--start/stop BGS connection listeners
 --view chat history
 --delete chat history
 --view recent/paired (?) devices
