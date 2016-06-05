@@ -382,6 +382,12 @@ public class SPMAService extends IntentService {
             case "Scan":
                 scanForNearbyDevices(msgData);
                 break;
+            case "ResendCachedDevices":
+                sendClearDevicesInternalMessage();
+                for(BluetoothDevice d:supportedDevices){
+                    sendNewDeviceFoundInternalMessage(d);
+                }
+                break;
             case "StartListeners":
                 startListeners(msgData);
                 break;

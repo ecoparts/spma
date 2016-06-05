@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
             serviceConnector.startService();
         }
 
+        serviceConnector.requestCachedDevices();
+
 
         deviceNames = new ArrayList<>();
         displayAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNames) {
