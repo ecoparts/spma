@@ -24,7 +24,8 @@ GUI
 --XXHDPI 144 x 144
 --XXXHDPI 192 x 192
 --WEB 512 x 512 (only required for play store)
---material design (?)
+-icon for background service
+-material design for all (?)
 Background Service
 -JSON (for IPC (intents) and BT communiation) //android has a built in json lib
 -sqlite for saved data //builtin sqlite support in android
