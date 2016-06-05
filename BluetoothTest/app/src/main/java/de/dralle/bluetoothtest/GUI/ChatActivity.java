@@ -70,8 +70,25 @@ public class ChatActivity extends AppCompatActivity {
                     mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+getResources().getString(R.string.connectionFailed));
                 }
                 break;
+            case "NewExternalMessage":
+                displayNewExternalMessage(msgData);
+
             default:
                 break;
+        }
+    }
+
+    private void displayNewExternalMessage(JSONObject msgData) {
+        String sender="";
+        String msg="";
+        try {
+            sender=msgData.getString("Sender");
+            msg=msgData.getString("Message");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(mainTextView!=null){
+            mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+sender+"> "+msg);
         }
     }
 
@@ -110,6 +127,7 @@ public class ChatActivity extends AppCompatActivity {
                 String msg= String.valueOf(etNewMsg.getText());
                 etNewMsg.setText("");
                 serviceConnector.sendExternalMessage(msg,deviceAddress);
+                mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+msg);
             }
         });
 

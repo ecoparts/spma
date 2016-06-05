@@ -171,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
                 if(btDevice!=null){
                     requestNewConnection(btDevice.getAddress());
+                }else{
+                    Log.w(LOG_TAG,"Clicked device is null");
                 }
             }
         });

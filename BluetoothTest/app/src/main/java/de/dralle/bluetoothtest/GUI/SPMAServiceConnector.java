@@ -26,7 +26,7 @@ import de.dralle.bluetoothtest.R;
 /**
  * Created by nils on 31.05.16.
  */
-public class SPMAServiceConnector {
+public class SPMAServiceConnector { //TODO: make singleton
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
     private List<BluetoothDevice> devices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
@@ -68,6 +68,7 @@ public class SPMAServiceConnector {
                 break;
             case "ClearDevices":
                 devices.clear();
+                Log.i(LOG_TAG,"Cached devices cleared");
                 broadcastToGUI(msgData.toString());
                 break;
             case "ListenersStarted":
@@ -367,7 +368,6 @@ public class SPMAServiceConnector {
 
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending Scan");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
@@ -391,7 +391,6 @@ public class SPMAServiceConnector {
 
         if(isServiceRunning()){
             Log.i(LOG_TAG,"Service is running. Sending ResendCachedDevices");
-            devices.clear(); //clear current device list
             JSONObject mdvCmd = new JSONObject();
             try {
                 mdvCmd.put("Extern", false);
