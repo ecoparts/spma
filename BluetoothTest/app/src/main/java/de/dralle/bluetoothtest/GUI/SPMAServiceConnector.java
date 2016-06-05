@@ -26,7 +26,14 @@ import de.dralle.bluetoothtest.R;
 /**
  * Created by nils on 31.05.16.
  */
-public class SPMAServiceConnector { //TODO: make singleton
+public class SPMAServiceConnector {
+    private static SPMAServiceConnector instance=null;
+    public static SPMAServiceConnector getInstance(Activity parentActivity) {
+        if(instance==null){
+            instance=new SPMAServiceConnector(parentActivity);
+        }
+        return instance;
+    }
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
     private List<BluetoothDevice> devices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
@@ -174,7 +181,7 @@ public class SPMAServiceConnector { //TODO: make singleton
 
     private Activity parentActivity;
 
-    public SPMAServiceConnector(Activity parentActivity) {
+    private SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;
         devices=new ArrayList<>();
     }

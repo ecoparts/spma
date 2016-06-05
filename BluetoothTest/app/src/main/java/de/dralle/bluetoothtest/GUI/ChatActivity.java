@@ -102,7 +102,7 @@ public class ChatActivity extends AppCompatActivity {
 
     public ChatActivity() {
         super();
-        serviceConnector=new SPMAServiceConnector(this); //initialize a service connector
+        serviceConnector=SPMAServiceConnector.getInstance(this); //initialize a service connector
     }
 
     @Override

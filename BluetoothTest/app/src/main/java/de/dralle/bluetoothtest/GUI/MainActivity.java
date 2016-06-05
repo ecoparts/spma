@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        serviceConnector = new SPMAServiceConnector(this);
+        serviceConnector = SPMAServiceConnector.getInstance(this);
         if (serviceConnector.isServiceRunning()) {
             Log.i(LOG_TAG, "Service already running");
         } else {
