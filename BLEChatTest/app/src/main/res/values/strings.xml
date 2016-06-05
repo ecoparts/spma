@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">BLE Chat Test</string>
-    <string name="action_settings">Settings</string>
-    <string name="send">Send</string>
-    <string name="uuid">52dcaf8e-2d15-11e5-b345-feff819cdc9f</string>
-</resources>
