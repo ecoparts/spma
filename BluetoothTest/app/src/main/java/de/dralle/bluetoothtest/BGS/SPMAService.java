@@ -463,7 +463,7 @@ public class SPMAService extends IntentService {
             BluetoothConnection connection = bco.getConnection(address);
             if (connection != null) {
                 Log.i(LOG_TAG, "Connection already there");
-                sendNewConnectionRetrievedInternalMessage(connection);
+                sendConnectionReadyInternalMessage(msgData);
             } else {
                 Log.i(LOG_TAG, "Connection needs to be made");
                 makeNewConnection(address);

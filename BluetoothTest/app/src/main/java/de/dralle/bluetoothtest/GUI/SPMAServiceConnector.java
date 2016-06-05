@@ -295,9 +295,13 @@ public class SPMAServiceConnector {
     public void stopService(){
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.stopService(bgServiceIntent);
+        try {
+            //unregister receiver
+            parentActivity.unregisterReceiver(broadcastReceiver);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
-        //unregister receiver
-        parentActivity.unregisterReceiver(broadcastReceiver);
         Log.i(LOG_TAG,"Stopped service");
     }
 
