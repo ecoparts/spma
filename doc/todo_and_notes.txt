@@ -1,5 +1,5 @@
 android 4.4 (API Level 19)
-please dont farcode text, instead place them inside the strings.xml file (and reference them from GUI/Code)(default language is english)
+please dont arcode text, instead place them inside the strings.xml file (and reference them from GUI/Code)(default language is english)
 GUI
 -app name
 -(login screen (user , password ; for local encryption))

@@ -489,6 +489,7 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         if (address != null) {
+            //verschlüsselun!!!!
             Log.i(LOG_TAG, "Sending new message to " + address);
 
             BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
@@ -557,6 +558,7 @@ public class SPMAService extends IntentService {
             Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
+                //decrypt
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
                 String senderAppVersion = jsoIn.getString("SenderVersionApp");
                 if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
