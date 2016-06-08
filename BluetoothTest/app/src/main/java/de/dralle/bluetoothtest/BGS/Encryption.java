@@ -1,7 +1,14 @@
 package de.dralle.bluetoothtest.BGS;
 
+import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -14,6 +21,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 
 /**
@@ -89,6 +97,32 @@ public class Encryption {
         keygen.initialize(bitLength);
         KeyPair keys = keygen.genKeyPair();
         return keys;
+    }
+
+    public void saveAES(Key key, String filename, Context ctx) throws IOException {
+        //speichervorgang
+        byte[] bytes = key.getEncoded();
+        FileOutputStream fo = ctx.openFileOutput(filename + ".key", Context.MODE_PRIVATE);
+        fo.write(bytes);
+        fo.close();
+    }
+
+    public void readAES(String filename, Context ctx){
+
+        try {
+            FileInputStream fi = ctx.openFileInput(filename + ".key");
+            byte[] encodedKey = new byte[(int) fi.getChannel().size()];
+            fi.read(encodedKey);
+            fi.close();
+
+            Log.v("KEY aus READ", encodedKey.toString());
+            //set the key
+            SecretKey key = new SecretKeySpec(encodedKey, "AES");
+            setKey(key);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

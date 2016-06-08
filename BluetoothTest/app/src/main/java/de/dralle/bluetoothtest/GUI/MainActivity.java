@@ -26,8 +26,13 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import javax.crypto.KeyGenerator;
+
+import de.dralle.bluetoothtest.BGS.Encryption;
 import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -94,6 +99,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //generate encryption keys.
+        try {
+            //128bit AES key
+            Encryption en = new Encryption(Encryption.newAESkey(128),"AES");
+            Log.v("AES Generation", en.getKey().toString());
+            en.saveAES(en.getKey(), "aes", getApplicationContext());
+            en.readAES("aes", getApplicationContext());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         serviceConnector = new SPMAServiceConnector(this);
         if (serviceConnector.isServiceRunning()) {
