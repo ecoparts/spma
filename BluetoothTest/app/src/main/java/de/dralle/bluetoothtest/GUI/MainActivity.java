@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
@@ -103,10 +104,22 @@ public class MainActivity extends AppCompatActivity {
         //generate encryption keys.
         try {
             //128bit AES key
-            Encryption en = new Encryption(Encryption.newAESkey(128),"AES");
-            Log.v("AES Generation", en.getKey().toString());
-            en.saveAES(en.getKey(), "aes", getApplicationContext());
-            en.readAES("aes", getApplicationContext());
+            Encryption aes = new Encryption(Encryption.newAESkey(128),"AES");
+            Log.v("AES Generation", aes.getKey().toString());
+            aes.saveAES(aes.getKey(), "aes", getApplicationContext());
+            aes.readAES("aes", getApplicationContext());
+
+            //RSA keys
+
+            KeyPair rsaKeys = Encryption.newRSAkeys(1024);
+            Encryption rsaPub = new Encryption(rsaKeys.getPublic(), "RSA");
+            Encryption rsaPri = new Encryption(rsaKeys.getPrivate(), "RSA");
+
+            rsaPub.saveRSAPublicKey(rsaPub.getKey(),"rsa",getApplicationContext());
+            rsaPri.saveRSAPrivateKey(rsaPri.getKey(),"rsa", getApplicationContext());
+
+
+
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (IOException e) {
