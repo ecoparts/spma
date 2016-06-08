@@ -1,12 +1,21 @@
 package de.dralle.bluetoothtest.BGS;
 
+import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,6 +23,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 
 /**
@@ -89,6 +99,54 @@ public class Encryption {
         keygen.initialize(bitLength);
         KeyPair keys = keygen.genKeyPair();
         return keys;
+    }
+
+    public void saveAES(Key key, String filename, Context ctx) throws IOException {
+        //speichervorgang
+        byte[] bytes = key.getEncoded();
+        FileOutputStream fo = ctx.openFileOutput(filename + ".key", Context.MODE_PRIVATE);
+        fo.write(bytes);
+        fo.close();
+    }
+
+    public void readAES(String filename, Context ctx){
+
+        try {
+            FileInputStream fi = ctx.openFileInput(filename + ".key");
+            byte[] encodedKey = new byte[(int) fi.getChannel().size()];
+            fi.read(encodedKey);
+            fi.close();
+
+            Log.v("KEY aus READ", encodedKey.toString());
+            //set the key
+            SecretKey key = new SecretKeySpec(encodedKey, "AES");
+            setKey(key);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //x509 encoded
+    public void saveRSAPublicKey(Key publicKey, String filename, Context ctx) throws IOException {
+        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
+        FileOutputStream fos = ctx.openFileOutput(filename + "_public.key",Context.MODE_PRIVATE );
+        fos.write(x509EncodedKeySpec.getEncoded());
+        fos.close();
+    }
+    //PKCS8 Encoded -> Public Key Cryptography Standards
+    public void saveRSAPrivateKey(Key privateKey, String filename, Context ctx) throws IOException {
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey.getEncoded());
+        FileOutputStream fos = ctx.openFileOutput(filename + "_private.key", Context.MODE_PRIVATE);
+        fos.write(pkcs8EncodedKeySpec.getEncoded());
+        fos.close();
+    }
+
+    public void readRSAPublicKey(){
+
+    }
+
+    public void readRSAPrivateKey () {
+
     }
 
 }

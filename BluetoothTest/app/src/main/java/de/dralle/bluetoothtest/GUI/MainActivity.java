@@ -26,8 +26,14 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import javax.crypto.KeyGenerator;
+
+import de.dralle.bluetoothtest.BGS.Encryption;
 import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -95,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        serviceConnector = SPMAServiceConnector.getInstance(this);
+        serviceConnector=SPMAServiceConnector.getInstance(this);
+
         if (serviceConnector.isServiceRunning()) {
             Log.i(LOG_TAG, "Service already running");
         } else {
@@ -104,6 +111,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         serviceConnector.requestCachedDevices();
+
+        //generate encryption keys.
+        try {
+            //128bit AES key
+            Encryption aes = new Encryption(Encryption.newAESkey(128),"AES");
+            Log.v("AES Generation", aes.getKey().toString());
+            aes.saveAES(aes.getKey(), "aes", getApplicationContext());
+            aes.readAES("aes", getApplicationContext());
+
+            //RSA keys
+
+            KeyPair rsaKeys = Encryption.newRSAkeys(1024);
+            Encryption rsaPub = new Encryption(rsaKeys.getPublic(), "RSA");
+            Encryption rsaPri = new Encryption(rsaKeys.getPrivate(), "RSA");
+
+            rsaPub.saveRSAPublicKey(rsaPub.getKey(),"rsa",getApplicationContext());
+            rsaPri.saveRSAPrivateKey(rsaPri.getKey(),"rsa", getApplicationContext());
+
+
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
 
 
         deviceNames = new ArrayList<>();
