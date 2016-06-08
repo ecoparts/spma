@@ -11,9 +11,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -126,6 +130,7 @@ public class Encryption {
             e.printStackTrace();
         }
     }
+    //Maybe Refactoring needed
     //x509 encoded
     public void saveRSAPublicKey(Key publicKey, String filename, Context ctx) throws IOException {
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
@@ -141,11 +146,49 @@ public class Encryption {
         fos.close();
     }
 
-    public void readRSAPublicKey(){
+    public void readRSAPublicKey(String filename, Context ctx){
+        try {
+            FileInputStream fi = ctx.openFileInput(filename + "_public.key");
+            byte[] encodedPublic = new byte[(int) fi.getChannel().size()];
+            fi.read(encodedPublic);
+            fi.close();
 
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublic);
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            setKey(publicKey);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void readRSAPrivateKey () {
+    public void readRSAPrivateKey (String filename, Context ctx) {
+        FileInputStream fi = null;
+        try {
+            fi = ctx.openFileInput(filename + "_private.key");
+            byte[] encodedPrivate = new byte[(int) fi.getChannel().size()];
+            fi.read(encodedPrivate);
+            fi.close();
+
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encodedPrivate);
+            PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
+            setKey(privateKey);
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
 
     }
 
