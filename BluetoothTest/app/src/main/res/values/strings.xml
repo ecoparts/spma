@@ -1,6 +1,76 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="app_version">0.07a</string>
+    <string name="version">0007</string>
+    <string name="dbname">spma</string>
+    <string-array name="dbcreate">
+        <item>
+            create table User(
+                ID integer primary key auto increment,
+                Name varchar(20) not null,
+                Password varchar(64),
+                AES varchar(256),
+                RSAPrivate varchar(256),
+                RSAPublic varchar(256)
+            )
+        </item>
+        <item>
+            create table Devices(
+                ID integer primary key auto increment,
+                Address varchar(17) not null,
+                DeviceName varchar(20) not null,
+                FriendlyName varchar(20) not null,
+                Paired integer not null,
+                LastSeen integer default CURRENT_TIMESTAMP
+            )
+        </item>
+        <item>
+            create table Friends(
+                ID integer primary key auto increment,
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table Send(
+                ID integer primary key auto increment,
+                Text varchar(1024) not null,
+                Timestamp integer default CURRENT_TIMESTAMP
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table Received(
+                ID integer primary key auto increment,
+                Text varchar(1024) not null,
+                Timestamp integer default CURRENT_TIMESTAMP
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table AES(
+                ID integer primary key auto increment,
+                Key varchar(256),
+                DeviceID integer not null,
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table RSA(
+                ID integer primary key auto increment,
+                Key varchar(256),
+                DeviceID integer not null,
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+    </string-array>
     <string name="scan">Scan</string>
     <string name="btNotSupported">Bluetooth not supported</string>
     <string name="btNotEnabled">Bluetooth not enabled</string>
