@@ -543,4 +543,27 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG,"Service not running");
         return false;
     }
+    /**
+     * Calls the service to add a new user
+     * @return true if service is running and message was sent
+     */
+    public boolean addUser(String name) {
+        if(isServiceRunning()){
+            Log.i(LOG_TAG,"Service is running. Sending AddNewLocalUser");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "AddNewLocalUser");
+                mdvCmd.put("Name", name);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+    }
+        Log.w(LOG_TAG,"Service not running");
+        return false;
+    }
 }

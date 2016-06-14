@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="version">0007</string>
+    <string name="app_version">0.08a</string>
+    <string name="db_version">1</string>
     <string name="dbname">spma</string>
     <string-array name="dbcreate">
         <item>
-            create table User(
-                ID integer primary key auto increment,
+            create table if not exists User(
+                ID integer primary key autoincrement,
                 Name varchar(20) not null,
                 Password varchar(64),
                 AES varchar(256),
@@ -14,8 +15,8 @@
             )
         </item>
         <item>
-            create table Devices(
-                ID integer primary key auto increment,
+            create table if not exists Devices(
+                ID integer primary key autoincrement,
                 Address varchar(17) not null,
                 DeviceName varchar(20) not null,
                 FriendlyName varchar(20) not null,
@@ -24,8 +25,8 @@
             )
         </item>
         <item>
-            create table Friends(
-                ID integer primary key auto increment,
+            create table if not exists Friends(
+                ID integer primary key autoincrement,
                 UserID integer not null,
                 DeviceID integer not null,
                 foreign key(UserID) references User(ID),
@@ -33,10 +34,10 @@
             )
         </item>
         <item>
-            create table Send(
-                ID integer primary key auto increment,
+            create table if not exists Send(
+                ID integer primary key autoincrement,
                 Text varchar(1024) not null,
-                Timestamp integer default CURRENT_TIMESTAMP
+                Timestamp integer default CURRENT_TIMESTAMP,
                 UserID integer not null,
                 DeviceID integer not null,
                 foreign key(UserID) references User(ID),
@@ -44,10 +45,10 @@
             )
         </item>
         <item>
-            create table Received(
-                ID integer primary key auto increment,
+            create table if not exists Received(
+                ID integer primary key autoincrement,
                 Text varchar(1024) not null,
-                Timestamp integer default CURRENT_TIMESTAMP
+                Timestamp integer default CURRENT_TIMESTAMP,
                 UserID integer not null,
                 DeviceID integer not null,
                 foreign key(UserID) references User(ID),
@@ -55,16 +56,16 @@
             )
         </item>
         <item>
-            create table AES(
-                ID integer primary key auto increment,
+            create table if not exists AES(
+                ID integer primary key autoincrement,
                 Key varchar(256),
                 DeviceID integer not null,
                 foreign key(DeviceID) references Devices(ID)
             )
         </item>
         <item>
-            create table RSA(
-                ID integer primary key auto increment,
+            create table if not exists RSA(
+                ID integer primary key autoincrement,
                 Key varchar(256),
                 DeviceID integer not null,
                 foreign key(DeviceID) references Devices(ID)

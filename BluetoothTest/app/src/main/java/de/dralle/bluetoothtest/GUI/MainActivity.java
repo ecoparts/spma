@@ -110,33 +110,6 @@ public class MainActivity extends AppCompatActivity {
             serviceConnector.startService();
         }
 
-        serviceConnector.requestCachedDevices();
-
-        //generate encryption keys.
-        try {
-            //128bit AES key
-            Encryption aes = new Encryption(Encryption.newAESkey(128),"AES");
-            Log.v("AES Generation", aes.getKey().toString());
-            aes.saveAES(aes.getKey(), "aes", getApplicationContext());
-            aes.readAES("aes", getApplicationContext());
-
-            //RSA keys
-
-            KeyPair rsaKeys = Encryption.newRSAkeys(1024);
-            Encryption rsaPub = new Encryption(rsaKeys.getPublic(), "RSA");
-            Encryption rsaPri = new Encryption(rsaKeys.getPrivate(), "RSA");
-
-            rsaPub.saveRSAPublicKey(rsaPub.getKey(),"rsa",getApplicationContext());
-            rsaPri.saveRSAPrivateKey(rsaPri.getKey(),"rsa", getApplicationContext());
-
-
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
 
 
 
@@ -164,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 serviceConnector.turnBluetoothOn();
                 serviceConnector.makeDeviceVisible();
                 serviceConnector.scanForNearbyDevices();
+                serviceConnector.addUser("default");
 
 
 
@@ -258,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //startDeviceScan();
+        serviceConnector.requestCachedDevices();
     }
 
     protected void onPause() {

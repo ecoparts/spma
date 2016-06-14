@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
 import de.dralle.bluetoothtest.GUI.ChatActivity;
 import de.dralle.bluetoothtest.GUI.MainActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
@@ -65,6 +66,7 @@ public class SPMAService extends IntentService {
      * Insecure listener. Insecure connections are used for connections between non paired devices
      */
     private BluetoothListener insecureListener;
+    private SPMADatabaseAccessHelper db;
 
     /**
      * Nested BroadcastReceiver. Receives some android system broadcasts and internal messages directed at the service
@@ -409,12 +411,25 @@ public class SPMAService extends IntentService {
             case "SendNewMessage":
                 prepareNewExternalMessage(msgData);
                 break;
+            case "AddNewLocalUser":
+                addNewLocalUser(msgData);
+                break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
         }
     }
+    public void addNewLocalUser(JSONObject msgData){
+        String newUserName= null;
+        try {
+            newUserName = msgData.getString("Name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(LOG_TAG,"Now trying to add new user with name "+newUserName);
+        db.addUser(newUserName);
 
+    }
     /**
      * Checks the message action attribute and executes the appropriate action
      *
@@ -1031,6 +1046,9 @@ public class SPMAService extends IntentService {
 
         BluetoothConnectionMaker.getInstance(getResources()); //prepare BluetoothConnectionMaker for later use
         BluetoothListenerMaker.getInstance(getResources());//prepare BluetoothListenerMaker for later use
+
+
+        db=new SPMADatabaseAccessHelper(this); //prepare database for use
 
         startNotification();
 
