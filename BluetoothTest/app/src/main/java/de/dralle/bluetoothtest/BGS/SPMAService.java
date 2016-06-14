@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
+import de.dralle.bluetoothtest.DB.User;
 import de.dralle.bluetoothtest.GUI.ChatActivity;
 import de.dralle.bluetoothtest.GUI.MainActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
@@ -414,11 +415,49 @@ public class SPMAService extends IntentService {
             case "AddNewLocalUser":
                 addNewLocalUser(msgData);
                 break;
+            case "RequestLocalUser":
+                requestLocalUserData(msgData);
+                break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
         }
     }
+
+    private void requestLocalUserData(JSONObject msgData) {
+        int id=-1;
+        try {
+            id=msgData.getInt("ID");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(LOG_TAG,"Now trying to get the data of user "+id);
+        if(id>-1){
+           User u=null;
+            u=db.getUser(id);
+            if(u==null){
+                Log.i(LOG_TAG,"No user found. Adding new.");
+                u=db.addUser(getLocalDeviceName());
+            }
+            sendLocalUserSelectedInternalMessage(u);
+        }else{
+            Log.w(LOG_TAG,"Local user selection failed");
+        }
+
+    }
+
+    /**
+     *
+     * @return The local bluetooth device name
+     */
+    private String getLocalDeviceName() {
+        BluetoothAdapter adapter=BluetoothAdapter.getDefaultAdapter();
+        if(adapter!=null){
+            return adapter.getName();
+        }
+        return null;
+    }
+
     public void addNewLocalUser(JSONObject msgData){
         String newUserName= null;
         try {
@@ -661,6 +700,25 @@ public class SPMAService extends IntentService {
             mdvCmd.put("Sender", address); //sendername
             mdvCmd.put("Timestamp", System.currentTimeMillis() / 1000);
             mdvCmd.put("Message", msg);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+
+    }
+    /**
+     * Send a message that a local user has been selected, directed at the GUI
+     */
+    private void sendLocalUserSelectedInternalMessage(User u) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "LocalUserSelected");
+            mdvCmd.put("ID", u.getId());
+            mdvCmd.put("Name", u.getName());
+
 
         } catch (JSONException e) {
             e.printStackTrace();

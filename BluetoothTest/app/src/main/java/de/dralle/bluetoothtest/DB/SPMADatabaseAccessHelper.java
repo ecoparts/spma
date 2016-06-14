@@ -43,4 +43,16 @@ public class SPMADatabaseAccessHelper {
         u.setName(name);
         return u;
     }
+    public User getUser(int id){
+        SQLiteDatabase connection=db.getReadableDatabase();
+        Cursor c=connection.rawQuery("select ID, Name from User where User.ID=?",new String[]{id+""});
+        c.moveToNext();
+        String name=c.getString(1);
+        c.close();
+        connection.close();
+        User u=new User();
+        u.setId(id);
+        u.setName(name);
+        return u;
+    }
 }

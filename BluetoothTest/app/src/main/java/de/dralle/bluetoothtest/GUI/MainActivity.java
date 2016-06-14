@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             Log.v(LOG_TAG, "Service starting");
             serviceConnector.startService();
         }
-
+        serviceConnector.selectUser(0); //always select user 0, since its the default one
 
 
 
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 serviceConnector.turnBluetoothOn();
                 serviceConnector.makeDeviceVisible();
                 serviceConnector.scanForNearbyDevices();
-                serviceConnector.addUser("default");
 
 
 
