@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
 import de.dralle.bluetoothtest.DB.User;
 import de.dralle.bluetoothtest.GUI.ChatActivity;
@@ -86,10 +87,6 @@ public class SPMAService extends IntentService {
 
                 addNewDevice(device);
 
-                if (checkForSupportedUUIDs(allUUIDs)) {
-
-                    sendNewDeviceFoundInternalMessage(device);
-                }
 
 
             }
@@ -193,8 +190,9 @@ public class SPMAService extends IntentService {
 
     private void sendNewSupportedDeviceListInternalMessage() {
         sendClearDevicesInternalMessage();
-        for (BluetoothDevice device : supportedDevices)
-            sendNewDeviceFoundInternalMessage(device);
+        List<DeviceDBData> allDevices = db.getAllDevices();
+        for (DeviceDBData device : allDevices)
+            sendCachedDeviceInternalMessage(device);
     }
 
 
@@ -270,6 +268,7 @@ public class SPMAService extends IntentService {
 
         }
         supportedDevices.add(device);
+        db.addDeviceIfNotExistsUpdateOtherwise(device);
         return true;
 
     }
@@ -296,16 +295,42 @@ public class SPMAService extends IntentService {
      *
      * @param device newly discovered device
      */
+    @Deprecated
     private void sendNewDeviceFoundInternalMessage(BluetoothDevice device) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "NewDevice");
-            mdvCmd.put("Name", device.getName()); //TODO: Friendly name
+            mdvCmd.put("Name", device.getName());
+            mdvCmd.put("SuperFriendlyName", db.getDeviceFriendlyName(device.getAddress()));
             mdvCmd.put("Address", device.getAddress());
             boolean bonded = device.getBondState() == BluetoothDevice.BOND_BONDED;
             mdvCmd.put("Paired", bonded);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+
+
+    }
+    /**
+     * Send a message that a new device was recovered from cache
+     *
+     * @param device newly recovered device
+     */
+    private void sendCachedDeviceInternalMessage(DeviceDBData device) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "NewDevice");
+            mdvCmd.put("Name", device.getDeviceName());
+            mdvCmd.put("SuperFriendlyName", device.getFriendlyName());
+            mdvCmd.put("Address", device.getAddress());
+            boolean bonded = device.isPaired();
+            mdvCmd.put("Paired", bonded);
+            mdvCmd.put("LastSeen", device.getLastSeen());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -387,9 +412,11 @@ public class SPMAService extends IntentService {
                 break;
             case "ResendCachedDevices":
                 sendClearDevicesInternalMessage();
-                for(BluetoothDevice d:supportedDevices){
-                    sendNewDeviceFoundInternalMessage(d);
+                List<DeviceDBData> devicesData = db.getAllDevices();
+                for(DeviceDBData dd:devicesData){
+                    sendCachedDeviceInternalMessage(dd);
                 }
+                
                 break;
             case "StartListeners":
                 startListeners(msgData);
@@ -544,6 +571,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         User sender=db.getUser(senderID);
         if (address != null) {
             //verschlüsselun!!!!
@@ -561,7 +589,11 @@ public class SPMAService extends IntentService {
                     jsoOut.put("Level", 0);
                     jsoOut.put("Content", "Text");
                     jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
-                    jsoOut.put("Sender", sender.getName());
+                    if(sender!=null){
+                        jsoOut.put("Sender", sender.getName());//TODO: investigate
+                    }else{
+                        jsoOut.put("Sender", adapter.getName());
+                    }
                     jsoOut.put("ReceiverAddress", address);
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                         jsoOut.put("SenderAddress", adapter.getAddress());
@@ -609,6 +641,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        db.updateDeviceLastSeen(address);
         JSONObject jsoIn = null;
         try {
             jsoIn = new JSONObject(msg);
@@ -629,7 +662,7 @@ public class SPMAService extends IntentService {
                 msg = jsoIn.getString("Message");
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
                 if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
-                    Log.i(LOG_TAG, "Content confirmed");
+                    Log.i(LOG_TAG, "Content is text");
                     if (confirmSender(senderAddress, address, senderAPIVersion)) {
                         if (confirmReceiver(receiverAddress)) {
 
@@ -700,7 +733,7 @@ public class SPMAService extends IntentService {
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "NewExternalMessage");
             mdvCmd.put("Address", address);
-            mdvCmd.put("Sender", address); //sendername
+            mdvCmd.put("Sender", db.getDeviceFriendlyName(address));
             mdvCmd.put("Timestamp", System.currentTimeMillis() / 1000);
             mdvCmd.put("Message", msg);
 

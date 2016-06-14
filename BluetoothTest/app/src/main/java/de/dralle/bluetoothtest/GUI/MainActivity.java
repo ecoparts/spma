@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     if (serviceConnector.checkMessage(msgData)) {
                         if (serviceConnector.getMessageAction(msgData).equals("NewDevice")) {
                             try {
-                                deviceNames.add(msgData.getString("Name"));
+                                deviceNames.add(msgData.getString("SuperFriendlyName"));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
