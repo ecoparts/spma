@@ -594,7 +594,7 @@ public class SPMAServiceConnector {
      *
      * @return true if service is running and message was sent
      */
-    public boolean sendExternalMessage(String msg, String deviceAddress) {
+    public boolean sendExternalMessage(String msg, String receiverDeviceAddress) {
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending SendNewMessage");
             JSONObject mdvCmd = new JSONObject();
@@ -602,7 +602,9 @@ public class SPMAServiceConnector {
                 mdvCmd.put("Extern", false);
                 mdvCmd.put("Level", 0);
                 mdvCmd.put("Action", "SendNewMessage");
-                mdvCmd.put("Address", deviceAddress);
+                mdvCmd.put("Sender", getUserName());
+                mdvCmd.put("SenderID", userId);
+                mdvCmd.put("Address", receiverDeviceAddress);
                 mdvCmd.put("Message", msg);
             } catch (JSONException e) {
                 e.printStackTrace();

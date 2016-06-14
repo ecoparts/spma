@@ -302,7 +302,7 @@ public class SPMAService extends IntentService {
             mdvCmd.put("Extern", false);
             mdvCmd.put("Level", 0);
             mdvCmd.put("Action", "NewDevice");
-            mdvCmd.put("Name", device.getName());
+            mdvCmd.put("Name", device.getName()); //TODO: Friendly name
             mdvCmd.put("Address", device.getAddress());
             boolean bonded = device.getBondState() == BluetoothDevice.BOND_BONDED;
             mdvCmd.put("Paired", bonded);
@@ -536,12 +536,15 @@ public class SPMAService extends IntentService {
     private void prepareNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
+        int senderID=-1;
         try {
             address = msgData.getString("Address");
             msg = msgData.getString("Message");
+            senderID=msgData.getInt("SenderID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        User sender=db.getUser(senderID);
         if (address != null) {
             //verschlüsselun!!!!
             Log.i(LOG_TAG, "Sending new message to " + address);
@@ -557,8 +560,8 @@ public class SPMAService extends IntentService {
                     jsoOut.put("Extern", true);
                     jsoOut.put("Level", 0);
                     jsoOut.put("Content", "Text");
-                    jsoOut.put("Receiver", address);
-                    jsoOut.put("Sender", adapter.getAddress());
+                    jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
+                    jsoOut.put("Sender", sender.getName());
                     jsoOut.put("ReceiverAddress", address);
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                         jsoOut.put("SenderAddress", adapter.getAddress());
