@@ -1,14 +1,13 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="app_version">0.09a</string>
-    <string name="db_version">1</string>
+    <string name="app_version">0.10a</string>
+    <string name="db_version">2</string>
     <string name="dbname">spma</string>
     <string-array name="dbcreate">
         <item>
             create table if not exists User(
                 ID integer primary key autoincrement,
                 Name varchar(20) not null,
-                Password varchar(64),
                 AES varchar(256),
                 RSAPrivate varchar(256),
                 RSAPublic varchar(256)
