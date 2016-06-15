@@ -35,6 +35,7 @@ GUI
 Background Service
 -JSON (for IPC (intents) and BT communiation) //android has a built in json lib - !done
 -sqlite for saved data //builtin sqlite support in android - part done
+-create message history
 -createInsecureRfcommSocketToServiceRecord(uuid); //for unpaired devices - !done
 -createRfcommSocketToServiceRecord(uuid); //for paired devices, make MITM impossible - !done
 -GUI activities and intentservice - final GUI missing
