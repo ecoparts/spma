@@ -29,7 +29,7 @@ GUI
 --XXXHDPI 192 x 192
 --WEB 512 x 512 (only required for play store)
 -icon for background service
--icon for paired/unpaired + display on GUI
+-icon for paired/unpaired + display on GUI (icons done, but not in use yet)
 -material design for all
 --CircleImageView (https://github.com/hdodenhof/CircleImageView)
 Background Service
