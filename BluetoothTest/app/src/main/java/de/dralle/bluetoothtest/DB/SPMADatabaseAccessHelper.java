@@ -29,7 +29,7 @@ public class SPMADatabaseAccessHelper {
         this.context = context;
         db = new SPMADatabaseHelper(context);
     }
-
+    @Deprecated
     public User addUser(String name) {
         SQLiteDatabase connection = db.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -49,16 +49,59 @@ public class SPMADatabaseAccessHelper {
         return u;
     }
 
+    /**
+     * Updates a database User
+     * @param u Userdata to be updated
+     * @return User given
+     */
+    public User createOrUpdateUser(User u) {
+        SQLiteDatabase connection = db.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put("Name", u.getName());
+        cv.put("AES", u.getAes());
+        cv.put("RSAPrivate", u.getRsaPrivate());
+        cv.put("RSAPublic", u.getRsaPublic());
+
+        //Check if user is already there
+        Cursor c=connection.rawQuery("select count(*) from User where ID = ?",new String[]{u.getId()+""});
+        if(c.moveToNext()){
+            int cnt=c.getInt(0);
+            if(cnt==0){
+                //Insert
+                cv.put("ID", u.getId());
+                connection.insert("User",null, cv);
+                Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
+            }else{
+                //Update. No need to check for count, because primary key
+                connection.update("User", cv,"ID = ?",new String[]{u.getId()+""});
+                Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
+            }
+        }
+
+
+
+        connection.close();
+
+
+        return u;
+    }
+
     public User getUser(int id) {
         SQLiteDatabase connection = db.getReadableDatabase();
-        Cursor c = connection.rawQuery("select Name from User where User.ID=?", new String[]{id + ""});
+        Cursor c = connection.rawQuery("select * from User where User.ID=?", new String[]{id + ""});
         if (c.moveToNext()) {
-            String name = c.getString(0);
-            c.close();
-            connection.close();
             User u = new User();
             u.setId(id);
-            u.setName(name);
+            u.setName(c.getString(1));
+            u.setAes(c.getString(2));
+            u.setRsaPrivate(c.getString(3));
+            u.setRsaPublic(c.getString(4));
+
+
+            c.close();
+            connection.close();
+
             return u;
         } else {
             c.close();

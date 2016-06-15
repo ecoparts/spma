@@ -1027,12 +1027,7 @@ public class SPMAService extends IntentService {
         }
     }
 
-    /**
-     * No.
-     */
-    private void makeAmericaGreatAgain() {
-        System.exit(1);
-    }
+    
 
     /**
      * Checks if bluetooth is on, and if no requests permission to turn it on
