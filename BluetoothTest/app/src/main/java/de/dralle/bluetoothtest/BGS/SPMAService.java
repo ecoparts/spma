@@ -442,6 +442,9 @@ public class SPMAService extends IntentService {
             case "AddNewLocalUser":
                 addNewLocalUser(msgData);
                 break;
+            case "ChangeLocalUserName":
+                changeLocalUserName(msgData);
+                break;
             case "RequestLocalUser":
                 requestLocalUserData(msgData);
                 break;
@@ -464,7 +467,17 @@ public class SPMAService extends IntentService {
             u=db.getUser(id);
             if(u==null){
                 Log.i(LOG_TAG,"No user found. Adding new.");
-                u=db.addUser(getLocalDeviceName());
+                u=new User();
+                u.setId(id);
+                String name=getLocalDeviceName();
+                if(name!=null){
+                    u.setName(name);
+                    db.createOrUpdateUser(u);
+                }else{
+                    Log.w(LOG_TAG,"Looks like BT is not available...");
+                }
+
+
             }
             sendLocalUserSelectedInternalMessage(u);
         }else{
@@ -484,7 +497,31 @@ public class SPMAService extends IntentService {
         }
         return null;
     }
+    public void changeLocalUserName(JSONObject msgData){
+        String newUserName= null;
+        int id=-1;
+        try {
+            id=msgData.getInt("ID");
+            newUserName = msgData.getString("Name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(id>-1){
+            Log.i(LOG_TAG,"Now trying to add new user with name "+newUserName);
+            User u=db.getUser(id);
+            if(u==null){
+                u=new User();
+            }
+            u.setId(id);
+            u.setName(newUserName);
+            db.createOrUpdateUser(u);
+            sendLocalUserSelectedInternalMessage(u);
+        }else{
+            Log.w(LOG_TAG,"No id given");
+        }
 
+
+    }
     public void addNewLocalUser(JSONObject msgData){
         String newUserName= null;
         try {
@@ -574,7 +611,7 @@ public class SPMAService extends IntentService {
 
         User sender=db.getUser(senderID);
         if (address != null) {
-            //verschlüsselun!!!!
+            //TODO: verschlüsselun!!!!
             Log.i(LOG_TAG, "Sending new message to " + address);
 
             BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
@@ -1027,7 +1064,7 @@ public class SPMAService extends IntentService {
         }
     }
 
-    
+
 
     /**
      * Checks if bluetooth is on, and if no requests permission to turn it on

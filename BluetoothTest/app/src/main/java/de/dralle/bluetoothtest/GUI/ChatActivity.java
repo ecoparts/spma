@@ -88,7 +88,7 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if(mainTextView!=null){
-            mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+sender+"> "+msg);
+            mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+sender+" > "+msg);
         }
     }
 
@@ -127,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
                 String msg= String.valueOf(etNewMsg.getText());
                 etNewMsg.setText("");
                 serviceConnector.sendExternalMessage(msg,deviceAddress);
-                mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+msg);
+                mainTextView.setText(mainTextView.getText()+System.getProperty("line.separator")+serviceConnector.getUserName()+" > "+msg);
             }
         });
 

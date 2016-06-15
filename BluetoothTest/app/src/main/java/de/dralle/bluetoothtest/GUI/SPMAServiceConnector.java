@@ -640,6 +640,32 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
+    /**
+     * Calls the service to add a change the local username
+     *
+     * @return true if service is running and message was sent
+     */
+
+    public boolean changeUserName(String name) {
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending ChangeLocalUserName");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "ChangeLocalUserName");
+                mdvCmd.put("ID",userId);
+                mdvCmd.put("Name", name);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
 
     /**
      * Calls the service to send the user data
