@@ -1,20 +1,22 @@
 android 4.4 (API Level 19)
-please dont arcode text, instead place them inside the strings.xml file (and reference them from GUI/Code)(default language is english)
+please dont hardcode text, instead place them inside the strings.xml file (and reference them from GUI/Code)(default language is english)
 GUI
--app name
--(login screen (user , password ; for local encryption))
+-app name -
+-(login screen (user , password ; for local encryption)) !dropped
 -Show nearby devices screen (listview)
--p2p chat screen (like sms/mms app or whatsapp?)
+-Show friends (listview)
+-p2p chat screen (like sms/mms app or whatsapp?)(scrollable)
 -settings
 --start/stop BGS
---make device discoverable (Button)
+--make device discoverable (Button) (with dialog box for duration? . or simply a default?)
 --start/stop BGS connection listeners
---view chat history
 --delete chat history
---view recent/paired (?) devices
---view and delete saved foreign public keys (see encryption)
+--delete cached devices
+--manage friends list
+---view recent/paired (?) devices (part of manage friends list)
+--view and delete saved foreign public keys (see encryption) - (or as part of 'delete cached evices?)
 --view and generate new device key
---change local encryption password
+--change local encryption password - !dropped
 -icon
 --https://www.google.com/design/spec/style/icons.html
 --http://developer.android.com/design/style/iconography.html
@@ -27,15 +29,20 @@ GUI
 --XXXHDPI 192 x 192
 --WEB 512 x 512 (only required for play store)
 -icon for background service
--material design for all (?)
+-icon for paired/unpaired + display on GUI
+-material design for all
+--CircleImageView (https://github.com/hdodenhof/CircleImageView)
 Background Service
--JSON (for IPC (intents) and BT communiation) //android has a built in json lib
--sqlite for saved data //builtin sqlite support in android
--createInsecureRfcommSocketToServiceRecord(uuid); //for unpaired devices
--createRfcommSocketToServiceRecord(uuid); //for paired devices, make MITM impossible
--GUI activities and intentservice
--multithreading
+-JSON (for IPC (intents) and BT communiation) //android has a built in json lib - !done
+-sqlite for saved data //builtin sqlite support in android - part done
+-createInsecureRfcommSocketToServiceRecord(uuid); //for unpaired devices - !done
+-createRfcommSocketToServiceRecord(uuid); //for paired devices, make MITM impossible - !done
+-GUI activities and intentservice - final GUI missing
+--serviceConnector to interface service
+-multithreading - !done
 Encryption
--local: file encryption with AES
+-local: file encryption with AES - !dropped
 -communication: AES and RSA (RSA for exchanging AES keys)
 Documentaion
+-Use Case
+-ER - !needs update
