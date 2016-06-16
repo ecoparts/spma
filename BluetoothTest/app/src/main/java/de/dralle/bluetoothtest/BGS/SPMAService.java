@@ -656,6 +656,7 @@ public class SPMAService extends IntentService {
                 }
                 if (connection != null) {
                     connection.sendExternalMessage(jsoOut.toString());
+                    db.addSendMessage(address,jsoOut.toString(),senderID);
                 } else {
                     Log.i(LOG_TAG, "No suitable connection found");
 

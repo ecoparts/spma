@@ -288,4 +288,23 @@ public class SPMADatabaseAccessHelper {
         }
 
     }
+    public void addSendMessage(String receiverAddress, String message, int userId) {
+        Log.i(LOG_TAG,"Logging message "+message+" for "+receiverAddress+" from "+userId);
+
+        int deviceId=getDeviceID(receiverAddress);
+        if(deviceId>-1){
+            SQLiteDatabase connection = db.getWritableDatabase();
+            ContentValues cv=new ContentValues();
+            cv.put("Text",message);
+            cv.put("Timestamp",System.currentTimeMillis()/1000);
+            cv.put("UserID",userId);
+            cv.put("DeviceID",deviceId);
+            connection.insert("Send",null,cv);
+            Log.i(LOG_TAG,"Logged message "+message+" for "+receiverAddress+" from "+userId);
+            connection.close();
+        }else{
+            Log.i(LOG_TAG,"Logging message "+message+" for "+receiverAddress+" from "+userId+" failed");
+        }
+
+    }
 }
