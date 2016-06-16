@@ -118,7 +118,7 @@ public class SPMADatabaseAccessHelper {
      */
     public String getDeviceFriendlyName(String address) {
         SQLiteDatabase connection = db.getReadableDatabase();
-        Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{"'"+address+"'"});
+        Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{address});
 
         if (c.moveToNext()) {
             String name = c.getString(0);
@@ -132,6 +132,30 @@ public class SPMADatabaseAccessHelper {
         }
 
     }
+    /**
+     * Looks for a device´s id from an address
+     *
+     * @param address Remote device address
+     * @return Remote device database id. -1 if no device is found
+     */
+    public int getDeviceID(String address) { //TODO: unify with above
+        SQLiteDatabase connection = db.getReadableDatabase();
+        Cursor c = connection.rawQuery("select ID from Devices where Address = ?", new String[]{address});
+
+        if (c.moveToNext()) {
+            int id=c.getInt(0);
+            c.close();
+            connection.close();
+            return id;
+        } else {
+            c.close();
+            connection.close();
+            Log.w(LOG_TAG,"No device with address "+address);
+            return -1;
+        }
+
+    }
+
 
     /**
      * Adds a device to the device table, if the device is new. Otherwise updates the existing device
@@ -209,7 +233,7 @@ public class SPMADatabaseAccessHelper {
     /**
      * Get all devices, that are saved in this database
      */
-    public List<DeviceDBData> getAllDevices() { //TODO; add update method for LastSeen
+    public List<DeviceDBData> getAllDevices() {
         SQLiteDatabase connection = db.getReadableDatabase();
         Cursor c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
         List<DeviceDBData> devices = new ArrayList<>();
@@ -245,4 +269,23 @@ public class SPMADatabaseAccessHelper {
 
     }
 
+    public void addReceivedMessage(String senderAddress, String message, int userId) {
+        Log.i(LOG_TAG,"Logging message "+message+" from "+senderAddress+" for "+userId);
+
+        int deviceId=getDeviceID(senderAddress);
+        if(deviceId>-1){
+            SQLiteDatabase connection = db.getWritableDatabase();
+            ContentValues cv=new ContentValues();
+            cv.put("Text",message);
+            cv.put("Timestamp",System.currentTimeMillis()/1000);
+            cv.put("UserID",userId);
+            cv.put("DeviceID",deviceId);
+            connection.insert("Received",null,cv);
+            Log.i(LOG_TAG,"Logged message "+message+" from "+senderAddress+" for "+userId);
+            connection.close();
+        }else{
+            Log.i(LOG_TAG,"Logging message "+message+" from "+senderAddress+" for "+userId+" failed");
+        }
+
+    }
 }

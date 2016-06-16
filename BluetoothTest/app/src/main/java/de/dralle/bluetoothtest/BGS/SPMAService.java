@@ -68,6 +68,13 @@ public class SPMAService extends IntentService {
      * Insecure listener. Insecure connections are used for connections between non paired devices
      */
     private BluetoothListener insecureListener;
+    /**
+     * userid of selected user
+     */
+    private int userId;
+    /**
+     * Database connector
+     */
     private SPMADatabaseAccessHelper db;
 
     /**
@@ -685,7 +692,7 @@ public class SPMAService extends IntentService {
             Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
-                //decrypt
+                //TODO: decrypt
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
                 String senderAppVersion = jsoIn.getString("SenderVersionApp");
                 if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
@@ -704,6 +711,7 @@ public class SPMAService extends IntentService {
                         if (confirmReceiver(receiverAddress)) {
 
                             sendNewMessageInternalMessage(msg, address);
+                            db.addReceivedMessage(address,msg,userId);
                         }
                     }
                 }
@@ -796,6 +804,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        userId=u.getId();
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
     }
