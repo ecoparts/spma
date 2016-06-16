@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                serviceConnector.selectUser(0); //select user 0 (default) every time a new connection is created
                 Log.i(LOG_TAG,"Clicked device "+id);
 
 
