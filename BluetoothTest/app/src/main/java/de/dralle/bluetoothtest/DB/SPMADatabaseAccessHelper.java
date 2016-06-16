@@ -204,6 +204,7 @@ public class SPMADatabaseAccessHelper {
      * Updates the last seen property of a given device
      * @param address Address of the remote device
      */
+    //TODO: make new device if not exists
     public void updateDeviceLastSeen(String address){
         SQLiteDatabase connection = db.getWritableDatabase();
         ContentValues values = new ContentValues();
