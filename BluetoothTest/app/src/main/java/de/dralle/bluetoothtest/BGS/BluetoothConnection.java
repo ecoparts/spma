@@ -215,7 +215,7 @@ jso.put("Address",device.getAddress());
         try {
             socket.close();
             Log.i(LOG_TAG,"Socket closed");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         socket=null;
