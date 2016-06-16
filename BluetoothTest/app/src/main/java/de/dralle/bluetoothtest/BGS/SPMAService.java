@@ -23,15 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
@@ -75,7 +69,7 @@ public class SPMAService extends IntentService {
      */
     private BluetoothListener insecureListener;
     private SPMADatabaseAccessHelper db;
-    private Encryption aes;
+
     /**
      * Nested BroadcastReceiver. Receives some android system broadcasts and internal messages directed at the service
      */
@@ -183,11 +177,7 @@ public class SPMAService extends IntentService {
                 }
                 if (msgData != null) {
                     if (checkInternalMessage(msgData)) {
-                        try {
-                            parseInternalMessageForAction(msgData);
-                        } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        }
+                        parseInternalMessageForAction(msgData);
                     }
                 } else {
                     Log.w(LOG_TAG, "Message not JSON");
@@ -395,7 +385,7 @@ public class SPMAService extends IntentService {
      *
      * @param msgData JSON formatted message to be checked
      */
-    public void parseInternalMessageForAction(JSONObject msgData) throws NoSuchAlgorithmException {
+    public void parseInternalMessageForAction(JSONObject msgData) {
         String action = "";
         try {
             action = msgData.getString("Action");
@@ -607,7 +597,7 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      * @return
      */
-    private void prepareNewExternalMessage(JSONObject msgData) throws NoSuchAlgorithmException {
+    private void prepareNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
         int senderID=-1;
@@ -622,10 +612,7 @@ public class SPMAService extends IntentService {
         User sender=db.getUser(senderID);
         if (address != null) {
             //TODO: verschlüsselun!!!!
-
             Log.i(LOG_TAG, "Sending new message to " + address);
-
-            aes = new Encryption(Encryption.newAESkey(128),"AES");
 
             BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
             BluetoothConnection connection = bco.getConnection(address);
@@ -637,8 +624,7 @@ public class SPMAService extends IntentService {
 
                     jsoOut.put("Extern", true);
                     jsoOut.put("Level", 0);
-                    //Nachricht mit AES verschlüsseln.
-                    jsoOut.put("Content", aes.encrypt("Text"));
+                    jsoOut.put("Content", "Text");
                     jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
                     if(sender!=null){
                         jsoOut.put("Sender", sender.getName());//TODO: investigate
@@ -659,14 +645,6 @@ public class SPMAService extends IntentService {
 
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (BadPaddingException e) {
-                    e.printStackTrace();
-                } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
-                } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
                     e.printStackTrace();
                 }
                 if (connection != null) {
@@ -708,7 +686,6 @@ public class SPMAService extends IntentService {
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
                 //decrypt
-                content = aes.decrypt(content);
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
                 String senderAppVersion = jsoIn.getString("SenderVersionApp");
                 if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
@@ -735,16 +712,6 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
             Log.w(LOG_TAG, "Couldnt parse message");
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
         }
 
 
