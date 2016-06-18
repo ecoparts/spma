@@ -21,18 +21,30 @@ public class SPMADatabaseAccessHelper {
      */
     private static final String LOG_TAG = SPMADatabaseAccessHelper.class.getName();
 
+    private static SPMADatabaseAccessHelper instance = null;
+
     private Context context;
 
     private SQLiteOpenHelper db = null;
 
-    public SPMADatabaseAccessHelper(Context context) {
+    private SQLiteDatabase writeConnection = null;
+    private SQLiteDatabase readConnection = null;
+
+    private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
         db = new SPMADatabaseHelper(context);
+        writeConnection=db.getWritableDatabase();
+        readConnection=db.getReadableDatabase();
     }
-
+    public static SPMADatabaseAccessHelper getInstance(Context context){
+        if(instance==null){
+            instance=new SPMADatabaseAccessHelper(context);
+        }
+        return instance;
+    }
     @Deprecated
     public User addUser(String name) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = writeConnection;
         ContentValues cv = new ContentValues();
         cv.put("Name", name);
         long rowid = connection.insert("User", null, cv);
@@ -42,7 +54,7 @@ public class SPMADatabaseAccessHelper {
         name = c.getString(1);
         int id = Integer.parseInt(sid);
         c.close();
-        connection.close();
+
         Log.i(LOG_TAG, "New User " + name + " with id " + id + " inserted");
         User u = new User();
         u.setId(id);
@@ -57,7 +69,7 @@ public class SPMADatabaseAccessHelper {
      * @return User given
      */
     public User createOrUpdateUser(User u) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = writeConnection;
         ContentValues cv = new ContentValues();
 
         cv.put("Name", u.getName());
@@ -83,14 +95,14 @@ public class SPMADatabaseAccessHelper {
 
 
         c.close();
-        connection.close();
+
 
 
         return u;
     }
 
     public User getUser(int id) {
-        SQLiteDatabase connection = db.getReadableDatabase();
+        SQLiteDatabase connection = readConnection;
         Cursor c = connection.rawQuery("select * from User where User.ID=?", new String[]{id + ""});
         User u = null;
         try {
@@ -107,7 +119,6 @@ public class SPMADatabaseAccessHelper {
 
             }
             c.close();
-            connection.close();
         } catch (Exception e) {
 
         }
@@ -124,17 +135,15 @@ public class SPMADatabaseAccessHelper {
      */
     public String getDeviceFriendlyName(String address) {
         try {
-            SQLiteDatabase connection = db.getReadableDatabase();
+            SQLiteDatabase connection = writeConnection;
             Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{address});
 
             if (c.moveToNext()) {
                 String name = c.getString(0);
                 c.close();
-                connection.close();
                 return name;
             } else {
                 c.close();
-                connection.close();
                 return address;
             }
         }
@@ -153,17 +162,15 @@ public class SPMADatabaseAccessHelper {
      * @return Remote device database id. -1 if no device is found
      */
     public int getDeviceID(String address) { //TODO: unify with above
-        SQLiteDatabase connection = db.getReadableDatabase();
+        SQLiteDatabase connection = readConnection;
         Cursor c = connection.rawQuery("select ID from Devices where Address = ?", new String[]{address});
 
         if (c.moveToNext()) {
             int id = c.getInt(0);
             c.close();
-            connection.close();
             return id;
         } else {
             c.close();
-            connection.close();
             Log.w(LOG_TAG, "No device with address " + address);
             return -1;
         }
@@ -177,7 +184,7 @@ public class SPMADatabaseAccessHelper {
      * @param device
      */
     public void addDeviceIfNotExistsUpdateOtherwise(BluetoothDevice device) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection =writeConnection;
         Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{device.getAddress()});
 
 
@@ -211,7 +218,7 @@ public class SPMADatabaseAccessHelper {
             Log.w(LOG_TAG, "Insert or update of device failed");
         }
         c.close();
-        connection.close();
+
     }
 
     /**
@@ -220,7 +227,7 @@ public class SPMADatabaseAccessHelper {
      * @param device
      */
     public void addDeviceIfNotExistsUpdateOtherwise(DeviceDBData device) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = writeConnection;
         Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{device.getAddress()});
 
 
@@ -255,7 +262,6 @@ public class SPMADatabaseAccessHelper {
             Log.w(LOG_TAG, "Insert or update of device failed");
         }
         c.close();
-        connection.close();
     }
 
     /**
@@ -267,14 +273,14 @@ public class SPMADatabaseAccessHelper {
         if (!checkDeviceExists(address)) {
             insertNewDevice(address);
         }
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = writeConnection;
         ContentValues values = new ContentValues();
 
 
         values.put("LastSeen", System.currentTimeMillis() / 1000);
         connection.update("Devices", values, "Address = ?", new String[]{address});
         Log.i(LOG_TAG, address + " updated lastSeen");
-        connection.close();
+
 
     }
 
@@ -293,7 +299,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Remote device address
      */
     private boolean checkDeviceExists(String address) {
-        SQLiteDatabase connection = db.getReadableDatabase();
+        SQLiteDatabase connection = readConnection;
         Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{address});
         int cnt = 0;
 
@@ -302,7 +308,6 @@ public class SPMADatabaseAccessHelper {
             Log.i(LOG_TAG, cnt + " entries for device " + address);
         }
         c.close();
-        connection.close();
         return cnt > 0;
     }
 
@@ -323,7 +328,7 @@ public class SPMADatabaseAccessHelper {
      * @param friendlyName
      */
     public void updateDeviceFriendlyName(String address, String friendlyName) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = writeConnection;
         ContentValues values = new ContentValues();
 
         values.put("FriendlyName", friendlyName);
@@ -331,14 +336,14 @@ public class SPMADatabaseAccessHelper {
 
         connection.update("Devices", values, "Address = ?", new String[]{address});
         Log.i(LOG_TAG, "Device " + address + " updated with name " + friendlyName);
-        connection.close();
+
     }
 
     /**
      * Get all devices, that are saved in this database
      */
     public List<DeviceDBData> getAllDevices() {
-        SQLiteDatabase connection = db.getReadableDatabase();
+        SQLiteDatabase connection = readConnection;
         Cursor c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
         List<DeviceDBData> devices = new ArrayList<>();
         while (c.moveToNext()) {
@@ -353,7 +358,7 @@ public class SPMADatabaseAccessHelper {
 
         }
         c.close();
-        connection.close();
+
         return devices;
 
 
@@ -379,7 +384,7 @@ public class SPMADatabaseAccessHelper {
 
         int deviceId = getDeviceID(senderAddress);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection =writeConnection;
             ContentValues cv = new ContentValues();
             cv.put("Text", message);
             cv.put("Timestamp", System.currentTimeMillis() / 1000);
@@ -387,7 +392,6 @@ public class SPMADatabaseAccessHelper {
             cv.put("DeviceID", deviceId);
             connection.insert("Received", null, cv);
             Log.i(LOG_TAG, "Logged message " + message + " from " + senderAddress + " for " + userId);
-            connection.close();
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId + " failed");
         }
@@ -399,7 +403,7 @@ public class SPMADatabaseAccessHelper {
 
         int deviceId = getDeviceID(receiverAddress);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection =writeConnection;
             ContentValues cv = new ContentValues();
             cv.put("Text", message);
             cv.put("Timestamp", System.currentTimeMillis() / 1000);
@@ -407,7 +411,6 @@ public class SPMADatabaseAccessHelper {
             cv.put("DeviceID", deviceId);
             connection.insert("Send", null, cv);
             Log.i(LOG_TAG, "Logged message " + message + " for " + receiverAddress + " from " + userId);
-            connection.close();
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId + " failed");
         }
@@ -419,14 +422,13 @@ public class SPMADatabaseAccessHelper {
         Log.i(LOG_TAG, "Writing RSA Public key from "+address);
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection = writeConnection;
 
             connection.delete("RSA","DeviceID = ?",new String[]{deviceId+""});
             ContentValues cv = new ContentValues();
             cv.put("DeviceID", deviceId);
             cv.put("Key",data);
             connection.insert("RSA",null,cv);
-            connection.close();
             Log.i(LOG_TAG,"New RSA Public key for device "+address);
         }
     }
@@ -434,7 +436,7 @@ public class SPMADatabaseAccessHelper {
         Log.i(LOG_TAG, "Reading RSA Public key from "+address+" from db");
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection = readConnection;
 
             Cursor c=connection.rawQuery("select Key from RSA where DeviceID = ?",new String[]{deviceId+""});
             String key=null;
@@ -442,32 +444,30 @@ public class SPMADatabaseAccessHelper {
                key=c.getString(0);
            }
             c.close();
-            connection.close();
             Log.i(LOG_TAG,"RSA Public key read "+key);
             return key;
         }
         return null;
     }
     public void insertDeviceAESKey(String address, String data) {
-        Log.i(LOG_TAG, "Writing AES Public key from "+address);
+        Log.i(LOG_TAG, "Writing AES key from "+address);
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection = writeConnection;
 
             connection.delete("AES","DeviceID = ?",new String[]{deviceId+""});
             ContentValues cv = new ContentValues();
             cv.put("DeviceID", deviceId);
             cv.put("Key",data);
             connection.insert("AES",null,cv);
-            connection.close();
             Log.i(LOG_TAG,"New AES key for device "+address);
         }
     }
     public String getDeviceAESKey(String address) {
-        Log.i(LOG_TAG, "Reading AES Public key from "+address+" from db");
+        Log.i(LOG_TAG, "Reading AES key from "+address+" from db");
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = db.getWritableDatabase();
+            SQLiteDatabase connection = readConnection;
 
             Cursor c=connection.rawQuery("select Key from AES where DeviceID = ?",new String[]{deviceId+""});
             String key=null;
@@ -475,10 +475,13 @@ public class SPMADatabaseAccessHelper {
                 key=c.getString(0);
             }
             c.close();
-            connection.close();
             Log.i(LOG_TAG,"AES key read "+key);
             return key;
         }
         return null;
+    }
+    public void closeConnections(){
+        writeConnection.close();
+        readConnection.close();
     }
 }

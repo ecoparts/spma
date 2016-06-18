@@ -442,7 +442,7 @@ public class SPMAService extends IntentService {
                 sendConnectionShutdownInternalMessage(msgData);
                 break;
             case "NewMessage":
-                handleNewExternalMessage(msgData);
+                handleNewInternalMessageContainingExternalMessage(msgData);
                 break;
             case "SendNewMessage":
                 prepareNewExternalMessage(msgData);
@@ -484,12 +484,14 @@ public class SPMAService extends IntentService {
                 if (name != null) {
                     u.setName(name);
                     db.createOrUpdateUser(u);
+
                 } else {
                     Log.w(LOG_TAG, "Looks like BT is not available...");
                 }
 
 
             }
+            generateKeysIfNoneExists(u.getId());
             sendLocalUserSelectedInternalMessage(u);
         } else {
             Log.w(LOG_TAG, "Local user selection failed");
@@ -563,13 +565,16 @@ public class SPMAService extends IntentService {
         User u = db.getUser(userId);
         if (u != null) {
             SecretKey aes = Encryption.newAESkey(256);
-            KeyPair rsa = Encryption.newRSAkeys(256);
+            KeyPair rsa = Encryption.newRSAkeys(512);
             u.setId(userId);
             u.setAes(Base64.encodeToString(aes.getEncoded(),Base64.DEFAULT));
             u.setRsaPrivate(Base64.encodeToString(rsa.getPrivate().getEncoded(),Base64.DEFAULT));
             u.setRsaPublic(Base64.encodeToString(rsa.getPublic().getEncoded(),Base64.DEFAULT));
+            Log.v(LOG_TAG,"RSA Public key is "+u.getRsaPublic());
             db.createOrUpdateUser(u);
             Log.i(LOG_TAG,"New crypto keys generated");
+        }else{
+            Log.i(LOG_TAG,"generateKeys: User null");
         }
 
     }
@@ -583,14 +588,19 @@ public class SPMAService extends IntentService {
         if (u != null) {
             if (u.getAes() == null || u.getRsaPublic() == null || u.getRsaPrivate() == null) {
                 SecretKey aes = Encryption.newAESkey(256);
-                KeyPair rsa = Encryption.newRSAkeys(256);
+                KeyPair rsa = Encryption.newRSAkeys(512);
                 u.setId(userId);
-                u.setAes(aes.toString());
-                u.setRsaPrivate(rsa.getPrivate().toString());
-                u.setRsaPublic(rsa.getPublic().toString());
+                u.setAes(Base64.encodeToString(aes.getEncoded(),Base64.DEFAULT));
+                u.setRsaPrivate(Base64.encodeToString(rsa.getPrivate().getEncoded(),Base64.DEFAULT));
+                u.setRsaPublic(Base64.encodeToString(rsa.getPublic().getEncoded(),Base64.DEFAULT));
+                Log.v(LOG_TAG,"RSA Public key is "+u.getRsaPublic());
                 db.createOrUpdateUser(u);
                 Log.i(LOG_TAG,"New crypto keys generated");
+            }else{
+                Log.i(LOG_TAG,"generateKeysIfNoneExists: Keys exist");
             }
+        }else{
+            Log.i(LOG_TAG,"generateKeysIfNoneExists: User null");
         }
 
 
@@ -671,10 +681,14 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        int encryptionLevel=0;
         User sender = db.getUser(senderID);
         if (address != null) {
-            //TODO: verschlüsselun!!!!
+            if(sender!=null){
+                if(sender.getAes()!=null){
+                    //TODO: AES
+                }
+            }
             Log.i(LOG_TAG, "Sending new message to " + address);
 
             BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
@@ -727,6 +741,30 @@ public class SPMAService extends IntentService {
 
     }
 
+    private List<JSONObject> splitJSON(String json){
+        List<JSONObject> jsoS=new ArrayList<>();
+        String rest=json;
+        int braces=0;
+        int prevJSONEnd=0;
+        for(int i=0;i<json.length();i++){
+            if(json.charAt(i)=='{'){
+                braces++;
+            }else if(json.charAt(i)=='}'){
+                braces--;
+            }
+            if(braces==0){
+                String nestedJSON=json.substring(prevJSONEnd,i+1);
+                try {
+                    jsoS.add(new JSONObject(nestedJSON));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                prevJSONEnd=i+1;
+            }
+        }
+        return jsoS;
+    }
+
 
     /**
      * Handle received new external message. Free it from its JSON container string and check some of the additional message attributes.
@@ -734,7 +772,7 @@ public class SPMAService extends IntentService {
      * @param msgData may contain additional data
      * @return
      */
-    private void handleNewExternalMessage(JSONObject msgData) {
+    private void handleNewInternalMessageContainingExternalMessage(JSONObject msgData) {
         Log.i(LOG_TAG, "New external message thing");
         String address = null;
         String msg = "";
@@ -745,52 +783,66 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         db.updateDeviceLastSeen(address);
-        JSONObject jsoIn = null;
-        try {
-            jsoIn = new JSONObject(msg);
-            Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
-            if (jsoIn.getBoolean("Extern")) { //is this an external message?
-                String content = jsoIn.getString("Content");
-                int level=jsoIn.getInt("Level");
-                //TODO: decrypt
-                String senderName = jsoIn.getString("Sender");
-                db.updateDeviceFriendlyName(address, senderName);
-                int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
-                String senderAppVersion = jsoIn.getString("SenderVersionApp");
-                if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
-                    Log.w(LOG_TAG, "App version mismatch. Things might go horribly wrong. You have been warned");
-                }
-                String senderAddress = null;
-                if (senderAPIVersion < Build.VERSION_CODES.M) {
-                    senderAddress = jsoIn.getString("SenderAddress");
-                }
-                String receiverAddress = jsoIn.getString("ReceiverAddress");
+        handleNewExternalMessage(address,msg);
 
-                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-                if (confirmSender(senderAddress, address, senderAPIVersion)) {
-                    if (confirmReceiver(receiverAddress)) {
-                        if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
-                            Log.i(LOG_TAG, "New text");
-                            msg = jsoIn.getString("Message");
-                            sendNewMessageInternalMessage(msg, address);
-                            db.addReceivedMessage(address, msg, userId);
-                        }
-                        if (content.equals("DataRequest")) {
-                            Log.i(LOG_TAG, "New dataRequest");
-                            parseDataRequest(address, jsoIn);
-                        }
-                        if (content.equals("DataResponse")) {
-                            Log.i(LOG_TAG, "New dataResponce");
-                            parseDataResponse(address, jsoIn);
+    }
+    /**
+     * Handle received new external message. Might contain multiple json strings
+     *
+     * @param extMessage Contains JSON formatted JSON string. might contain multiple JSON strings
+     * @return
+     */
+    private void handleNewExternalMessage(String fromAddress, String extMessage) {
+        List<JSONObject> jsoInS=splitJSON(extMessage);
+        Log.i(LOG_TAG,jsoInS.size()+" messages received at once");
+        for(JSONObject jsoIn:jsoInS) {
+            try {
+
+                Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
+                if (jsoIn.getBoolean("Extern")) { //is this an external message?
+                    String content = jsoIn.getString("Content");
+                    int level = jsoIn.getInt("Level");
+                    //TODO: decrypt
+                    String senderName = jsoIn.getString("Sender");
+                    db.updateDeviceFriendlyName(fromAddress, senderName);
+                    int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
+                    String senderAppVersion = jsoIn.getString("SenderVersionApp");
+                    if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
+                        Log.w(LOG_TAG, "App version mismatch. Things might go horribly wrong. You have been warned");
+                    }
+                    String senderAddress = null;
+                    if (senderAPIVersion < Build.VERSION_CODES.M) {
+                        senderAddress = jsoIn.getString("SenderAddress");
+                    }
+                    String receiverAddress = jsoIn.getString("ReceiverAddress");
+
+                    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+
+                    if (confirmSender(senderAddress, fromAddress, senderAPIVersion)) {
+                        if (confirmReceiver(receiverAddress)) {
+                            if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
+                                Log.i(LOG_TAG, "New text");
+                                String msg = jsoIn.getString("Message");
+                                sendNewMessageInternalMessage(msg, fromAddress);
+                                db.addReceivedMessage(fromAddress, msg, userId);
+                            }
+                            if (content.equals("DataRequest")) {
+                                Log.i(LOG_TAG, "New dataRequest");
+                                parseDataRequest(fromAddress, jsoIn);
+                            }
+                            if (content.equals("DataResponse")) {
+                                Log.i(LOG_TAG, "New dataResponce");
+                                parseDataResponse(fromAddress, jsoIn);
+                            }
                         }
                     }
-                }
 
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.w(LOG_TAG, "Couldnt parse message");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.w(LOG_TAG, "Couldnt parse message");
         }
 
 
@@ -1006,6 +1058,7 @@ public class SPMAService extends IntentService {
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
         sendExternalDataRequest(address);
+        generateKeysIfNoneExists(userId);
 
     }
 
@@ -1035,6 +1088,13 @@ public class SPMAService extends IntentService {
                 break;
             case "RSAPublic":
                 Log.i(LOG_TAG, "RSAPublic key has been requested");
+                if(u==null){
+                    Log.v(LOG_TAG,"RSA Public key request user is null");
+                }else{
+                    if(u.getRsaPublic()==null){
+                        Log.v(LOG_TAG,"RSA Public key request key is null");
+                    }
+                }
                 if (u != null&&u.getRsaPublic()!=null) {
                     prepareNewExternalDataResponseNoEncryption(address, requestType, u.getRsaPublic());
                 } else {
@@ -1192,7 +1252,7 @@ public class SPMAService extends IntentService {
         BluetoothConnection connection = bco.getConnection(address);
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-        if (adapter != null) {
+        if (adapter != null&&connection!=null) {
             JSONObject jsoOut = new JSONObject();
             try {
 
@@ -1481,7 +1541,7 @@ public class SPMAService extends IntentService {
         BluetoothListenerMaker.getInstance(getResources());//prepare BluetoothListenerMaker for later use
 
 
-        db = new SPMADatabaseAccessHelper(this); //prepare database for use
+        db = SPMADatabaseAccessHelper.getInstance(this); //prepare database for use
 
         startNotification();
 
@@ -1513,6 +1573,7 @@ public class SPMAService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        SPMADatabaseAccessHelper.getInstance(this).closeConnections(); //close Database connections
         endNotification();
     }
 

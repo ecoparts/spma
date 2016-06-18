@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="app_version">0.13a</string>
-    <string name="db_version">3</string>
+    <string name="app_version">0.15a</string>
+    <string name="db_version">4</string>
     <string name="dbname">spma</string>
     <string-array name="dbcreate">
         <item>
@@ -9,8 +9,8 @@
                 ID integer primary key autoincrement,
                 Name varchar(20) not null,
                 AES varchar(256),
-                RSAPrivate varchar(256),
-                RSAPublic varchar(256)
+                RSAPrivate varchar(512),
+                RSAPublic varchar(512)
             )
         </item>
         <item>
