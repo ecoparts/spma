@@ -274,7 +274,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Remote device address
      */
     private boolean checkDeviceExists(String address) {
-        SQLiteDatabase connection = db.getWritableDatabase();
+        SQLiteDatabase connection = db.getReadableDatabase();
         Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{address});
         int cnt=0;
 
@@ -294,6 +294,24 @@ public class SPMADatabaseAccessHelper {
     @Deprecated
     public void updateDevice(BluetoothDevice device){
         addDeviceIfNotExistsUpdateOtherwise(device);
+    }
+
+    /**
+     * Updates a devices friendly name
+     * @param address
+     * @param friendlyName
+     */
+    public void updateDeviceFriendlyName(String address, String friendlyName) {
+        SQLiteDatabase connection = db.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put("FriendlyName", friendlyName);
+
+
+
+        connection.update("Devices", values, "Address = ?", new String[]{address});
+        Log.i(LOG_TAG, "Device "+address+" updated with name "+friendlyName);
+        connection.close();
     }
     /**
      * Get all devices, that are saved in this database
@@ -372,4 +390,6 @@ public class SPMADatabaseAccessHelper {
         }
 
     }
+
+
 }

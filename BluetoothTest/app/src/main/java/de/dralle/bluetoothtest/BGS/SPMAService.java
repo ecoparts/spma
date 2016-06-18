@@ -694,6 +694,8 @@ public class SPMAService extends IntentService {
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
                 //TODO: decrypt
+                String senderName=jsoIn.getString("Sender");
+                db.updateDeviceFriendlyName(address,senderName);
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
                 String senderAppVersion = jsoIn.getString("SenderVersionApp");
                 if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
