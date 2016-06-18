@@ -87,22 +87,39 @@ public class Encryption {
         return new String(decoded);
     }
 
-    public static SecretKey newAESkey(int bitLength) throws NoSuchAlgorithmException {
+    public static SecretKey newAESkey(int bitLength)  {
         //AES Algorithmus
-        KeyGenerator keygen = KeyGenerator.getInstance("AES");
-        //Länge 256-bit
-        keygen.init(bitLength);
-        //Schlüssel generieren
-        SecretKey aesKey = keygen.generateKey();
+        KeyGenerator keygen = null;
+        try {
+            keygen = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        if(keygen!=null){
+            //Länge 256-bit
+            keygen.init(bitLength);
+            //Schlüssel generieren
+            SecretKey aesKey = keygen.generateKey();
 
-        return aesKey;
+            return aesKey;
+        }
+        return null;
+
     }
 
-    public static KeyPair newRSAkeys(int bitLength) throws NoSuchAlgorithmException {
-        KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
-        keygen.initialize(bitLength);
-        KeyPair keys = keygen.genKeyPair();
-        return keys;
+    public static KeyPair newRSAkeys(int bitLength){
+        KeyPairGenerator keygen = null;
+        try {
+            keygen = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        if(keygen!=null) {
+            keygen.initialize(bitLength);
+            KeyPair keys = keygen.genKeyPair();
+            return keys;
+        }
+        return null;
     }
 
     public void saveAES(Key key, String filename, Context ctx) throws IOException {

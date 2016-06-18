@@ -666,7 +666,31 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
+    /**
+     * Calls the service to add a regenerate encryption keys
+     *
+     * @return true if service is running and message was sent
+     */
 
+    public boolean regenerateKeys(String name) {
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending RegenerateKeys");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "RegenerateKeys");
+                mdvCmd.put("UserID",userId);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
     /**
      * Calls the service to send the user data
      *

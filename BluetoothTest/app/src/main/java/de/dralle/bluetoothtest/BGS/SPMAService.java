@@ -23,9 +23,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import javax.crypto.SecretKey;
 
 import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
@@ -455,6 +458,9 @@ public class SPMAService extends IntentService {
             case "RequestLocalUser":
                 requestLocalUserData(msgData);
                 break;
+            case "RegenerateKeys":
+                generateKeys(msgData);
+                break;
             default:
                 Log.w(LOG_TAG, "Action not recognized: " + action);
                 break;
@@ -522,6 +528,7 @@ public class SPMAService extends IntentService {
             u.setId(id);
             u.setName(newUserName);
             db.createOrUpdateUser(u);
+            generateKeysIfNoneExists(u.getId());
             sendLocalUserSelectedInternalMessage(u);
         } else {
             Log.w(LOG_TAG, "No id given");
@@ -539,6 +546,55 @@ public class SPMAService extends IntentService {
         }
         Log.i(LOG_TAG, "Now trying to add new user with name " + newUserName);
         db.addUser(newUserName);
+
+    }
+
+    /**
+     * Generate (new) crypto keys
+     *
+     * @param msgData May contain additional data
+     */
+    public void generateKeys(JSONObject msgData) {
+        int userId = -1;
+        try {
+            userId = msgData.getInt("UserID");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.i(LOG_TAG, "Now trying to generate new crypto keys for user " + userId);
+        User u = db.getUser(userId);
+        if (u != null) {
+            SecretKey aes = Encryption.newAESkey(256);
+            KeyPair rsa = Encryption.newRSAkeys(256);
+            u.setId(userId);
+            u.setAes(aes.toString());
+            u.setRsaPrivate(rsa.getPrivate().toString());
+            u.setRsaPublic(rsa.getPublic().toString());
+            db.createOrUpdateUser(u);
+            Log.i(LOG_TAG,"New crypto keys generated");
+        }
+
+    }
+
+    /**
+     * Generate (new) crypto keys
+     */
+    public void generateKeysIfNoneExists(int userId) {
+        Log.i(LOG_TAG, "Now trying to generate new crypto keys for user " + userId);
+        User u = db.getUser(userId);
+        if (u != null) {
+            if (u.getAes() == null || u.getRsaPublic() == null || u.getRsaPrivate() == null) {
+                SecretKey aes = Encryption.newAESkey(256);
+                KeyPair rsa = Encryption.newRSAkeys(256);
+                u.setId(userId);
+                u.setAes(aes.toString());
+                u.setRsaPrivate(rsa.getPrivate().toString());
+                u.setRsaPublic(rsa.getPublic().toString());
+                db.createOrUpdateUser(u);
+                Log.i(LOG_TAG,"New crypto keys generated");
+            }
+        }
+
 
     }
 
@@ -681,7 +737,7 @@ public class SPMAService extends IntentService {
      * @return
      */
     private void handleNewExternalMessage(JSONObject msgData) {
-        Log.i(LOG_TAG,"New external message thing");
+        Log.i(LOG_TAG, "New external message thing");
         String address = null;
         String msg = "";
         try {
@@ -716,18 +772,18 @@ public class SPMAService extends IntentService {
                 if (confirmSender(senderAddress, address, senderAPIVersion)) {
                     if (confirmReceiver(receiverAddress)) {
                         if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
-                            Log.i(LOG_TAG,"New text");
+                            Log.i(LOG_TAG, "New text");
                             msg = jsoIn.getString("Message");
                             sendNewMessageInternalMessage(msg, address);
                             db.addReceivedMessage(address, msg, userId);
                         }
-                        if(content.equals("DataRequest")){
-                            Log.i(LOG_TAG,"New dataRequest");
-                            parseDataRequest(address,jsoIn);
+                        if (content.equals("DataRequest")) {
+                            Log.i(LOG_TAG, "New dataRequest");
+                            parseDataRequest(address, jsoIn);
                         }
-                        if(content.equals("DataResponse")){
-                            Log.i(LOG_TAG,"New dataResponce");
-                            parseDataResponse(address,jsoIn);
+                        if (content.equals("DataResponse")) {
+                            Log.i(LOG_TAG, "New dataResponce");
+                            parseDataResponse(address, jsoIn);
                         }
                     }
                 }
@@ -740,7 +796,6 @@ public class SPMAService extends IntentService {
 
 
     }
-
 
 
     /**
@@ -962,43 +1017,46 @@ public class SPMAService extends IntentService {
     private void sendExternalDatRequestForName(String address) {
         prepareNewExternalDataRequest(address, "Name");
     }
+
     private void parseDataRequest(String address, JSONObject msgData) {
-        String requestType=null;
+        String requestType = null;
         try {
-            requestType=msgData.getString("RequestType");
+            requestType = msgData.getString("RequestType");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        switch (requestType){
+        switch (requestType) {
             case "Name":
-                Log.i(LOG_TAG,"Name has been requested");
-                User u=db.getUser(userId);
-                if(u!=null){
-                    prepareNewExternalDataResponse(address,requestType,u.getName());
-                }else{
-                    Log.w(LOG_TAG,"Answer for request "+requestType+" couldnt be send");
+                Log.i(LOG_TAG, "Name has been requested");
+                User u = db.getUser(userId);
+                if (u != null) {
+                    prepareNewExternalDataResponse(address, requestType, u.getName());
+                } else {
+                    Log.w(LOG_TAG, "Answer for request " + requestType + " couldnt be send");
                 }
             default:
                 break;
         }
     }
+
     private void parseDataResponse(String address, JSONObject msgData) {
-        String requestType=null;
-        String data=null;
+        String requestType = null;
+        String data = null;
         try {
-            requestType=msgData.getString("RequestType");
-            data=msgData.getString("Data");
+            requestType = msgData.getString("RequestType");
+            data = msgData.getString("Data");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        switch (requestType){
+        switch (requestType) {
             case "Name":
-                Log.i(LOG_TAG,"Name has been reported by "+address);
-                db.updateDeviceFriendlyName(address,data);
+                Log.i(LOG_TAG, "Name has been reported by " + address);
+                db.updateDeviceFriendlyName(address, data);
             default:
                 break;
         }
     }
+
     /**
      * Prepare a new external data request and wrap it into a JSON string
      *
@@ -1012,7 +1070,7 @@ public class SPMAService extends IntentService {
 
         User sender = db.getUser(senderID);
 
-        Log.i(LOG_TAG, "Sending new " + requestType + " data response to " + address +" with data "+data);
+        Log.i(LOG_TAG, "Sending new " + requestType + " data response to " + address + " with data " + data);
 
         BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
         BluetoothConnection connection = bco.getConnection(address);
@@ -1042,7 +1100,7 @@ public class SPMAService extends IntentService {
 
                 jsoOut.put("Secure", connection.isSecureConnection());
                 jsoOut.put("RequestType", requestType);
-                jsoOut.put("Data",data);
+                jsoOut.put("Data", data);
 
 
             } catch (JSONException e) {
@@ -1050,7 +1108,7 @@ public class SPMAService extends IntentService {
             }
             if (connection != null) {
                 connection.sendExternalMessage(jsoOut.toString());
-                Log.i(LOG_TAG,"External data request send");
+                Log.i(LOG_TAG, "External data request send");
             } else {
                 Log.i(LOG_TAG, "No suitable connection found");
 
