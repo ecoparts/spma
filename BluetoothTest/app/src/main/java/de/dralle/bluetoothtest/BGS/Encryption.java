@@ -32,6 +32,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by Niklas on 21.05.16.
+ * Modified by Nils on 19.06.16
  */
 public class Encryption {
     private Key key = null;
@@ -60,6 +61,101 @@ public class Encryption {
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = algorithm;
+    }
+
+    public static String decryptWithRSA(String text, String rsaPrivateKey){
+        // BASE64 String zu Byte-Array
+        byte[] crypted = Base64.decode(text, Base64.DEFAULT);
+
+        byte[] keyBytes = Base64.decode(rsaPrivateKey.getBytes(),Base64.DEFAULT);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory fact = null;
+        try {
+            fact = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        PrivateKey priv = null;
+        try {
+            priv = fact.generatePrivate(keySpec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        // entschluesseln
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, priv);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+
+        byte[] decoded = new byte[0];
+        try {
+            decoded = cipher.doFinal(crypted);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return new String(decoded);
+    }
+
+    public static String encryptWithRSA(String text, String rsaPublicKey){
+        //Cipher erstellen und verschluesseln
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        byte[] keyBytes = Base64.decode(rsaPublicKey.getBytes(),Base64.DEFAULT);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        PublicKey key = null;
+        try {
+            key = keyFactory.generatePublic(spec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        byte[] encrypted = new byte[0];
+        try {
+            encrypted = cipher.doFinal(text.getBytes());
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        //byte array zu Base64 konvertieren
+        String encoded = Base64.encodeToString(encrypted, Base64.DEFAULT);
+
+        return encoded;
     }
 
     public String encrypt(String text) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {

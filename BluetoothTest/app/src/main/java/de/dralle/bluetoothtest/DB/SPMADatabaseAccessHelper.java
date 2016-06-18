@@ -415,4 +415,70 @@ public class SPMADatabaseAccessHelper {
     }
 
 
+    public void insertDeviceRSAPublicKey(String address, String data) {
+        Log.i(LOG_TAG, "Writing RSA Public key from "+address);
+        int deviceId = getDeviceID(address);
+        if (deviceId > -1) {
+            SQLiteDatabase connection = db.getWritableDatabase();
+
+            connection.delete("RSA","DeviceID = ?",new String[]{deviceId+""});
+            ContentValues cv = new ContentValues();
+            cv.put("DeviceID", deviceId);
+            cv.put("Key",data);
+            connection.insert("RSA",null,cv);
+            connection.close();
+            Log.i(LOG_TAG,"New RSA Public key for device "+address);
+        }
+    }
+    public String getDeviceRSAPublicKey(String address) {
+        Log.i(LOG_TAG, "Reading RSA Public key from "+address+" from db");
+        int deviceId = getDeviceID(address);
+        if (deviceId > -1) {
+            SQLiteDatabase connection = db.getWritableDatabase();
+
+            Cursor c=connection.rawQuery("select Key from RSA where DeviceID = ?",new String[]{deviceId+""});
+            String key=null;
+           if(c.moveToNext()){
+               key=c.getString(0);
+           }
+            c.close();
+            connection.close();
+            Log.i(LOG_TAG,"RSA Public key read "+key);
+            return key;
+        }
+        return null;
+    }
+    public void insertDeviceAESKey(String address, String data) {
+        Log.i(LOG_TAG, "Writing AES Public key from "+address);
+        int deviceId = getDeviceID(address);
+        if (deviceId > -1) {
+            SQLiteDatabase connection = db.getWritableDatabase();
+
+            connection.delete("AES","DeviceID = ?",new String[]{deviceId+""});
+            ContentValues cv = new ContentValues();
+            cv.put("DeviceID", deviceId);
+            cv.put("Key",data);
+            connection.insert("AES",null,cv);
+            connection.close();
+            Log.i(LOG_TAG,"New AES key for device "+address);
+        }
+    }
+    public String getDeviceAESKey(String address) {
+        Log.i(LOG_TAG, "Reading AES Public key from "+address+" from db");
+        int deviceId = getDeviceID(address);
+        if (deviceId > -1) {
+            SQLiteDatabase connection = db.getWritableDatabase();
+
+            Cursor c=connection.rawQuery("select Key from AES where DeviceID = ?",new String[]{deviceId+""});
+            String key=null;
+            if(c.moveToNext()){
+                key=c.getString(0);
+            }
+            c.close();
+            connection.close();
+            Log.i(LOG_TAG,"AES key read "+key);
+            return key;
+        }
+        return null;
+    }
 }

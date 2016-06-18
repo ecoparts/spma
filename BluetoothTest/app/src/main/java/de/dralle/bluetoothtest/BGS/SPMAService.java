@@ -13,10 +13,9 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
-import android.os.SystemClock;
-import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.app.NotificationCompat;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -33,7 +32,6 @@ import javax.crypto.SecretKey;
 import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
 import de.dralle.bluetoothtest.DB.User;
-import de.dralle.bluetoothtest.GUI.ChatActivity;
 import de.dralle.bluetoothtest.GUI.MainActivity;
 import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 import de.dralle.bluetoothtest.R;
@@ -567,9 +565,9 @@ public class SPMAService extends IntentService {
             SecretKey aes = Encryption.newAESkey(256);
             KeyPair rsa = Encryption.newRSAkeys(256);
             u.setId(userId);
-            u.setAes(aes.toString());
-            u.setRsaPrivate(rsa.getPrivate().toString());
-            u.setRsaPublic(rsa.getPublic().toString());
+            u.setAes(Base64.encodeToString(aes.getEncoded(),Base64.DEFAULT));
+            u.setRsaPrivate(Base64.encodeToString(rsa.getPrivate().getEncoded(),Base64.DEFAULT));
+            u.setRsaPublic(Base64.encodeToString(rsa.getPublic().getEncoded(),Base64.DEFAULT));
             db.createOrUpdateUser(u);
             Log.i(LOG_TAG,"New crypto keys generated");
         }
@@ -753,6 +751,7 @@ public class SPMAService extends IntentService {
             Log.i(LOG_TAG, "Transmitted: " + jsoIn.toString());
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
+                int level=jsoIn.getInt("Level");
                 //TODO: decrypt
                 String senderName = jsoIn.getString("Sender");
                 db.updateDeviceFriendlyName(address, senderName);
@@ -1011,12 +1010,11 @@ public class SPMAService extends IntentService {
     }
 
     private void sendExternalDataRequest(String address) {
-        sendExternalDatRequestForName(address);
+       prepareNewExternalDataRequest(address,"Name");
+        prepareNewExternalDataRequest(address,"RSAPublic");
     }
 
-    private void sendExternalDatRequestForName(String address) {
-        prepareNewExternalDataRequest(address, "Name");
-    }
+
 
     private void parseDataRequest(String address, JSONObject msgData) {
         String requestType = null;
@@ -1025,12 +1023,31 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        User u = db.getUser(userId);
         switch (requestType) {
             case "Name":
                 Log.i(LOG_TAG, "Name has been requested");
-                User u = db.getUser(userId);
                 if (u != null) {
-                    prepareNewExternalDataResponse(address, requestType, u.getName());
+                    prepareNewExternalDataResponseNoEncryption(address, requestType, u.getName());
+                } else {
+                    Log.w(LOG_TAG, "Answer for request " + requestType + " couldnt be send");
+                }
+                break;
+            case "RSAPublic":
+                Log.i(LOG_TAG, "RSAPublic key has been requested");
+                if (u != null&&u.getRsaPublic()!=null) {
+                    prepareNewExternalDataResponseNoEncryption(address, requestType, u.getRsaPublic());
+                } else {
+                    Log.w(LOG_TAG, "Answer for request " + requestType + " couldnt be send");
+                }
+                break;
+            case "AESEncrypted":
+                Log.i(LOG_TAG, "AES key has been requested");
+                String remoteDeviceRSAPublicKey=db.getDeviceRSAPublicKey(address);
+                if (u != null&&u.getAes()!=null) {
+                   String myAESKey=u.getAes();
+                    String aesEncrypted=Encryption.encryptWithRSA(myAESKey,remoteDeviceRSAPublicKey);
+                    prepareNewExternalDataResponse(address,requestType,aesEncrypted,2); //RSA encrypted
                 } else {
                     Log.w(LOG_TAG, "Answer for request " + requestType + " couldnt be send");
                 }
@@ -1052,18 +1069,54 @@ public class SPMAService extends IntentService {
             case "Name":
                 Log.i(LOG_TAG, "Name has been reported by " + address);
                 db.updateDeviceFriendlyName(address, data);
+                break;
+            case "RSAPublic":
+                Log.i(LOG_TAG, "RSAPublic has been reported by " + address);
+                db.insertDeviceRSAPublicKey(address,data);
+                prepareNewExternalDataRequest(address,"AESEncrypted");
+                break;
+            case "AESEncrypted":
+                Log.i(LOG_TAG, "AES key has been reported by " + address);
+                int encryptionLevel= 0;
+                try {
+                    encryptionLevel = msgData.getInt("Level");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(encryptionLevel==2) { //aes key rsa encrypted for transport
+                    User u=db.getUser(userId);
+                    if(u!=null){
+                        String rsaPrivate=u.getRsaPrivate();
+                        if(rsaPrivate!=null){
+                            String remoteDeviceAesKey=Encryption.decryptWithRSA(data,rsaPrivate);
+                            Log.i(LOG_TAG,"AES key received");
+                            db.insertDeviceAESKey(address,remoteDeviceAesKey);
+                            Log.i(LOG_TAG,"Key exchange finished");
+                        }
+                    }
+                }
+
+                break;
             default:
                 break;
         }
     }
-
     /**
-     * Prepare a new external data request and wrap it into a JSON string
+     * Prepare a new external data response and wrap it into a JSON string
      *
      * @param
      * @return
      */
-    private void prepareNewExternalDataResponse(String address, String requestType, String data) {
+    private void prepareNewExternalDataResponseNoEncryption(String address, String requestType, String data) {
+        prepareNewExternalDataResponse(address,requestType,data,0);
+    }
+    /**
+     * Prepare a new external data response and wrap it into a JSON string
+     *
+     * @param
+     * @return
+     */
+    private void prepareNewExternalDataResponse(String address, String requestType, String data,int encryptionLevel) {
 
 
         int senderID = userId;
@@ -1081,7 +1134,7 @@ public class SPMAService extends IntentService {
             try {
 
                 jsoOut.put("Extern", true);
-                jsoOut.put("Level", 0);
+                jsoOut.put("Level", encryptionLevel);
                 jsoOut.put("Content", "DataResponse");
                 jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
                 if (sender != null) {
