@@ -95,7 +95,6 @@ public class SPMAService extends IntentService {
                 addNewDevice(device);
 
 
-
             }
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 Log.i(LOG_TAG, "Discovery started");
@@ -321,6 +320,7 @@ public class SPMAService extends IntentService {
 
 
     }
+
     /**
      * Send a message that a new device was recovered from cache
      *
@@ -420,10 +420,10 @@ public class SPMAService extends IntentService {
             case "ResendCachedDevices":
                 sendClearDevicesInternalMessage();
                 List<DeviceDBData> devicesData = db.getAllDevices();
-                for(DeviceDBData dd:devicesData){
+                for (DeviceDBData dd : devicesData) {
                     sendCachedDeviceInternalMessage(dd);
                 }
-                
+
                 break;
             case "StartListeners":
                 startListeners(msgData);
@@ -462,84 +462,86 @@ public class SPMAService extends IntentService {
     }
 
     private void requestLocalUserData(JSONObject msgData) {
-        int id=-1;
+        int id = -1;
         try {
-            id=msgData.getInt("ID");
+            id = msgData.getInt("ID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i(LOG_TAG,"Now trying to get the data of user "+id);
-        if(id>-1){
-           User u=null;
-            u=db.getUser(id);
-            if(u==null){
-                Log.i(LOG_TAG,"No user found. Adding new.");
-                u=new User();
+        Log.i(LOG_TAG, "Now trying to get the data of user " + id);
+        if (id > -1) {
+            User u = null;
+            u = db.getUser(id);
+            if (u == null) {
+                Log.i(LOG_TAG, "No user found. Adding new.");
+                u = new User();
                 u.setId(id);
-                String name=getLocalDeviceName();
-                if(name!=null){
+                String name = getLocalDeviceName();
+                if (name != null) {
                     u.setName(name);
                     db.createOrUpdateUser(u);
-                }else{
-                    Log.w(LOG_TAG,"Looks like BT is not available...");
+                } else {
+                    Log.w(LOG_TAG, "Looks like BT is not available...");
                 }
 
 
             }
             sendLocalUserSelectedInternalMessage(u);
-        }else{
-            Log.w(LOG_TAG,"Local user selection failed");
+        } else {
+            Log.w(LOG_TAG, "Local user selection failed");
         }
 
     }
 
     /**
-     *
      * @return The local bluetooth device name
      */
     private String getLocalDeviceName() {
-        BluetoothAdapter adapter=BluetoothAdapter.getDefaultAdapter();
-        if(adapter!=null){
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
             return adapter.getName();
         }
         return null;
     }
-    public void changeLocalUserName(JSONObject msgData){
-        String newUserName= null;
-        int id=-1;
+
+    public void changeLocalUserName(JSONObject msgData) {
+        String newUserName = null;
+        int id = -1;
         try {
-            id=msgData.getInt("ID");
+            id = msgData.getInt("ID");
             newUserName = msgData.getString("Name");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if(id>-1){
-            Log.i(LOG_TAG,"Now trying to add new user with name "+newUserName);
-            User u=db.getUser(id);
-            if(u==null){
-                u=new User();
+        if (id > -1) {
+            Log.i(LOG_TAG, "Now trying to add new user with name " + newUserName);
+            User u = db.getUser(id);
+            if (u == null) {
+                u = new User();
             }
             u.setId(id);
             u.setName(newUserName);
             db.createOrUpdateUser(u);
             sendLocalUserSelectedInternalMessage(u);
-        }else{
-            Log.w(LOG_TAG,"No id given");
+        } else {
+            Log.w(LOG_TAG, "No id given");
         }
 
 
     }
-    public void addNewLocalUser(JSONObject msgData){
-        String newUserName= null;
+
+    public void addNewLocalUser(JSONObject msgData) {
+        String newUserName = null;
         try {
             newUserName = msgData.getString("Name");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i(LOG_TAG,"Now trying to add new user with name "+newUserName);
+        Log.i(LOG_TAG, "Now trying to add new user with name " + newUserName);
         db.addUser(newUserName);
 
     }
+
     /**
      * Checks the message action attribute and executes the appropriate action
      *
@@ -607,16 +609,16 @@ public class SPMAService extends IntentService {
     private void prepareNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
-        int senderID=-1;
+        int senderID = -1;
         try {
             address = msgData.getString("Address");
             msg = msgData.getString("Message");
-            senderID=msgData.getInt("SenderID");
+            senderID = msgData.getInt("SenderID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        User sender=db.getUser(senderID);
+        User sender = db.getUser(senderID);
         if (address != null) {
             //TODO: verschlüsselun!!!!
             Log.i(LOG_TAG, "Sending new message to " + address);
@@ -633,9 +635,9 @@ public class SPMAService extends IntentService {
                     jsoOut.put("Level", 0);
                     jsoOut.put("Content", "Text");
                     jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
-                    if(sender!=null){
+                    if (sender != null) {
                         jsoOut.put("Sender", sender.getName());//TODO: investigate
-                    }else{
+                    } else {
                         jsoOut.put("Sender", adapter.getName());
                     }
                     jsoOut.put("ReceiverAddress", address);
@@ -656,7 +658,7 @@ public class SPMAService extends IntentService {
                 }
                 if (connection != null) {
                     connection.sendExternalMessage(jsoOut.toString());
-                    db.addSendMessage(address,msg,senderID);
+                    db.addSendMessage(address, msg, senderID);
                 } else {
                     Log.i(LOG_TAG, "No suitable connection found");
 
@@ -670,6 +672,7 @@ public class SPMAService extends IntentService {
 
 
     }
+
 
     /**
      * Handle received new external message. Free it from its JSON container string and check some of the additional message attributes.
@@ -694,8 +697,8 @@ public class SPMAService extends IntentService {
             if (jsoIn.getBoolean("Extern")) { //is this an external message?
                 String content = jsoIn.getString("Content");
                 //TODO: decrypt
-                String senderName=jsoIn.getString("Sender");
-                db.updateDeviceFriendlyName(address,senderName);
+                String senderName = jsoIn.getString("Sender");
+                db.updateDeviceFriendlyName(address, senderName);
                 int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
                 String senderAppVersion = jsoIn.getString("SenderVersionApp");
                 if (!getResources().getString(R.string.app_version).equals(senderAppVersion)) {
@@ -708,13 +711,19 @@ public class SPMAService extends IntentService {
                 String receiverAddress = jsoIn.getString("ReceiverAddress");
                 msg = jsoIn.getString("Message");
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-                if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
-                    Log.i(LOG_TAG, "Content is text");
-                    if (confirmSender(senderAddress, address, senderAPIVersion)) {
-                        if (confirmReceiver(receiverAddress)) {
 
+                Log.i(LOG_TAG, "Content is text");
+                if (confirmSender(senderAddress, address, senderAPIVersion)) {
+                    if (confirmReceiver(receiverAddress)) {
+                        if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
                             sendNewMessageInternalMessage(msg, address);
-                            db.addReceivedMessage(address,msg,userId);
+                            db.addReceivedMessage(address, msg, userId);
+                        }
+                        if(content.equals("DataRequest")){
+                            parseDataRequest(address,jsoIn);
+                        }
+                        if(content.equals("DataResponse")){
+                            parseDataResponse(address,jsoIn);
                         }
                     }
                 }
@@ -727,6 +736,8 @@ public class SPMAService extends IntentService {
 
 
     }
+
+
 
     /**
      * Confirm the receiver of the message. Since Android 6 it isnt possible anymore to get the own device address. In that case the test is skipped.
@@ -791,6 +802,7 @@ public class SPMAService extends IntentService {
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
     }
+
     /**
      * Send a message that a local user has been selected, directed at the GUI
      */
@@ -807,7 +819,7 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        userId=u.getId();
+        userId = u.getId();
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
     }
@@ -935,6 +947,174 @@ public class SPMAService extends IntentService {
             e.printStackTrace();
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+        sendExternalDataRequest(address);
+
+    }
+
+    private void sendExternalDataRequest(String address) {
+        sendExternalDatRequestForName(address);
+    }
+
+    private void sendExternalDatRequestForName(String address) {
+        prepareNewExternalDataRequest(address, "Name");
+    }
+    private void parseDataRequest(String address, JSONObject msgData) {
+        String requestType=null;
+        try {
+            requestType=msgData.getString("RequestType");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        switch (requestType){
+            case "Name":
+                Log.i(LOG_TAG,"Name has been requested");
+                User u=db.getUser(userId);
+                if(u!=null){
+                    prepareNewExternalDataResponse(address,requestType,u.getName());
+                }else{
+                    Log.w(LOG_TAG,"Answer for request "+requestType+" couldnt be send");
+                }
+            default:
+                break;
+        }
+    }
+    private void parseDataResponse(String address, JSONObject msgData) {
+        String requestType=null;
+        String data=null;
+        try {
+            requestType=msgData.getString("RequestType");
+            data=msgData.getString("Data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        switch (requestType){
+            case "Name":
+                Log.i(LOG_TAG,"Name has been reported by "+address);
+                db.updateDeviceFriendlyName(address,data);
+            default:
+                break;
+        }
+    }
+    /**
+     * Prepare a new external data request and wrap it into a JSON string
+     *
+     * @param
+     * @return
+     */
+    private void prepareNewExternalDataResponse(String address, String requestType, String data) {
+
+
+        int senderID = userId;
+
+        User sender = db.getUser(senderID);
+
+        Log.i(LOG_TAG, "Sending new " + requestType + " data response to " + address +" with data "+data);
+
+        BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
+        BluetoothConnection connection = bco.getConnection(address);
+
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            JSONObject jsoOut = new JSONObject();
+            try {
+
+                jsoOut.put("Extern", true);
+                jsoOut.put("Level", 0);
+                jsoOut.put("Content", "DataResponse");
+                jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
+                if (sender != null) {
+                    jsoOut.put("Sender", sender.getName());//TODO: investigate
+                } else {
+                    jsoOut.put("Sender", adapter.getName());
+                }
+                jsoOut.put("ReceiverAddress", address);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    jsoOut.put("SenderAddress", adapter.getAddress());
+                }
+
+                jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
+                jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
+                jsoOut.put("Timestamp", System.currentTimeMillis() / 1000);
+
+                jsoOut.put("Secure", connection.isSecureConnection());
+                jsoOut.put("RequestType", requestType);
+                jsoOut.put("Data",data);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (connection != null) {
+                connection.sendExternalMessage(jsoOut.toString());
+            } else {
+                Log.i(LOG_TAG, "No suitable connection found");
+
+            }
+        } else {
+            Log.w(LOG_TAG, "No bluetooth. Cant send.");
+        }
+
+
+    }
+
+    /**
+     * Prepare a new external data request and wrap it into a JSON string
+     *
+     * @param
+     * @return
+     */
+    private void prepareNewExternalDataRequest(String address, String requestType) {
+
+
+        int senderID = userId;
+
+        User sender = db.getUser(senderID);
+
+        Log.i(LOG_TAG, "Sending new " + requestType + " data request to " + address);
+
+        BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
+        BluetoothConnection connection = bco.getConnection(address);
+
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            JSONObject jsoOut = new JSONObject();
+            try {
+
+                jsoOut.put("Extern", true);
+                jsoOut.put("Level", 0);
+                jsoOut.put("Content", "DataRequest");
+                jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
+                if (sender != null) {
+                    jsoOut.put("Sender", sender.getName());//TODO: investigate
+                } else {
+                    jsoOut.put("Sender", adapter.getName());
+                }
+                jsoOut.put("ReceiverAddress", address);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    jsoOut.put("SenderAddress", adapter.getAddress());
+                }
+
+                jsoOut.put("SenderVersionAPI", Build.VERSION.SDK_INT);
+                jsoOut.put("SenderVersionApp", getResources().getString(R.string.app_version));
+                jsoOut.put("Timestamp", System.currentTimeMillis() / 1000);
+
+                jsoOut.put("Secure", connection.isSecureConnection());
+                jsoOut.put("RequestType", requestType);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (connection != null) {
+                connection.sendExternalMessage(jsoOut.toString());
+            } else {
+                Log.i(LOG_TAG, "No suitable connection found");
+
+            }
+        } else {
+            Log.w(LOG_TAG, "No bluetooth. Cant send.");
+        }
+
 
     }
 
@@ -1077,7 +1257,6 @@ public class SPMAService extends IntentService {
     }
 
 
-
     /**
      * Checks if bluetooth is on, and if no requests permission to turn it on
      */
@@ -1186,7 +1365,7 @@ public class SPMAService extends IntentService {
         BluetoothListenerMaker.getInstance(getResources());//prepare BluetoothListenerMaker for later use
 
 
-        db=new SPMADatabaseAccessHelper(this); //prepare database for use
+        db = new SPMADatabaseAccessHelper(this); //prepare database for use
 
         startNotification();
 
