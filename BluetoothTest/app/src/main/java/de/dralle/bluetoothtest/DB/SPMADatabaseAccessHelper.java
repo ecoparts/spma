@@ -29,6 +29,7 @@ public class SPMADatabaseAccessHelper {
         this.context = context;
         db = new SPMADatabaseHelper(context);
     }
+
     @Deprecated
     public User addUser(String name) {
         SQLiteDatabase connection = db.getWritableDatabase();
@@ -51,6 +52,7 @@ public class SPMADatabaseAccessHelper {
 
     /**
      * Updates a database User
+     *
      * @param u Userdata to be updated
      * @return User given
      */
@@ -64,23 +66,23 @@ public class SPMADatabaseAccessHelper {
         cv.put("RSAPublic", u.getRsaPublic());
 
         //Check if user is already there
-        Cursor c=connection.rawQuery("select count(*) from User where ID = ?",new String[]{u.getId()+""});
-        if(c.moveToNext()){
-            int cnt=c.getInt(0);
-            if(cnt==0){
+        Cursor c = connection.rawQuery("select count(*) from User where ID = ?", new String[]{u.getId() + ""});
+        if (c.moveToNext()) {
+            int cnt = c.getInt(0);
+            if (cnt == 0) {
                 //Insert
                 cv.put("ID", u.getId());
-                connection.insert("User",null, cv);
+                connection.insert("User", null, cv);
                 Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
-            }else{
+            } else {
                 //Update. No need to check for count, because primary key
-                connection.update("User", cv,"ID = ?",new String[]{u.getId()+""});
+                connection.update("User", cv, "ID = ?", new String[]{u.getId() + ""});
                 Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
             }
         }
 
 
-
+        c.close();
         connection.close();
 
 
@@ -90,24 +92,28 @@ public class SPMADatabaseAccessHelper {
     public User getUser(int id) {
         SQLiteDatabase connection = db.getReadableDatabase();
         Cursor c = connection.rawQuery("select * from User where User.ID=?", new String[]{id + ""});
-        if (c.moveToNext()) {
-            User u = new User();
-            u.setId(id);
-            u.setName(c.getString(1));
-            u.setAes(c.getString(2));
-            u.setRsaPrivate(c.getString(3));
-            u.setRsaPublic(c.getString(4));
+        User u = null;
+        try {
 
 
+            if (c.moveToNext()) {
+                u = new User();
+                u.setId(id);
+                u.setName(c.getString(1));
+                u.setAes(c.getString(2));
+                u.setRsaPrivate(c.getString(3));
+                u.setRsaPublic(c.getString(4));
+
+
+            }
             c.close();
             connection.close();
+        } catch (Exception e) {
 
-            return u;
-        } else {
-            c.close();
-            connection.close();
-            return null;
         }
+
+        return u;
+
     }
 
     /**
@@ -117,21 +123,29 @@ public class SPMADatabaseAccessHelper {
      * @return Remote device friendly name/remote device user name. returns address when no name was found.
      */
     public String getDeviceFriendlyName(String address) {
-        SQLiteDatabase connection = db.getReadableDatabase();
-        Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{address});
+        try {
+            SQLiteDatabase connection = db.getReadableDatabase();
+            Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{address});
 
-        if (c.moveToNext()) {
-            String name = c.getString(0);
-            c.close();
-            connection.close();
-            return name;
-        } else {
-            c.close();
-            connection.close();
-            return address;
+            if (c.moveToNext()) {
+                String name = c.getString(0);
+                c.close();
+                connection.close();
+                return name;
+            } else {
+                c.close();
+                connection.close();
+                return address;
+            }
         }
+        catch(Exception e){
+            e.printStackTrace();
+            Log.i(LOG_TAG,"Opening DB for requesting device friendly name failed");
+        }
+        return address;
 
     }
+
     /**
      * Looks for a device´s id from an address
      *
@@ -143,14 +157,14 @@ public class SPMADatabaseAccessHelper {
         Cursor c = connection.rawQuery("select ID from Devices where Address = ?", new String[]{address});
 
         if (c.moveToNext()) {
-            int id=c.getInt(0);
+            int id = c.getInt(0);
             c.close();
             connection.close();
             return id;
         } else {
             c.close();
             connection.close();
-            Log.w(LOG_TAG,"No device with address "+address);
+            Log.w(LOG_TAG, "No device with address " + address);
             return -1;
         }
 
@@ -191,7 +205,7 @@ public class SPMADatabaseAccessHelper {
                 Log.w(LOG_TAG, "Insert or update of device failed. Seriously, something failed in a very bad way");
                 Log.v(LOG_TAG, "Panic mode");
                 //"self healing": check
-                connection.delete("Devices","Address = ?",new String[]{device.getAddress()});
+                connection.delete("Devices", "Address = ?", new String[]{device.getAddress()});
             }
         } else {
             Log.w(LOG_TAG, "Insert or update of device failed");
@@ -199,6 +213,7 @@ public class SPMADatabaseAccessHelper {
         c.close();
         connection.close();
     }
+
     /**
      * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LatSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
      *
@@ -234,7 +249,7 @@ public class SPMADatabaseAccessHelper {
                 Log.w(LOG_TAG, "Insert or update of device failed. Seriously, something failed in a very bad way");
                 Log.v(LOG_TAG, "Panic mode");
                 //"self healing": check
-                connection.delete("Devices","Address = ?",new String[]{device.getAddress()});
+                connection.delete("Devices", "Address = ?", new String[]{device.getAddress()});
             }
         } else {
             Log.w(LOG_TAG, "Insert or update of device failed");
@@ -245,10 +260,11 @@ public class SPMADatabaseAccessHelper {
 
     /**
      * Updates the last seen property of a given device
+     *
      * @param address Address of the remote device
      */
-    public void updateDeviceLastSeen(String address){
-        if(!checkDeviceExists(address)){
+    public void updateDeviceLastSeen(String address) {
+        if (!checkDeviceExists(address)) {
             insertNewDevice(address);
         }
         SQLiteDatabase connection = db.getWritableDatabase();
@@ -257,26 +273,29 @@ public class SPMADatabaseAccessHelper {
 
         values.put("LastSeen", System.currentTimeMillis() / 1000);
         connection.update("Devices", values, "Address = ?", new String[]{address});
-        Log.i(LOG_TAG,address + " updated lastSeen");
+        Log.i(LOG_TAG, address + " updated lastSeen");
         connection.close();
-        
+
     }
+
     /**
      * Adds a new device based on its address
+     *
      * @param address Remote device address
      */
     private void insertNewDevice(String address) {
-        addDeviceIfNotExistsUpdateOtherwise(new DeviceDBData(address,address,address,0,0,false));
+        addDeviceIfNotExistsUpdateOtherwise(new DeviceDBData(address, address, address, 0, 0, false));
     }
 
     /**
      * Checks if a certain device exists in the DB
+     *
      * @param address Remote device address
      */
     private boolean checkDeviceExists(String address) {
         SQLiteDatabase connection = db.getReadableDatabase();
         Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{address});
-        int cnt=0;
+        int cnt = 0;
 
         if (c.moveToNext()) {
             cnt = c.getInt(0);
@@ -284,20 +303,22 @@ public class SPMADatabaseAccessHelper {
         }
         c.close();
         connection.close();
-        return cnt>0;
+        return cnt > 0;
     }
 
     /**
      * Updates various properties of a given device
+     *
      * @param device Remote device
      */
     @Deprecated
-    public void updateDevice(BluetoothDevice device){
+    public void updateDevice(BluetoothDevice device) {
         addDeviceIfNotExistsUpdateOtherwise(device);
     }
 
     /**
      * Updates a devices friendly name
+     *
      * @param address
      * @param friendlyName
      */
@@ -308,11 +329,11 @@ public class SPMADatabaseAccessHelper {
         values.put("FriendlyName", friendlyName);
 
 
-
         connection.update("Devices", values, "Address = ?", new String[]{address});
-        Log.i(LOG_TAG, "Device "+address+" updated with name "+friendlyName);
+        Log.i(LOG_TAG, "Device " + address + " updated with name " + friendlyName);
         connection.close();
     }
+
     /**
      * Get all devices, that are saved in this database
      */
@@ -337,14 +358,15 @@ public class SPMADatabaseAccessHelper {
 
 
     }
+
     /**
      * Get all devices, that are saved in this database, and sort them based on their age
      */
     public List<DeviceDBData> getMostRecentDevices(int maxage) {
         List<DeviceDBData> devices = getAllDevices();
-        List<DeviceDBData> filteredDevices=new ArrayList<>();
-        for(DeviceDBData dd:devices){
-            if(maxage>=System.currentTimeMillis()/1000-dd.getLastSeen()){
+        List<DeviceDBData> filteredDevices = new ArrayList<>();
+        for (DeviceDBData dd : devices) {
+            if (maxage >= System.currentTimeMillis() / 1000 - dd.getLastSeen()) {
                 filteredDevices.add(dd);
             }
         }
@@ -353,40 +375,41 @@ public class SPMADatabaseAccessHelper {
     }
 
     public void addReceivedMessage(String senderAddress, String message, int userId) {
-        Log.i(LOG_TAG,"Logging message "+message+" from "+senderAddress+" for "+userId);
+        Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId);
 
-        int deviceId=getDeviceID(senderAddress);
-        if(deviceId>-1){
+        int deviceId = getDeviceID(senderAddress);
+        if (deviceId > -1) {
             SQLiteDatabase connection = db.getWritableDatabase();
-            ContentValues cv=new ContentValues();
-            cv.put("Text",message);
-            cv.put("Timestamp",System.currentTimeMillis()/1000);
-            cv.put("UserID",userId);
-            cv.put("DeviceID",deviceId);
-            connection.insert("Received",null,cv);
-            Log.i(LOG_TAG,"Logged message "+message+" from "+senderAddress+" for "+userId);
+            ContentValues cv = new ContentValues();
+            cv.put("Text", message);
+            cv.put("Timestamp", System.currentTimeMillis() / 1000);
+            cv.put("UserID", userId);
+            cv.put("DeviceID", deviceId);
+            connection.insert("Received", null, cv);
+            Log.i(LOG_TAG, "Logged message " + message + " from " + senderAddress + " for " + userId);
             connection.close();
-        }else{
-            Log.i(LOG_TAG,"Logging message "+message+" from "+senderAddress+" for "+userId+" failed");
+        } else {
+            Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId + " failed");
         }
 
     }
-    public void addSendMessage(String receiverAddress, String message, int userId) {
-        Log.i(LOG_TAG,"Logging message "+message+" for "+receiverAddress+" from "+userId);
 
-        int deviceId=getDeviceID(receiverAddress);
-        if(deviceId>-1){
+    public void addSendMessage(String receiverAddress, String message, int userId) {
+        Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId);
+
+        int deviceId = getDeviceID(receiverAddress);
+        if (deviceId > -1) {
             SQLiteDatabase connection = db.getWritableDatabase();
-            ContentValues cv=new ContentValues();
-            cv.put("Text",message);
-            cv.put("Timestamp",System.currentTimeMillis()/1000);
-            cv.put("UserID",userId);
-            cv.put("DeviceID",deviceId);
-            connection.insert("Send",null,cv);
-            Log.i(LOG_TAG,"Logged message "+message+" for "+receiverAddress+" from "+userId);
+            ContentValues cv = new ContentValues();
+            cv.put("Text", message);
+            cv.put("Timestamp", System.currentTimeMillis() / 1000);
+            cv.put("UserID", userId);
+            cv.put("DeviceID", deviceId);
+            connection.insert("Send", null, cv);
+            Log.i(LOG_TAG, "Logged message " + message + " for " + receiverAddress + " from " + userId);
             connection.close();
-        }else{
-            Log.i(LOG_TAG,"Logging message "+message+" for "+receiverAddress+" from "+userId+" failed");
+        } else {
+            Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId + " failed");
         }
 
     }

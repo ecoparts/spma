@@ -681,6 +681,7 @@ public class SPMAService extends IntentService {
      * @return
      */
     private void handleNewExternalMessage(JSONObject msgData) {
+        Log.i(LOG_TAG,"New external message thing");
         String address = null;
         String msg = "";
         try {
@@ -709,20 +710,23 @@ public class SPMAService extends IntentService {
                     senderAddress = jsoIn.getString("SenderAddress");
                 }
                 String receiverAddress = jsoIn.getString("ReceiverAddress");
-                msg = jsoIn.getString("Message");
+
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 
-                Log.i(LOG_TAG, "Content is text");
                 if (confirmSender(senderAddress, address, senderAPIVersion)) {
                     if (confirmReceiver(receiverAddress)) {
                         if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
+                            Log.i(LOG_TAG,"New text");
+                            msg = jsoIn.getString("Message");
                             sendNewMessageInternalMessage(msg, address);
                             db.addReceivedMessage(address, msg, userId);
                         }
                         if(content.equals("DataRequest")){
+                            Log.i(LOG_TAG,"New dataRequest");
                             parseDataRequest(address,jsoIn);
                         }
                         if(content.equals("DataResponse")){
+                            Log.i(LOG_TAG,"New dataResponce");
                             parseDataResponse(address,jsoIn);
                         }
                     }
@@ -1046,6 +1050,7 @@ public class SPMAService extends IntentService {
             }
             if (connection != null) {
                 connection.sendExternalMessage(jsoOut.toString());
+                Log.i(LOG_TAG,"External data request send");
             } else {
                 Log.i(LOG_TAG, "No suitable connection found");
 
