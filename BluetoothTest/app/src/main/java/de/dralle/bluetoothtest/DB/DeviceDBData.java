@@ -11,6 +11,10 @@ public class DeviceDBData {
     private boolean paired;
     private int lastSeen;
 
+    public DeviceDBData() {
+
+    }
+
     public String getAddress() {
         return address;
     }
@@ -37,6 +41,15 @@ public class DeviceDBData {
 
     public int getId() {
         return id;
+    }
+
+    public DeviceDBData(String address, String deviceName, String friendlyName, int lastSeen, int id, boolean paired) {
+        this.address = address;
+        this.deviceName = deviceName;
+        this.friendlyName = friendlyName;
+        this.lastSeen = lastSeen;
+        this.id = id;
+        this.paired = paired;
     }
 
     public void setId(int id) {

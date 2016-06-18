@@ -199,13 +199,58 @@ public class SPMADatabaseAccessHelper {
         c.close();
         connection.close();
     }
+    /**
+     * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LatSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
+     *
+     * @param device
+     */
+    public void addDeviceIfNotExistsUpdateOtherwise(DeviceDBData device) {
+        SQLiteDatabase connection = db.getWritableDatabase();
+        Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{device.getAddress()});
+
+
+        if (c.moveToNext()) {
+            int cnt = c.getInt(0);
+            Log.i(LOG_TAG, cnt + " entries for device " + device.getAddress());
+            if (cnt == 1) {
+                ContentValues values = new ContentValues();
+                values.put("DeviceName", device.getDeviceName());
+                values.put("FriendlyName", device.getFriendlyName());
+                values.put("Paired", device.isPaired());
+
+                values.put("LastSeen", System.currentTimeMillis() / 1000);
+                connection.update("Devices", values, "Address = ?", new String[]{device.getAddress()});
+                Log.i(LOG_TAG, "DB updated");
+            } else if (cnt == 0) {
+                ContentValues values = new ContentValues();
+                values.put("DeviceName", device.getDeviceName());
+                values.put("FriendlyName", device.getFriendlyName());
+                values.put("Paired", device.isPaired());
+                values.put("Address", device.getAddress());
+                values.put("LastSeen", System.currentTimeMillis() / 1000);
+                connection.insert("Devices", null, values);
+                Log.i(LOG_TAG, "New device in DB");
+            } else {
+                Log.w(LOG_TAG, "Insert or update of device failed. Seriously, something failed in a very bad way");
+                Log.v(LOG_TAG, "Panic mode");
+                //"self healing": check
+                connection.delete("Devices","Address = ?",new String[]{device.getAddress()});
+            }
+        } else {
+            Log.w(LOG_TAG, "Insert or update of device failed");
+        }
+        c.close();
+        connection.close();
+    }
 
     /**
      * Updates the last seen property of a given device
      * @param address Address of the remote device
      */
-    //TODO: make new device if not exists
     public void updateDeviceLastSeen(String address){
+        if(!checkDeviceExists(address)){
+            insertNewDevice(address);
+        }
         SQLiteDatabase connection = db.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -214,22 +259,41 @@ public class SPMADatabaseAccessHelper {
         connection.update("Devices", values, "Address = ?", new String[]{address});
         Log.i(LOG_TAG,address + " updated lastSeen");
         connection.close();
+        
     }
+    /**
+     * Adds a new device based on its address
+     * @param address Remote device address
+     */
+    private void insertNewDevice(String address) {
+        addDeviceIfNotExistsUpdateOtherwise(new DeviceDBData(address,address,address,0,0,false));
+    }
+
+    /**
+     * Checks if a certain device exists in the DB
+     * @param address Remote device address
+     */
+    private boolean checkDeviceExists(String address) {
+        SQLiteDatabase connection = db.getWritableDatabase();
+        Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{address});
+        int cnt=0;
+
+        if (c.moveToNext()) {
+            cnt = c.getInt(0);
+            Log.i(LOG_TAG, cnt + " entries for device " + address);
+        }
+        c.close();
+        connection.close();
+        return cnt>0;
+    }
+
     /**
      * Updates various properties of a given device
      * @param device Remote device
      */
+    @Deprecated
     public void updateDevice(BluetoothDevice device){
-        SQLiteDatabase connection = db.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-
-        values.put("DeviceName", device.getName());
-        values.put("Paired", device.getBondState() == BluetoothDevice.BOND_BONDED);
-        values.put("LastSeen", System.currentTimeMillis() / 1000);
-        connection.update("Devices", values, "Address = ?", new String[]{device.getAddress()});
-        Log.i(LOG_TAG,device.getAddress() + " updated");
-        connection.close();
+        addDeviceIfNotExistsUpdateOtherwise(device);
     }
     /**
      * Get all devices, that are saved in this database
