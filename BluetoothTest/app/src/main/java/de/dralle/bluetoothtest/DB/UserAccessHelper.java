@@ -24,6 +24,7 @@ public class UserAccessHelper {
 
     /**
      * Adds a new user to the table
+     *
      * @param name New users'name
      * @return New user
      */
@@ -43,6 +44,7 @@ public class UserAccessHelper {
         u.setName(name);
         return u;
     }
+
     /**
      * Updates a database User
      *
@@ -71,6 +73,25 @@ public class UserAccessHelper {
                 connection.update("User", cv, "ID = ?", new String[]{u.getId() + ""});
                 Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
             }
+        }
+        c.close();
+        return u;
+    }
+    /**
+     * Gets a user from the db
+     * @param id User id
+     * @return User data. Can be null.
+     */
+    public User getUser(int id) {
+        Cursor c = connection.rawQuery("select * from User where User.ID=?", new String[]{id + ""});
+        User u = null;
+        if (c.moveToNext()) {
+            u = new User();
+            u.setId(id);
+            u.setName(c.getString(1));
+            u.setAes(c.getString(2));
+            u.setRsaPrivate(c.getString(3));
+            u.setRsaPublic(c.getString(4));
         }
         c.close();
         return u;

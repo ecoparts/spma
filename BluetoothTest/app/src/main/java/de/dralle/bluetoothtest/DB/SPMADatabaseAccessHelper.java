@@ -62,29 +62,13 @@ public class SPMADatabaseAccessHelper {
         return userAccessHelper.createOrUpdateUser(u);
     }
 
+    /**
+     * Gets a user from the db
+     * @param id User id
+     * @return User data. Can be null.
+     */
     public User getUser(int id) {
-        SQLiteDatabase connection = readConnection;
-        Cursor c = connection.rawQuery("select * from User where User.ID=?", new String[]{id + ""});
-        User u = null;
-        try {
-
-
-            if (c.moveToNext()) {
-                u = new User();
-                u.setId(id);
-                u.setName(c.getString(1));
-                u.setAes(c.getString(2));
-                u.setRsaPrivate(c.getString(3));
-                u.setRsaPublic(c.getString(4));
-
-
-            }
-            c.close();
-        } catch (Exception e) {
-
-        }
-
-        return u;
+        return userAccessHelper.getUser(id);
 
     }
 
