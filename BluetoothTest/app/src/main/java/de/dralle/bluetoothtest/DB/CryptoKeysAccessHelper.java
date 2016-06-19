@@ -1,6 +1,7 @@
 package de.dralle.bluetoothtest.DB;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -22,51 +23,59 @@ public class CryptoKeysAccessHelper {
     }
 
     /**
-     * Add a received message to the message history
-     * @param senderId
-     * @param message
-     * @param userId
-     * @param encrypted
+     * Write a new public key for a certain device
+     * @param deviceID
+     * @param data
      */
-    public void addReceivedMessage(int senderId, String message, int userId,boolean encrypted) {
-        Log.i(LOG_TAG, "Logging message " + message + " from " + senderId + " for " + userId);
-        if (senderId > -1) {
+    public void insertDeviceRSAPublicKey(int deviceID, String data) {
+        Log.i(LOG_TAG, "Writing RSA Public key of "+deviceID);
+        if (deviceID > -1) {
+            connection.delete("RSA","DeviceID = ?",new String[]{deviceID+""});
             ContentValues cv = new ContentValues();
-            cv.put("Text", message);
-            cv.put("Timestamp", System.currentTimeMillis() / 1000);
-            cv.put("Encrypted",encrypted);
-            cv.put("UserID", userId);
-            cv.put("DeviceID", senderId);
-            connection.insert("Received", null, cv);
-            Log.i(LOG_TAG, "Logged message " + message + " from " + senderId + " for " + userId);
-        } else {
-            Log.i(LOG_TAG, "Logging message " + message + " from " + senderId + " for " + userId + " failed");
+            cv.put("DeviceID", deviceID);
+            cv.put("Key",data);
+            connection.insert("RSA",null,cv);
+            Log.i(LOG_TAG,"New RSA Public key for device "+deviceID);
         }
-
     }
-
-    /**
-     * Add a send message to history
-     * @param receiverId
-     * @param message
-     * @param userId
-     * @param encrypted
-     */
-    public void addSendMessage(int receiverId, String message, int userId,boolean encrypted) {
-        Log.i(LOG_TAG, "Logging message " + message + " for " + receiverId + " from " + userId);
-        if (receiverId > -1) {
-            ContentValues cv = new ContentValues();
-            cv.put("Text", message);
-            cv.put("Timestamp", System.currentTimeMillis() / 1000);
-            cv.put("Encrypted",encrypted);
-            cv.put("UserID", userId);
-            cv.put("DeviceID", receiverId);
-            connection.insert("Send", null, cv);
-            Log.i(LOG_TAG, "Logged message " + message + " for " + receiverId + " from " + userId);
-        } else {
-            Log.i(LOG_TAG, "Logging message " + message + " for " + receiverId + " from " + userId + " failed");
+    public String getDeviceRSAPublicKey(int deviceID) {
+        Log.i(LOG_TAG, "Reading RSA Public key of "+deviceID+" from db");
+        if (deviceID > -1) {
+            Cursor c=connection.rawQuery("select Key from RSA where DeviceID = ?",new String[]{deviceID+""});
+            String key=null;
+            if(c.moveToNext()){
+                key=c.getString(0);
+            }
+            c.close();
+            Log.i(LOG_TAG,"RSA Public key read "+key);
+            return key;
         }
-
+        return null;
+    }
+    public void insertDeviceAESKey(int deviceID, String data) {
+        Log.i(LOG_TAG, "Writing AES key of "+deviceID);
+        if (deviceID > -1) {
+            connection.delete("AES","DeviceID = ?",new String[]{deviceID+""});
+            ContentValues cv = new ContentValues();
+            cv.put("DeviceID", deviceID);
+            cv.put("Key",data);
+            connection.insert("AES",null,cv);
+            Log.i(LOG_TAG,"New AES key for device "+deviceID);
+        }
+    }
+    public String getDeviceAESKey(int deviceID) {
+        Log.i(LOG_TAG, "Reading AES key of "+deviceID+" from db");
+        if (deviceID > -1) {
+            Cursor c=connection.rawQuery("select Key from AES where DeviceID = ?",new String[]{deviceID+""});
+            String key=null;
+            if(c.moveToNext()){
+                key=c.getString(0);
+            }
+            c.close();
+            Log.i(LOG_TAG,"AES key read "+key);
+            return key;
+        }
+        return null;
     }
 
 }

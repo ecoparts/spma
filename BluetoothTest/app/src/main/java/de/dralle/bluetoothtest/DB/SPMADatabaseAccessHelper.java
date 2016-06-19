@@ -28,7 +28,6 @@ public class SPMADatabaseAccessHelper {
     private SQLiteOpenHelper db = null;
 
     private SQLiteDatabase writeConnection = null;
-    private SQLiteDatabase readConnection = null;
     /**
      * Used to read/write user tables
      */
@@ -41,15 +40,19 @@ public class SPMADatabaseAccessHelper {
      * Used to read/write msg history tables
      */
     private MessageHistoryAccessHelper messageHistoryAccessHelper;
+    /**
+     * Used to read/write crypto key tables
+     */
+    private CryptoKeysAccessHelper cryptoKeysAccessHelper;
 
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
         db = new SPMADatabaseHelper(context);
         writeConnection=db.getWritableDatabase();
-        readConnection=db.getReadableDatabase();
         userAccessHelper=new UserAccessHelper(writeConnection);
         deviceAccessHelper=new DeviceAccessHelper(writeConnection);
         messageHistoryAccessHelper=new MessageHistoryAccessHelper(writeConnection);
+        cryptoKeysAccessHelper=new CryptoKeysAccessHelper(writeConnection);
     }
     public static SPMADatabaseAccessHelper getInstance(Context context){
         if(instance==null){
@@ -98,7 +101,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Remote device address
      * @return Remote device database id. -1 if no device is found
      */
-    public int getDeviceID(String address) { //TODO: unify with above
+    public int getDeviceID(String address) {
         return deviceAccessHelper.getDeviceID(address);
 
     }
@@ -221,16 +224,10 @@ public class SPMADatabaseAccessHelper {
 
 
     public void insertDeviceRSAPublicKey(String address, String data) {
-        Log.i(LOG_TAG, "Writing RSA Public key from "+address);
+        Log.i(LOG_TAG, "Writing RSA Public key of "+address);
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = writeConnection;
-
-            connection.delete("RSA","DeviceID = ?",new String[]{deviceId+""});
-            ContentValues cv = new ContentValues();
-            cv.put("DeviceID", deviceId);
-            cv.put("Key",data);
-            connection.insert("RSA",null,cv);
+           cryptoKeysAccessHelper.insertDeviceRSAPublicKey(deviceId,data);
             Log.i(LOG_TAG,"New RSA Public key for device "+address);
         }
     }
@@ -238,14 +235,7 @@ public class SPMADatabaseAccessHelper {
         Log.i(LOG_TAG, "Reading RSA Public key from "+address+" from db");
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = readConnection;
-
-            Cursor c=connection.rawQuery("select Key from RSA where DeviceID = ?",new String[]{deviceId+""});
-            String key=null;
-           if(c.moveToNext()){
-               key=c.getString(0);
-           }
-            c.close();
+           String key=cryptoKeysAccessHelper.getDeviceRSAPublicKey(deviceId);
             Log.i(LOG_TAG,"RSA Public key read "+key);
             return key;
         }
@@ -255,13 +245,7 @@ public class SPMADatabaseAccessHelper {
         Log.i(LOG_TAG, "Writing AES key from "+address);
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = writeConnection;
-
-            connection.delete("AES","DeviceID = ?",new String[]{deviceId+""});
-            ContentValues cv = new ContentValues();
-            cv.put("DeviceID", deviceId);
-            cv.put("Key",data);
-            connection.insert("AES",null,cv);
+            cryptoKeysAccessHelper.insertDeviceAESKey(deviceId,data);
             Log.i(LOG_TAG,"New AES key for device "+address);
         }
     }
@@ -269,14 +253,7 @@ public class SPMADatabaseAccessHelper {
         Log.i(LOG_TAG, "Reading AES key from "+address+" from db");
         int deviceId = getDeviceID(address);
         if (deviceId > -1) {
-            SQLiteDatabase connection = readConnection;
-
-            Cursor c=connection.rawQuery("select Key from AES where DeviceID = ?",new String[]{deviceId+""});
-            String key=null;
-            if(c.moveToNext()){
-                key=c.getString(0);
-            }
-            c.close();
+            String key=cryptoKeysAccessHelper.getDeviceAESKey(deviceId);
             Log.i(LOG_TAG,"AES key read "+key);
             return key;
         }
@@ -284,6 +261,5 @@ public class SPMADatabaseAccessHelper {
     }
     public void closeConnections(){
         writeConnection.close();
-        readConnection.close();
     }
 }
