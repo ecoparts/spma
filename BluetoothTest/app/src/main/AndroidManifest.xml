@@ -21,7 +21,9 @@
             android:exported="false" />
 
         <activity android:name=".GUI.ChatActivity" />
-        <activity android:name=".GUI.com.example.niklas.layouttest.MainActivity_NT">
+        <activity android:name=".GUI.com.example.niklas.layouttest.MainActivity_NT"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
