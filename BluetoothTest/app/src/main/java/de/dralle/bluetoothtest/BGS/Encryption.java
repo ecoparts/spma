@@ -158,6 +158,79 @@ public class Encryption {
         return encoded;
     }
 
+    public static String encryptWithAES(String text, String aesKey){
+        //Cipher erstellen und verschluesseln
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+
+        byte[] keyBytes = Base64.decode(aesKey.getBytes(),Base64.DEFAULT);
+       SecretKey originalAESKey=new SecretKeySpec(keyBytes,"AES");
+
+
+
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, originalAESKey);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        byte[] encrypted = new byte[0];
+        try {
+            encrypted = cipher.doFinal(text.getBytes());
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        //byte array zu Base64 konvertieren
+        String encoded = Base64.encodeToString(encrypted, Base64.DEFAULT);
+
+        return encoded;
+    }
+
+    public static String decryptWithAES(String text, String aesKey){
+        // BASE64 String zu Byte-Array
+        byte[] crypted = Base64.decode(text, Base64.DEFAULT);
+
+        byte[] keyBytes = Base64.decode(aesKey.getBytes(),Base64.DEFAULT);
+        SecretKey originalAESKey=new SecretKeySpec(keyBytes,"AES");
+
+        // entschluesseln
+        Cipher cipher = null;
+        try {
+            cipher = Cipher.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, originalAESKey);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+
+        byte[] decoded = new byte[0];
+        try {
+            decoded = cipher.doFinal(crypted);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return new String(decoded);
+    }
+
     public String encrypt(String text) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
         //Cipher erstellen und verschluesseln
         Cipher cipher = Cipher.getInstance(algorithm);
