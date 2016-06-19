@@ -1,5 +1,7 @@
 package de.dralle.bluetoothtest.DB;
 
+import android.bluetooth.BluetoothDevice;
+
 /**
  * Created by nils on 09.06.16.
  */
@@ -50,6 +52,14 @@ public class DeviceDBData {
         this.lastSeen = lastSeen;
         this.id = id;
         this.paired = paired;
+    }
+    public DeviceDBData(BluetoothDevice device) {
+        this.address = device.getAddress();
+        this.deviceName = device.getName();
+        this.friendlyName = device.getName();
+        this.lastSeen = 0;
+        this.id = 0;
+        this.paired = device.getBondState()==BluetoothDevice.BOND_BONDED;
     }
 
     public void setId(int id) {

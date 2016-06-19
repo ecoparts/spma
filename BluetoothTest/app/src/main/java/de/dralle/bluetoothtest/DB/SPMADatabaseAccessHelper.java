@@ -33,6 +33,10 @@ public class SPMADatabaseAccessHelper {
      * Used to read/write user tables
      */
     private UserAccessHelper userAccessHelper;
+    /**
+     * Used to read/write device tables
+     */
+    private DeviceAccessHelper deviceAccessHelper;
 
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
@@ -40,6 +44,7 @@ public class SPMADatabaseAccessHelper {
         writeConnection=db.getWritableDatabase();
         readConnection=db.getReadableDatabase();
         userAccessHelper=new UserAccessHelper(writeConnection);
+        deviceAccessHelper=new DeviceAccessHelper(writeConnection);
     }
     public static SPMADatabaseAccessHelper getInstance(Context context){
         if(instance==null){
@@ -79,25 +84,7 @@ public class SPMADatabaseAccessHelper {
      * @return Remote device friendly name/remote device user name. returns address when no name was found.
      */
     public String getDeviceFriendlyName(String address) {
-        try {
-            SQLiteDatabase connection = writeConnection;
-            Cursor c = connection.rawQuery("select FriendlyName from Devices where Address = ?", new String[]{address});
-
-            if (c.moveToNext()) {
-                String name = c.getString(0);
-                c.close();
-                return name;
-            } else {
-                c.close();
-                return address;
-            }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            Log.i(LOG_TAG,"Opening DB for requesting device friendly name failed");
-        }
-        return address;
-
+        return deviceAccessHelper.getDeviceFriendlyName(address);
     }
 
     /**
@@ -107,19 +94,17 @@ public class SPMADatabaseAccessHelper {
      * @return Remote device database id. -1 if no device is found
      */
     public int getDeviceID(String address) { //TODO: unify with above
-        SQLiteDatabase connection = readConnection;
-        Cursor c = connection.rawQuery("select ID from Devices where Address = ?", new String[]{address});
+        return deviceAccessHelper.getDeviceID(address);
 
-        if (c.moveToNext()) {
-            int id = c.getInt(0);
-            c.close();
-            return id;
-        } else {
-            c.close();
-            Log.w(LOG_TAG, "No device with address " + address);
-            return -1;
-        }
-
+    }
+    /**
+     * Looks for a device´s id from an address
+     *
+     * @param address Remote device address
+     * @return Remote device data. Null if no device found.
+     */
+    public DeviceDBData getDevice(String address) {
+        return deviceAccessHelper.getDevice(address);
     }
 
 
@@ -129,84 +114,17 @@ public class SPMADatabaseAccessHelper {
      * @param device
      */
     public void addDeviceIfNotExistsUpdateOtherwise(BluetoothDevice device) {
-        SQLiteDatabase connection =writeConnection;
-        Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{device.getAddress()});
-
-
-        if (c.moveToNext()) {
-            int cnt = c.getInt(0);
-            Log.i(LOG_TAG, cnt + " entries for device " + device.getAddress());
-            if (cnt == 1) {
-                ContentValues values = new ContentValues();
-                values.put("DeviceName", device.getName());
-                values.put("Paired", device.getBondState() == BluetoothDevice.BOND_BONDED);
-
-                values.put("LastSeen", System.currentTimeMillis() / 1000);
-                connection.update("Devices", values, "Address = ?", new String[]{device.getAddress()});
-                Log.i(LOG_TAG, "DB updated");
-            } else if (cnt == 0) {
-                ContentValues values = new ContentValues();
-                values.put("DeviceName", device.getName());
-                values.put("FriendlyName", device.getName());
-                values.put("Paired", device.getBondState() == BluetoothDevice.BOND_BONDED);
-                values.put("Address", device.getAddress());
-                values.put("LastSeen", System.currentTimeMillis() / 1000);
-                connection.insert("Devices", null, values);
-                Log.i(LOG_TAG, "New device in DB");
-            } else {
-                Log.w(LOG_TAG, "Insert or update of device failed. Seriously, something failed in a very bad way");
-                Log.v(LOG_TAG, "Panic mode");
-                //"self healing": check
-                connection.delete("Devices", "Address = ?", new String[]{device.getAddress()});
-            }
-        } else {
-            Log.w(LOG_TAG, "Insert or update of device failed");
-        }
-        c.close();
+        deviceAccessHelper.addDeviceIfNotExistsUpdateOtherwise(device);
 
     }
 
     /**
-     * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LatSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
+     * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LastSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
      *
      * @param device
      */
     public void addDeviceIfNotExistsUpdateOtherwise(DeviceDBData device) {
-        SQLiteDatabase connection = writeConnection;
-        Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{device.getAddress()});
-
-
-        if (c.moveToNext()) {
-            int cnt = c.getInt(0);
-            Log.i(LOG_TAG, cnt + " entries for device " + device.getAddress());
-            if (cnt == 1) {
-                ContentValues values = new ContentValues();
-                values.put("DeviceName", device.getDeviceName());
-                values.put("FriendlyName", device.getFriendlyName());
-                values.put("Paired", device.isPaired());
-
-                values.put("LastSeen", System.currentTimeMillis() / 1000);
-                connection.update("Devices", values, "Address = ?", new String[]{device.getAddress()});
-                Log.i(LOG_TAG, "DB updated");
-            } else if (cnt == 0) {
-                ContentValues values = new ContentValues();
-                values.put("DeviceName", device.getDeviceName());
-                values.put("FriendlyName", device.getFriendlyName());
-                values.put("Paired", device.isPaired());
-                values.put("Address", device.getAddress());
-                values.put("LastSeen", System.currentTimeMillis() / 1000);
-                connection.insert("Devices", null, values);
-                Log.i(LOG_TAG, "New device in DB");
-            } else {
-                Log.w(LOG_TAG, "Insert or update of device failed. Seriously, something failed in a very bad way");
-                Log.v(LOG_TAG, "Panic mode");
-                //"self healing": check
-                connection.delete("Devices", "Address = ?", new String[]{device.getAddress()});
-            }
-        } else {
-            Log.w(LOG_TAG, "Insert or update of device failed");
-        }
-        c.close();
+        deviceAccessHelper.addDeviceIfNotExistsUpdateOtherwise(device);
     }
 
     /**
@@ -215,18 +133,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Address of the remote device
      */
     public void updateDeviceLastSeen(String address) {
-        if (!checkDeviceExists(address)) {
-            insertNewDevice(address);
-        }
-        SQLiteDatabase connection = writeConnection;
-        ContentValues values = new ContentValues();
-
-
-        values.put("LastSeen", System.currentTimeMillis() / 1000);
-        connection.update("Devices", values, "Address = ?", new String[]{address});
-        Log.i(LOG_TAG, address + " updated lastSeen");
-
-
+        deviceAccessHelper.updateDeviceLastSeen(address);
     }
 
     /**
@@ -235,7 +142,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Remote device address
      */
     private void insertNewDevice(String address) {
-        addDeviceIfNotExistsUpdateOtherwise(new DeviceDBData(address, address, address, 0, 0, false));
+        deviceAccessHelper.insertNewDevice(address);
     }
 
     /**
@@ -244,16 +151,7 @@ public class SPMADatabaseAccessHelper {
      * @param address Remote device address
      */
     private boolean checkDeviceExists(String address) {
-        SQLiteDatabase connection = readConnection;
-        Cursor c = connection.rawQuery("select count(*) from Devices where Address = ?", new String[]{address});
-        int cnt = 0;
-
-        if (c.moveToNext()) {
-            cnt = c.getInt(0);
-            Log.i(LOG_TAG, cnt + " entries for device " + address);
-        }
-        c.close();
-        return cnt > 0;
+        return deviceAccessHelper.checkDeviceExists(address);
     }
 
     /**
@@ -273,14 +171,7 @@ public class SPMADatabaseAccessHelper {
      * @param friendlyName
      */
     public void updateDeviceFriendlyName(String address, String friendlyName) {
-        SQLiteDatabase connection = writeConnection;
-        ContentValues values = new ContentValues();
-
-        values.put("FriendlyName", friendlyName);
-
-
-        connection.update("Devices", values, "Address = ?", new String[]{address});
-        Log.i(LOG_TAG, "Device " + address + " updated with name " + friendlyName);
+        deviceAccessHelper.updateDeviceFriendlyName(address, friendlyName);
 
     }
 
@@ -288,23 +179,7 @@ public class SPMADatabaseAccessHelper {
      * Get all devices, that are saved in this database
      */
     public List<DeviceDBData> getAllDevices() {
-        SQLiteDatabase connection = readConnection;
-        Cursor c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
-        List<DeviceDBData> devices = new ArrayList<>();
-        while (c.moveToNext()) {
-            DeviceDBData device = new DeviceDBData();
-            device.setId(c.getInt(0));
-            device.setAddress(c.getString(1));
-            device.setDeviceName(c.getString(2));
-            device.setFriendlyName(c.getString(3));
-            device.setPaired(c.getInt(4) == 1);
-            device.setLastSeen(c.getInt(5));
-            devices.add(device);
-
-        }
-        c.close();
-
-        return devices;
+        return deviceAccessHelper.getAllDevices();
 
 
     }
@@ -313,14 +188,7 @@ public class SPMADatabaseAccessHelper {
      * Get all devices, that are saved in this database, and sort them based on their age
      */
     public List<DeviceDBData> getMostRecentDevices(int maxage) {
-        List<DeviceDBData> devices = getAllDevices();
-        List<DeviceDBData> filteredDevices = new ArrayList<>();
-        for (DeviceDBData dd : devices) {
-            if (maxage >= System.currentTimeMillis() / 1000 - dd.getLastSeen()) {
-                filteredDevices.add(dd);
-            }
-        }
-        return filteredDevices;
+        return deviceAccessHelper.getMostRecentDevices(maxage);
 
     }
 
