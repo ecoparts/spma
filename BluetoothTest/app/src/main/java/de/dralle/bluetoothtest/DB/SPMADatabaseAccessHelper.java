@@ -37,6 +37,10 @@ public class SPMADatabaseAccessHelper {
      * Used to read/write device tables
      */
     private DeviceAccessHelper deviceAccessHelper;
+    /**
+     * Used to read/write msg history tables
+     */
+    private MessageHistoryAccessHelper messageHistoryAccessHelper;
 
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
@@ -45,6 +49,7 @@ public class SPMADatabaseAccessHelper {
         readConnection=db.getReadableDatabase();
         userAccessHelper=new UserAccessHelper(writeConnection);
         deviceAccessHelper=new DeviceAccessHelper(writeConnection);
+        messageHistoryAccessHelper=new MessageHistoryAccessHelper(writeConnection);
     }
     public static SPMADatabaseAccessHelper getInstance(Context context){
         if(instance==null){
@@ -194,18 +199,9 @@ public class SPMADatabaseAccessHelper {
 
     public void addReceivedMessage(String senderAddress, String message, int userId,boolean encrypted) {
         Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId);
-
         int deviceId = getDeviceID(senderAddress);
         if (deviceId > -1) {
-            SQLiteDatabase connection =writeConnection;
-            ContentValues cv = new ContentValues();
-            cv.put("Text", message);
-            cv.put("Timestamp", System.currentTimeMillis() / 1000);
-            cv.put("Encrypted",encrypted);
-            cv.put("UserID", userId);
-            cv.put("DeviceID", deviceId);
-            connection.insert("Received", null, cv);
-            Log.i(LOG_TAG, "Logged message " + message + " from " + senderAddress + " for " + userId);
+            messageHistoryAccessHelper.addReceivedMessage(deviceId,message,userId,encrypted);
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId + " failed");
         }
@@ -214,18 +210,9 @@ public class SPMADatabaseAccessHelper {
 
     public void addSendMessage(String receiverAddress, String message, int userId,boolean encrypted) {
         Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId);
-
         int deviceId = getDeviceID(receiverAddress);
         if (deviceId > -1) {
-            SQLiteDatabase connection =writeConnection;
-            ContentValues cv = new ContentValues();
-            cv.put("Text", message);
-            cv.put("Timestamp", System.currentTimeMillis() / 1000);
-            cv.put("Encrypted",encrypted);
-            cv.put("UserID", userId);
-            cv.put("DeviceID", deviceId);
-            connection.insert("Send", null, cv);
-            Log.i(LOG_TAG, "Logged message " + message + " for " + receiverAddress + " from " + userId);
+            messageHistoryAccessHelper.addSendMessage(deviceId,message,userId,encrypted);
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId + " failed");
         }
