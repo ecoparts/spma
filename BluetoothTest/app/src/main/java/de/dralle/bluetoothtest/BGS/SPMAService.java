@@ -21,6 +21,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -681,12 +682,19 @@ public class SPMAService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         int encryptionLevel=0;
         User sender = db.getUser(senderID);
         if (address != null) {
             if(sender!=null){
                 if(sender.getAes()!=null){
-                    //TODO: AES
+                   String encMsg=Encryption.encryptWithAES(msg,sender.getAes());
+                    if(encMsg!=null){
+                        msg=encMsg;
+                        encryptionLevel=1;
+                    }else{
+                        Log.w(LOG_TAG,"Encryption failed");
+                    }
                 }
             }
             Log.i(LOG_TAG, "Sending new message to " + address);
@@ -700,7 +708,7 @@ public class SPMAService extends IntentService {
                 try {
 
                     jsoOut.put("Extern", true);
-                    jsoOut.put("Level", 0);
+                    jsoOut.put("Level", encryptionLevel);
                     jsoOut.put("Content", "Text");
                     jsoOut.put("Receiver", db.getDeviceFriendlyName(address));
                     if (sender != null) {
@@ -803,7 +811,7 @@ public class SPMAService extends IntentService {
                 if (jsoIn.getBoolean("Extern")) { //is this an external message?
                     String content = jsoIn.getString("Content");
                     int level = jsoIn.getInt("Level");
-                    //TODO: decrypt
+
                     String senderName = jsoIn.getString("Sender");
                     db.updateDeviceFriendlyName(fromAddress, senderName);
                     int senderAPIVersion = jsoIn.getInt("SenderVersionAPI");
@@ -824,8 +832,28 @@ public class SPMAService extends IntentService {
                             if (content.equals("Text")) {//right "contentType? only text is supposed to be displayed
                                 Log.i(LOG_TAG, "New text");
                                 String msg = jsoIn.getString("Message");
-                                sendNewMessageInternalMessage(msg, fromAddress);
-                                db.addReceivedMessage(fromAddress, msg, userId);
+                                if(level==0){
+                                    Log.i(LOG_TAG,"Message is not encrypted");
+                                    sendNewMessageInternalMessage(msg, fromAddress);
+                                    db.addReceivedMessage(fromAddress, msg, userId);
+                                }else if (level==1){
+                                    Log.i(LOG_TAG,"Message is AES encrypted");
+                                    //decrypt
+                                    String deviceKey=db.getDeviceAESKey(fromAddress);
+                                    if(deviceKey!=null){
+                                        String decMsg=Encryption.decryptWithAES(msg,deviceKey);
+                                        if(decMsg!=null){
+                                            sendNewMessageInternalMessage(decMsg, fromAddress);
+                                            db.addReceivedMessage(fromAddress, decMsg, userId);
+                                        }else{
+                                            Log.i(LOG_TAG,"Decryption failed: Decryption failed");
+                                        }
+                                    }else{
+                                        Log.i(LOG_TAG,"Decryption failed: Key missing");
+                                    }
+                                }
+
+
                             }
                             if (content.equals("DataRequest")) {
                                 Log.i(LOG_TAG, "New dataRequest");

@@ -206,7 +206,7 @@ public class Encryption {
         // entschluesseln
         Cipher cipher = null;
         try {
-            cipher = Cipher.getInstance("RSA");
+            cipher = Cipher.getInstance("AES");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
