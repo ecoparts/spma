@@ -1,22 +1,15 @@
-package com.example.niklas.layouttest;
+package de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest;
+
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import de.dralle.bluetoothtest.R;
 
-/**
- * Created by Niklas on 03.06.2016.
- */
-public class SettingsActivity extends Fragment {
+public class SettingsActivity extends AppCompatActivity {
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.content_fragment,container,false);
-        return v;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
     }
 }

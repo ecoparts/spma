@@ -13,6 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".GUI.MainActivity">
+
+        </activity>
+
+        <service
+            android:name=".BGS.SPMAService"
+            android:exported="false" />
+
+        <activity android:name=".GUI.ChatActivity" />
+        <activity android:name=".GUI.com.example.niklas.layouttest.MainActivity_NT">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,10 +29,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".BGS.SPMAService"
-            android:exported="false" />
-
-        <activity android:name=".GUI.ChatActivity"></activity>
+        <activity android:name=".GUI.com.example.niklas.layouttest.SettingsActivity"></activity>
     </application>
 
 </manifest>

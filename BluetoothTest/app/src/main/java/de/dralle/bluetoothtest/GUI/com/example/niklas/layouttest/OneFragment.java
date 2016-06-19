@@ -1,4 +1,4 @@
-package com.example.niklas.layouttest;
+package de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest;
 
 import android.content.Context;
 import android.net.Uri;

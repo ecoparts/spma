@@ -1,4 +1,4 @@
-package com.example.niklas.layouttest;
+package de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,7 +29,7 @@ import info.androidhive.materialtabs.fragments.ThreeFragment;
 import info.androidhive.materialtabs.fragments.TwoFragment;
 */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity_NT extends AppCompatActivity {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -48,15 +48,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_nt);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
 
         //Navigation
 
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+       //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -80,9 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(),"Profil ausgewählt",Toast.LENGTH_SHORT).show();
                         SettingsActivity fragment = new SettingsActivity();
-                        android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.frame,fragment);
-                        fragmentTransaction.commit();
+
                         return true;
                     case R.id.settings:
                         Toast.makeText(getApplicationContext(),"Einstellungen",Toast.LENGTH_SHORT).show();
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new OneFragment(), "Umgebung");
+        adapter.addFragment(new OneFragment(), "Umgebung"); //TODO: reference strings.xml instead
         adapter.addFragment(new TwoFragment(), "Freunde");
         adapter.addFragment(new ThreeFragment(), "Chats");
         viewPager.setAdapter(adapter);
