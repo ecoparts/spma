@@ -734,7 +734,7 @@ public class SPMAService extends IntentService {
                 }
                 if (connection != null) {
                     connection.sendExternalMessage(jsoOut.toString());
-                    db.addSendMessage(address, msg, senderID);
+                    db.addSendMessage(address, msg, senderID,encryptionLevel==1);
                 } else {
                     Log.i(LOG_TAG, "No suitable connection found");
 
@@ -835,7 +835,7 @@ public class SPMAService extends IntentService {
                                 if(level==0){
                                     Log.i(LOG_TAG,"Message is not encrypted");
                                     sendNewMessageInternalMessage(msg, fromAddress);
-                                    db.addReceivedMessage(fromAddress, msg, userId);
+                                    db.addReceivedMessage(fromAddress, msg, userId,false);
                                 }else if (level==1){
                                     Log.i(LOG_TAG,"Message is AES encrypted");
                                     //decrypt
@@ -844,7 +844,7 @@ public class SPMAService extends IntentService {
                                         String decMsg=Encryption.decryptWithAES(msg,deviceKey);
                                         if(decMsg!=null){
                                             sendNewMessageInternalMessage(decMsg, fromAddress);
-                                            db.addReceivedMessage(fromAddress, decMsg, userId);
+                                            db.addReceivedMessage(fromAddress, msg, userId,true);
                                         }else{
                                             Log.i(LOG_TAG,"Decryption failed: Decryption failed");
                                         }

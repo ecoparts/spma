@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="app_version">0.15a</string>
-    <string name="db_version">4</string>
+    <string name="app_version">0.16a</string>
+    <string name="db_version">5</string>
     <string name="dbname">spma</string>
     <string-array name="dbcreate">
         <item>
@@ -37,6 +37,7 @@
                 ID integer primary key autoincrement,
                 Text varchar(1024) not null,
                 Timestamp integer default CURRENT_TIMESTAMP,
+                Encrypted integer not null,
                 UserID integer not null,
                 DeviceID integer not null,
                 foreign key(UserID) references User(ID),
@@ -48,6 +49,7 @@
                 ID integer primary key autoincrement,
                 Text varchar(1024) not null,
                 Timestamp integer default CURRENT_TIMESTAMP,
+                Encrypted integer not null,
                 UserID integer not null,
                 DeviceID integer not null,
                 foreign key(UserID) references User(ID),

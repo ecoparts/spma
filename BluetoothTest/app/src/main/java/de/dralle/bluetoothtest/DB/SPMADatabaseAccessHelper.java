@@ -379,7 +379,7 @@ public class SPMADatabaseAccessHelper {
 
     }
 
-    public void addReceivedMessage(String senderAddress, String message, int userId) {
+    public void addReceivedMessage(String senderAddress, String message, int userId,boolean encrypted) {
         Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId);
 
         int deviceId = getDeviceID(senderAddress);
@@ -388,6 +388,7 @@ public class SPMADatabaseAccessHelper {
             ContentValues cv = new ContentValues();
             cv.put("Text", message);
             cv.put("Timestamp", System.currentTimeMillis() / 1000);
+            cv.put("Encrypted",encrypted);
             cv.put("UserID", userId);
             cv.put("DeviceID", deviceId);
             connection.insert("Received", null, cv);
@@ -398,7 +399,7 @@ public class SPMADatabaseAccessHelper {
 
     }
 
-    public void addSendMessage(String receiverAddress, String message, int userId) {
+    public void addSendMessage(String receiverAddress, String message, int userId,boolean encrypted) {
         Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId);
 
         int deviceId = getDeviceID(receiverAddress);
@@ -407,6 +408,7 @@ public class SPMADatabaseAccessHelper {
             ContentValues cv = new ContentValues();
             cv.put("Text", message);
             cv.put("Timestamp", System.currentTimeMillis() / 1000);
+            cv.put("Encrypted",encrypted);
             cv.put("UserID", userId);
             cv.put("DeviceID", deviceId);
             connection.insert("Send", null, cv);
