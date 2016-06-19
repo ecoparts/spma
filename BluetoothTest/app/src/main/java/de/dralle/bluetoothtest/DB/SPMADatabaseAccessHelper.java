@@ -29,12 +29,17 @@ public class SPMADatabaseAccessHelper {
 
     private SQLiteDatabase writeConnection = null;
     private SQLiteDatabase readConnection = null;
+    /**
+     * Used to read/write user tables
+     */
+    private UserAccessHelper userAccessHelper;
 
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
         db = new SPMADatabaseHelper(context);
         writeConnection=db.getWritableDatabase();
         readConnection=db.getReadableDatabase();
+        userAccessHelper=new UserAccessHelper(writeConnection);
     }
     public static SPMADatabaseAccessHelper getInstance(Context context){
         if(instance==null){
@@ -44,22 +49,7 @@ public class SPMADatabaseAccessHelper {
     }
     @Deprecated
     public User addUser(String name) {
-        SQLiteDatabase connection = writeConnection;
-        ContentValues cv = new ContentValues();
-        cv.put("Name", name);
-        long rowid = connection.insert("User", null, cv);
-        Cursor c = connection.rawQuery("select ID, Name from User where User._rowid_=?", new String[]{rowid + ""});
-        c.moveToNext();
-        String sid = c.getString(0);
-        name = c.getString(1);
-        int id = Integer.parseInt(sid);
-        c.close();
-
-        Log.i(LOG_TAG, "New User " + name + " with id " + id + " inserted");
-        User u = new User();
-        u.setId(id);
-        u.setName(name);
-        return u;
+        return userAccessHelper.addUser(name);
     }
 
     /**
