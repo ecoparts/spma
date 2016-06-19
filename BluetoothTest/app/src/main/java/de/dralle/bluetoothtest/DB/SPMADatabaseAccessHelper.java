@@ -59,36 +59,7 @@ public class SPMADatabaseAccessHelper {
      * @return User given
      */
     public User createOrUpdateUser(User u) {
-        SQLiteDatabase connection = writeConnection;
-        ContentValues cv = new ContentValues();
-
-        cv.put("Name", u.getName());
-        cv.put("AES", u.getAes());
-        cv.put("RSAPrivate", u.getRsaPrivate());
-        cv.put("RSAPublic", u.getRsaPublic());
-
-        //Check if user is already there
-        Cursor c = connection.rawQuery("select count(*) from User where ID = ?", new String[]{u.getId() + ""});
-        if (c.moveToNext()) {
-            int cnt = c.getInt(0);
-            if (cnt == 0) {
-                //Insert
-                cv.put("ID", u.getId());
-                connection.insert("User", null, cv);
-                Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
-            } else {
-                //Update. No need to check for count, because primary key
-                connection.update("User", cv, "ID = ?", new String[]{u.getId() + ""});
-                Log.i(LOG_TAG, "User " + u.getName() + " with id " + u.getId() + " updated");
-            }
-        }
-
-
-        c.close();
-
-
-
-        return u;
+        return userAccessHelper.createOrUpdateUser(u);
     }
 
     public User getUser(int id) {
