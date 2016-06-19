@@ -5,6 +5,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import de.dralle.bluetoothtest.R;
+
 /**
  * Created by Niklas on 03.06.2016.
  */

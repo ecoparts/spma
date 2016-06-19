@@ -20,6 +20,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dralle.bluetoothtest.R;
+
 /*
 import info.androidhive.materialtabs.R;
 import info.androidhive.materialtabs.fragments.OneFragment;

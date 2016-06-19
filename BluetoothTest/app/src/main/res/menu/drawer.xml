@@ -7,12 +7,12 @@
             android:id="@+id/profile"
             android:checked="false"
             android:icon="@drawable/user_48"
-            android:title="@string/menü_Profil" />
+            android:title="@string/menuProfile" />
         <item
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/settings_48"
-            android:title="@string/menü_Einstellungen" />
+            android:title="@string/menuSettings" />
 
     </group>
 </menu>

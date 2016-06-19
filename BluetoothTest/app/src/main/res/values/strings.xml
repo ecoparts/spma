@@ -88,4 +88,9 @@
     <string name="connectionShutdown">Connection shutdown</string>
     <string name="BGSNotificationTitle">SPMA Service</string>
     <string name="BGSNotificationText">Service is currently running</string>
+    <string name="menuProfile">Profile</string>
+    <string name="menuSettings">Settings</string>
+    <string name="actionSettings">Settings</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
 </resources>

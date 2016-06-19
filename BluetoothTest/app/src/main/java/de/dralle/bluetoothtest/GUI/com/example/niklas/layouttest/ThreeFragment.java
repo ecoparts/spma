@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import de.dralle.bluetoothtest.R;
+
 /**
  * Created by Niklas on 18.06.2016.
  */
