@@ -34,13 +34,14 @@ public class DeviceAccessHelper {
      */
     public String getDeviceFriendlyName(String address) {
         DeviceDBData device = getDevice(address);
-        if(device!=null){
+        if (device != null) {
             return device.getFriendlyName();
-        }else{
+        } else {
             return address;
         }
 
     }
+
     /**
      * Looks for a device´s id from an address
      *
@@ -49,12 +50,13 @@ public class DeviceAccessHelper {
      */
     public int getDeviceID(String address) {
         DeviceDBData device = getDevice(address);
-        if(device!=null){
+        if (device != null) {
             return device.getId();
-        }else{
+        } else {
             return -1;
         }
     }
+
     /**
      * Looks for a device´s id from an address
      *
@@ -62,13 +64,13 @@ public class DeviceAccessHelper {
      * @return Remote device data. Null if no device found.
      */
     public DeviceDBData getDevice(String address) {
-        DeviceDBData device=null;
+        DeviceDBData device = null;
         Cursor c = connection.rawQuery("select * from Devices where Address = ?", new String[]{address});
         if (c.moveToNext()) {
-            device=new DeviceDBData();
+            device = new DeviceDBData();
             device.setId(c.getInt(0));
             device.setDeviceName(c.getString(2));
-            device.setPaired(c.getInt(4)==1);
+            device.setPaired(c.getInt(4) == 1);
             device.setFriendlyName(c.getString(3));
             device.setAddress(c.getString(1));
             device.setLastSeen(c.getInt(5));
@@ -78,6 +80,7 @@ public class DeviceAccessHelper {
         c.close();
         return device;
     }
+
     /**
      * Adds a device to the device table, if the device is new. Otherwise updates the existing device
      *
@@ -156,10 +159,9 @@ public class DeviceAccessHelper {
      * @param address Remote device address
      */
     public boolean checkDeviceExists(String address) {
-        DeviceDBData device=getDevice(address);
-        return device!=null;
+        DeviceDBData device = getDevice(address);
+        return device != null;
     }
-
 
 
     /**
@@ -179,20 +181,30 @@ public class DeviceAccessHelper {
      * Get all devices, that are saved in this database
      */
     public List<DeviceDBData> getAllDevices() {
-        Cursor c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
-        List<DeviceDBData> devices = new ArrayList<>();
-        while (c.moveToNext()) {
-            DeviceDBData device = new DeviceDBData();
-            device.setId(c.getInt(0));
-            device.setAddress(c.getString(1));
-            device.setDeviceName(c.getString(2));
-            device.setFriendlyName(c.getString(3));
-            device.setPaired(c.getInt(4) == 1);
-            device.setLastSeen(c.getInt(5));
-            devices.add(device);
+        Cursor c = null;
+        try {
+            c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
+        } catch (Exception e) {
+
         }
-        c.close();
+        List<DeviceDBData> devices = new ArrayList<>();
+        if (c != null) {
+
+
+            while (c.moveToNext()) {
+                DeviceDBData device = new DeviceDBData();
+                device.setId(c.getInt(0));
+                device.setAddress(c.getString(1));
+                device.setDeviceName(c.getString(2));
+                device.setFriendlyName(c.getString(3));
+                device.setPaired(c.getInt(4) == 1);
+                device.setLastSeen(c.getInt(5));
+                devices.add(device);
+            }
+            c.close();
+        }
         return devices;
+
     }
 
     /**
