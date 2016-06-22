@@ -1,9 +1,7 @@
 package de.dralle.bluetoothtest.BGS;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.res.Resources;
 import android.util.Log;
 
@@ -18,6 +16,15 @@ import de.dralle.bluetoothtest.R;
 public class BluetoothListenerMaker {
     private static final String LOG_TAG = BluetoothListenerMaker.class.getName();
     private static BluetoothListenerMaker instance = null;
+    private Resources res = null;
+
+    private BluetoothListenerMaker(Resources res) {
+        this.res = res;
+    }
+
+    private BluetoothListenerMaker() {
+        this.res = res;
+    }
 
     /**
      * Singleton constructor
@@ -44,16 +51,6 @@ public class BluetoothListenerMaker {
         return instance;
     }
 
-    private Resources res = null;
-
-    private BluetoothListenerMaker(Resources res) {
-        this.res = res;
-    }
-
-    private BluetoothListenerMaker() {
-        this.res = res;
-    }
-
     /**
      * Assists the user in creating a listener
      *
@@ -69,7 +66,7 @@ public class BluetoothListenerMaker {
 
                 try {
                     Log.i(LOG_TAG, "Trying to create secure serversocket");
-                    serverSocket=adapter.listenUsingRfcommWithServiceRecord("SecureListener",UUID.fromString(res.getString(R.string.uuid_secure)));
+                    serverSocket = adapter.listenUsingRfcommWithServiceRecord("SecureListener", UUID.fromString(res.getString(R.string.uuid_secure)));
                     Log.i(LOG_TAG, "Created serversocket");
                 } catch (IOException e) {
                     Log.w(LOG_TAG, "serversocket creation failed");
@@ -79,7 +76,7 @@ public class BluetoothListenerMaker {
             } else {
                 try {
                     Log.i(LOG_TAG, "Trying to create insecure serversocket");
-                    serverSocket=adapter.listenUsingInsecureRfcommWithServiceRecord("InsecureListener",UUID.fromString(res.getString(R.string.uuid_insecure)));
+                    serverSocket = adapter.listenUsingInsecureRfcommWithServiceRecord("InsecureListener", UUID.fromString(res.getString(R.string.uuid_insecure)));
                     Log.i(LOG_TAG, "Created serversocket");
                 } catch (IOException e) {
                     Log.w(LOG_TAG, "serversocket creation failed");
@@ -88,7 +85,7 @@ public class BluetoothListenerMaker {
             }
         }
         if (serverSocket != null) {
-            return new BluetoothListener(secure,serverSocket);
+            return new BluetoothListener(secure, serverSocket);
         }
         return null;
     }

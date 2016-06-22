@@ -4,13 +4,7 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -29,6 +23,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
+import de.dralle.bluetoothtest.DB.User;
+
 
 /**
  * Created by Niklas on 21.05.16.
@@ -36,15 +33,24 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class Encryption {
 
+    /**
+     * Log tag. Used to identify this´ class log messages in log output
+     */
+    private static final String LOG_TAG = Encryption.class.getName();
+    /**
+     * Context to be ujsed
+     */
+    private Context context;
 
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
-
-
-    public static String decryptWithRSA(String text, String rsaPrivateKey){
+    public String decryptWithRSA(String text, String rsaPrivateKey) {
         // BASE64 String zu Byte-Array
         byte[] crypted = Base64.decode(text, Base64.DEFAULT);
 
-        byte[] keyBytes = Base64.decode(rsaPrivateKey.getBytes(),Base64.DEFAULT);
+        byte[] keyBytes = Base64.decode(rsaPrivateKey.getBytes(), Base64.DEFAULT);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory fact = null;
         try {
@@ -87,7 +93,7 @@ public class Encryption {
         return new String(decoded);
     }
 
-    public static String encryptWithRSA(String text, String rsaPublicKey){
+    public String encryptWithRSA(String text, String rsaPublicKey) {
         //Cipher erstellen und verschluesseln
         Cipher cipher = null;
         try {
@@ -98,7 +104,7 @@ public class Encryption {
             e.printStackTrace();
         }
 
-        byte[] keyBytes = Base64.decode(rsaPublicKey.getBytes(),Base64.DEFAULT);
+        byte[] keyBytes = Base64.decode(rsaPublicKey.getBytes(), Base64.DEFAULT);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = null;
         try {
@@ -135,7 +141,7 @@ public class Encryption {
         return encoded;
     }
 
-    public static String encryptWithAES(String text, String aesKey){
+    public String encryptWithAES(String text, String aesKey) {
         //Cipher erstellen und verschluesseln
         Cipher cipher = null;
         try {
@@ -146,10 +152,8 @@ public class Encryption {
             e.printStackTrace();
         }
 
-        byte[] keyBytes = Base64.decode(aesKey.getBytes(),Base64.DEFAULT);
-       SecretKey originalAESKey=new SecretKeySpec(keyBytes,"AES");
-
-
+        byte[] keyBytes = Base64.decode(aesKey.getBytes(), Base64.DEFAULT);
+        SecretKey originalAESKey = new SecretKeySpec(keyBytes, "AES");
 
 
         try {
@@ -173,12 +177,12 @@ public class Encryption {
         return encoded;
     }
 
-    public static String decryptWithAES(String text, String aesKey){
+    public String decryptWithAES(String text, String aesKey) {
         // BASE64 String zu Byte-Array
         byte[] crypted = Base64.decode(text, Base64.DEFAULT);
 
-        byte[] keyBytes = Base64.decode(aesKey.getBytes(),Base64.DEFAULT);
-        SecretKey originalAESKey=new SecretKeySpec(keyBytes,"AES");
+        byte[] keyBytes = Base64.decode(aesKey.getBytes(), Base64.DEFAULT);
+        SecretKey originalAESKey = new SecretKeySpec(keyBytes, "AES");
 
         // entschluesseln
         Cipher cipher = null;
@@ -209,8 +213,7 @@ public class Encryption {
     }
 
 
-
-    public static SecretKey newAESkey(int bitLength)  {
+    public SecretKey newAESkey(int bitLength) {
         //AES Algorithmus
         KeyGenerator keygen = null;
         try {
@@ -218,7 +221,7 @@ public class Encryption {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        if(keygen!=null){
+        if (keygen != null) {
             //Länge 256-bit
             keygen.init(bitLength);
             //Schlüssel generieren
@@ -230,19 +233,47 @@ public class Encryption {
 
     }
 
-    public static KeyPair newRSAkeys(int bitLength){
+    public KeyPair newRSAkeys(int bitLength) {
         KeyPairGenerator keygen = null;
         try {
             keygen = KeyPairGenerator.getInstance("RSA");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-        if(keygen!=null) {
+        if (keygen != null) {
             keygen.initialize(bitLength);
             KeyPair keys = keygen.genKeyPair();
             return keys;
         }
         return null;
+    }
+
+    /**
+     * Generate (new) crypto keys
+     */
+    public void generateKeys(int userId, boolean override) {
+        Log.i(LOG_TAG, "Now trying to generate new crypto keys for user " + userId);
+        SPMADatabaseAccessHelper db = SPMADatabaseAccessHelper.getInstance(context);
+        User u = db.getUser(userId);
+        if (u != null) {
+            if (u.getAes() == null || u.getRsaPublic() == null || u.getRsaPrivate() == null || override) {
+                SecretKey aes = newAESkey(256);
+                KeyPair rsa = newRSAkeys(512);
+                u.setId(userId);
+                u.setAes(Base64.encodeToString(aes.getEncoded(), Base64.DEFAULT));
+                u.setRsaPrivate(Base64.encodeToString(rsa.getPrivate().getEncoded(), Base64.DEFAULT));
+                u.setRsaPublic(Base64.encodeToString(rsa.getPublic().getEncoded(), Base64.DEFAULT));
+                Log.v(LOG_TAG, "RSA Public key is " + u.getRsaPublic());
+                db.createOrUpdateUser(u);
+                Log.i(LOG_TAG, "New crypto keys generated");
+            } else {
+                Log.i(LOG_TAG, "generateKeys: Keys exist");
+            }
+        } else {
+            Log.i(LOG_TAG, "generateKeys: User null");
+        }
+
+
     }
 
 }
