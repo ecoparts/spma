@@ -79,8 +79,7 @@ public class SPMAService extends IntentService {
         spmaBroadcastReceiver = new SPMAServiceBroadcastReceiver();
         uuidChecker = new UUIDChecker(true);
         spmaBroadcastReceiver.setUuidChecker(uuidChecker);
-        uuidChecker.addUUID(UUID.fromString(getResources().getString(R.string.uuid_secure)));
-        uuidChecker.addUUID(UUID.fromString(getResources().getString(R.string.uuid_insecure)));
+
         internalMessageSender = new InternalMessageSender(this);//prepare broadcast sender
         spmaBroadcastReceiver.setInternalMessageSender(internalMessageSender);
         deviceManager = new RemoteBTDeviceManager();
@@ -163,6 +162,10 @@ public class SPMAService extends IntentService {
         SPMADatabaseAccessHelper.getInstance(this); //prepare database for use
 
         notificationManager.startNotification();
+
+        //Add UUIDs to check for when scanning
+        uuidChecker.addUUID(UUID.fromString(getResources().getString(R.string.uuid_secure)));
+        uuidChecker.addUUID(UUID.fromString(getResources().getString(R.string.uuid_insecure)));
 
 
     }
