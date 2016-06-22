@@ -61,7 +61,7 @@ public class InternalMessageSender {
      *
      * @param device newly recovered device
      */
-    public void sendCachedDevice(DeviceDBData device) {
+    public void sendSupportedDevice(DeviceDBData device) {
         JSONObject mdvCmd = getMessageFrame();
         try {
 
@@ -231,7 +231,7 @@ public class InternalMessageSender {
         sendClearDevices();
         List<DeviceDBData> allDevices = deviceManager.getAllCachedDevices();
         for (DeviceDBData device : allDevices)
-            sendCachedDevice(device);
+            sendSupportedDevice(device);
     }
 
     /**
