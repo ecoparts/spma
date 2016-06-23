@@ -54,6 +54,7 @@ public class SPMADatabaseAccessHelper {
         deviceAccessHelper = new DeviceAccessHelper(writeConnection);
         messageHistoryAccessHelper = new MessageHistoryAccessHelper(writeConnection);
         cryptoKeysAccessHelper = new CryptoKeysAccessHelper(writeConnection);
+        unlockDB();
     }
 
     public static SPMADatabaseAccessHelper getInstance(Context context) {
@@ -328,6 +329,7 @@ public class SPMADatabaseAccessHelper {
     }
 
     public void closeConnections() {
+        lockDB();
         writeConnection.close();
         Log.i(LOG_TAG, "Database connection closed");
     }
