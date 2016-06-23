@@ -189,6 +189,7 @@ public class InternalMessageParser {
                 localUserManager.changeLocalUserName(msgData);
                 break;
             case "RequestLocalUser":
+                Log.i(LOG_TAG,"Local user requested");
                 try {
                     localUserManager.setUserId(msgData.getInt("ID"));
                 } catch (JSONException e) {
