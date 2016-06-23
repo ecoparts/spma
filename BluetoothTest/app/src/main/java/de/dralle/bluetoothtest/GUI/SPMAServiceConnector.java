@@ -246,6 +246,11 @@ public class SPMAServiceConnector {
                 e.printStackTrace();
             }
             Log.i(LOG_TAG, "Service started");
+            try {
+                Thread.sleep(50); //sleep a bit to give service time to come online
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
