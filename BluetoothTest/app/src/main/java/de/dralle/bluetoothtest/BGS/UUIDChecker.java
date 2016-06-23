@@ -39,11 +39,15 @@ public class UUIDChecker {
     }
 
     public boolean checkForSupportedUUIDs(ParcelUuid[] allUUIDs) {
-        UUID[] uuids = new UUID[allUUIDs.length];
-        for (int i = 0; i < allUUIDs.length; i++) {
-            uuids[i] = allUUIDs[i].getUuid();
+        if(allUUIDs==null){
+            return false;
+        }else {
+            UUID[] uuids = new UUID[allUUIDs.length];
+            for (int i = 0; i < allUUIDs.length; i++) {
+                uuids[i] = allUUIDs[i].getUuid();
+            }
+            return checkForSupportedUUIDs(uuids);
         }
-        return checkForSupportedUUIDs(uuids);
     }
 
     public boolean checkForSupportedUUIDs(UUID[] allUUIDs) {
