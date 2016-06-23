@@ -181,28 +181,25 @@ public class DeviceAccessHelper {
      * Get all devices, that are saved in this database
      */
     public List<DeviceDBData> getAllDevices() {
-        Cursor c = null;
-        try {
-            c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
-        } catch (Exception e) {
 
-        }
+        Cursor c = connection.rawQuery("select * from Devices order by LastSeen", new String[]{});
+
         List<DeviceDBData> devices = new ArrayList<>();
-        if (c != null) {
 
 
-            while (c.moveToNext()) {
-                DeviceDBData device = new DeviceDBData();
-                device.setId(c.getInt(0));
-                device.setAddress(c.getString(1));
-                device.setDeviceName(c.getString(2));
-                device.setFriendlyName(c.getString(3));
-                device.setPaired(c.getInt(4) == 1);
-                device.setLastSeen(c.getInt(5));
-                devices.add(device);
-            }
-            c.close();
+        while (c.moveToNext()) {
+            DeviceDBData device = new DeviceDBData();
+            device.setId(c.getInt(0));
+            device.setAddress(c.getString(1));
+            device.setDeviceName(c.getString(2));
+            device.setFriendlyName(c.getString(3));
+            device.setPaired(c.getInt(4) == 1);
+            device.setLastSeen(c.getInt(5));
+            devices.add(device);
         }
+        c.close();
+        Log.v(LOG_TAG,devices.size()+" Devices in cache");
+
         return devices;
 
     }

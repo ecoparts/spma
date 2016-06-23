@@ -112,16 +112,18 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
             if (uuidChecker.checkForSupportedUUIDs(allUUIDs)) {
                 Log.i(LOG_TAG, "Device " + device.getAddress() + " supported");
                 deviceManager.addSupportedDevice(device);
+                deviceManager.addDeviceToCache(device);
             } else {
                 Log.i(LOG_TAG, "Device " + device.getAddress() + " not supported");
             }
 
-            internalMessageSender.sendNewSupportedDeviceList();
+
             BluetoothDevice nextDeviceToScan = deviceManager.getNearbyDevice();
             if (nextDeviceToScan != null) {
                 nextDeviceToScan.fetchUuidsWithSdp();
             } else {
                 Log.i(LOG_TAG, "Fetching UUIDs for all devices finished. Found " + deviceManager.getSupportedDevices().size() + " connect-worthy devices");
+                internalMessageSender.sendNewSupportedDeviceList();
             }
         }
 
