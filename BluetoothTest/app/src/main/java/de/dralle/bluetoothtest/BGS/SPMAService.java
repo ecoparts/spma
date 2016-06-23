@@ -115,6 +115,7 @@ public class SPMAService extends IntentService {
         internalMessageParser.setExternalMessageParser(externalMessageParser);
         spmaBroadcastReceiver.setInternalMessageParser( internalMessageParser);
         internalMessageSender.setDeviceManager(deviceManager);
+        spmaBroadcastReceiver.setDeviceManager(deviceManager);
         BluetoothConnectionObserver.getInstance().setInternalMessageParser(internalMessageParser); //prepare observer for later use
         BluetoothConnectionObserver.getInstance().setInternalMessageSender(internalMessageSender); //prepare observer for later use
         BluetoothConnectionObserver.getInstance().setDeviceManager(deviceManager);//prepare observer for later use
