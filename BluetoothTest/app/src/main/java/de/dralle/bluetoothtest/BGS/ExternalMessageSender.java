@@ -184,6 +184,7 @@ public class ExternalMessageSender {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.i(LOG_TAG,"Message is "+msg);
         //encode message as Base64 to handle äöü
         try {
             msg=Base64.encodeToString(msg.getBytes("utf-8"),Base64.DEFAULT);
@@ -191,6 +192,7 @@ public class ExternalMessageSender {
             e.printStackTrace();
         }
 
+        Log.i(LOG_TAG,"Message base64 is "+msg);
         int encryptionLevel = 0;
         User sender = SPMADatabaseAccessHelper.getInstance(con).getUser(senderID);
         if(sender==null){
@@ -203,6 +205,8 @@ public class ExternalMessageSender {
                     encMsg = enc.encryptWithAES(msg, sender.getAes());
                     if (encMsg != null) {
                         encryptionLevel = 1;
+
+                        Log.i(LOG_TAG,"Message encrypted "+msg);
                     } else {
                         Log.w(LOG_TAG, "Encryption failed");
                     }

@@ -125,7 +125,9 @@ public class ExternalMessageParser {
                                     //decrypt
                                     String deviceKey = SPMADatabaseAccessHelper.getInstance(con).getDeviceAESKey(fromAddress);
                                     if (deviceKey != null) {
+                                        Log.i(LOG_TAG, "Message before AES decrypt: "+msg);
                                         String decMsg = enc.decryptWithAES(msg, deviceKey);
+                                        Log.i(LOG_TAG, "Message after AES decrypt: "+decMsg);
                                         if (decMsg != null) {
                                             String decodedMsg = "";
                                             try {

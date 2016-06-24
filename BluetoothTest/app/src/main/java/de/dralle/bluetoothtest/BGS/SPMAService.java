@@ -175,6 +175,7 @@ public class SPMAService extends IntentService {
         //create a default user
         SPMADatabaseAccessHelper.getInstance(this).createDefaultUserIfNotExists(bluetoothManager.getLocalDeviceName());
         enc.generateKeys(0,true);
+        localUserManager.setUserId(0);
 
 
     }
