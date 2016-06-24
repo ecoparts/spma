@@ -228,7 +228,7 @@ public class ExternalMessageSender {
                 }
                 if (connection != null) {
                     connection.sendExternalMessage(jsoOut.toString());
-                    SPMADatabaseAccessHelper.getInstance(con).addSendMessage(address, msg, senderID, encryptionLevel == 1);
+                    SPMADatabaseAccessHelper.getInstance(con).addSendMessage(address, msg, senderID);
                 } else {
                     Log.i(LOG_TAG, "No suitable connection found");
 
