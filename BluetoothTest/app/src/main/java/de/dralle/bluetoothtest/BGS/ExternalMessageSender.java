@@ -254,7 +254,7 @@ public class ExternalMessageSender {
                         jsoOut.put("Receiver", device.getFriendlyName());
                     }
                     if (sender != null) {
-                        jsoOut.put("Sender", sender.getName());//TODO: investigate
+                        jsoOut.put("Sender", sender.getName());
                     } else {
                         jsoOut.put("Sender", adapter.getName());
                     }
@@ -287,8 +287,33 @@ public class ExternalMessageSender {
 
 
         }
+    }
 
+    public JSONObject enrichData(JSONObject original, int encryptionLevel, String contentType, User sender, DeviceDBData remoteDevice, BluetoothConnection connection) {
+        try {
+            original.put("Level", encryptionLevel);
 
+            original.put("Content", contentType);
+            if (remoteDevice != null) {
+                original.put("Receiver", remoteDevice.getFriendlyName());
+            }
+
+            original.put("Sender", sender.getName());
+
+            original.put("ReceiverAddress", remoteDevice.getAddress());
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                original.put("SenderAddress", localUserManager.getSenderAddress());
+            }
+
+            original.put("SenderVersionAPI", Build.VERSION.SDK_INT);
+            original.put("SenderVersionApp", con.getResources().getString(R.string.app_version));
+            original.put("Timestamp", System.currentTimeMillis() / 1000);
+
+            original.put("Secure", connection.isSecureConnection());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return original;
     }
 
 

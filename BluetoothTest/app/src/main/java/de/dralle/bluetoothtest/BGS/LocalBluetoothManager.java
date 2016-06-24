@@ -160,6 +160,16 @@ public class LocalBluetoothManager {
         }
         return null;
     }
+    /**
+     * @return The local bluetooth device address. Not working in API 23+
+     */
+    public String getLocalDeviceAddress() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            return adapter.getAddress();
+        }
+        return null;
+    }
 
 
 }

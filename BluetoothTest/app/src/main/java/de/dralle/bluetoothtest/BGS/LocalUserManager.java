@@ -153,4 +153,7 @@ public class LocalUserManager {
         SPMADatabaseAccessHelper.getInstance(context).addUser(newUserName);
 
     }
+    public String getSenderAddress(){
+        return bluetoothManager.getLocalDeviceAddress();
+    }
 }
