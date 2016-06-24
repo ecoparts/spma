@@ -156,4 +156,7 @@ public class LocalUserManager {
     public String getSenderAddress(){
         return bluetoothManager.getLocalDeviceAddress();
     }
+    public String getDefaultName(){
+        return bluetoothManager.getLocalDeviceName();
+    }
 }
