@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
-
+    serviceConnector.unregisterForBroadcasts();
         serviceConnector.stopListeners();
         serviceConnector.stopService();
 

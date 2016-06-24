@@ -43,10 +43,16 @@ public class SPMADatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        for(String sql : context.getResources().getStringArray(R.array.dbdrop))
-            sqLiteDatabase.execSQL(sql);
-        Log.i(LOG_TAG,"Database 'upgraded'");
-        onCreate(sqLiteDatabase);
+        Log.i(LOG_TAG, "Database upgrading from "+i+" to "+i1);
+        if(i1>9){
+
+        }
+        else {//prior to dbversion 9, no upgrade log was beeing recorded
+            for (String sql : context.getResources().getStringArray(R.array.dbdrop))
+                sqLiteDatabase.execSQL(sql);
+            Log.i(LOG_TAG, "Database 'upgraded'");
+            onCreate(sqLiteDatabase);
+        }
 
     }
 }

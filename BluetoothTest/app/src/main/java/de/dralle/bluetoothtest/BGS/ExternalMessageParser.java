@@ -285,6 +285,7 @@ public class ExternalMessageParser {
                     e.printStackTrace();
                 }
                 if (encryptionLevel == 2) { //aes key rsa encrypted for transport
+                    Log.i(LOG_TAG,"AES key encryption level requirement met");
                     User u = localUserManager.getUserData();
                     if (u != null) {
                         String rsaPrivate = u.getRsaPrivate();
@@ -294,6 +295,8 @@ public class ExternalMessageParser {
                             SPMADatabaseAccessHelper.getInstance(con).insertDeviceAESKey(address, remoteDeviceAesKey);
                             Log.i(LOG_TAG, "Key exchange finished");
                         }
+                    }else{
+                        Log.i(LOG_TAG,"AES key encryption failed: User null");
                     }
                 }
 

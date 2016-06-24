@@ -86,6 +86,22 @@ public class SPMADatabaseAccessHelper {
     /**
      * Updates a database User
      *
+     */
+    public void createDefaultUserIfNotExists(String name) {
+        lockDB();
+        User user = userAccessHelper.getUser(0);
+        if(user==null){
+            user=new User();
+            user.setId(0);
+            user.setName(name);
+            userAccessHelper.createOrUpdateUser(user);
+        }
+        unlockDB();
+    }
+
+    /**
+     * Updates a database User
+     *
      * @param u Userdata to be updated
      * @return User given
      */
