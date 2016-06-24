@@ -253,12 +253,12 @@ public class SPMADatabaseAccessHelper {
         return devices;
     }
 
-    public void addReceivedMessage(String senderAddress, String message, int userId, boolean encrypted) {
+    public void addReceivedMessage(String senderAddress, String message, int userId) {
         Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId);
         int deviceId = getDeviceID(senderAddress);
         if (deviceId > -1) {
             lockDB();
-            messageHistoryAccessHelper.addReceivedMessage(deviceId, message, userId, encrypted);
+            messageHistoryAccessHelper.addReceivedMessage(deviceId, message, userId);
             unlockDB();
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " from " + senderAddress + " for " + userId + " failed");
@@ -266,12 +266,12 @@ public class SPMADatabaseAccessHelper {
 
     }
 
-    public void addSendMessage(String receiverAddress, String message, int userId, boolean encrypted) {
+    public void addSendMessage(String receiverAddress, String message, int userId) {
         Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId);
         int deviceId = getDeviceID(receiverAddress);
         if (deviceId > -1) {
             lockDB();
-            messageHistoryAccessHelper.addSendMessage(deviceId, message, userId, encrypted);
+            messageHistoryAccessHelper.addSendMessage(deviceId, message, userId);
             unlockDB();
         } else {
             Log.i(LOG_TAG, "Logging message " + message + " for " + receiverAddress + " from " + userId + " failed");

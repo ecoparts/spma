@@ -112,13 +112,14 @@ public class ExternalMessageParser {
                                 String msg = jsoIn.getString("Message");
                                 if (level == 0) {
                                     Log.i(LOG_TAG, "Message is not encrypted");
+                                    String decodedMsg="";
                                     try {
-                                        msg= new String(Base64.decode(msg,Base64.DEFAULT),"utf-8");
+                                        decodedMsg= new String(Base64.decode(msg,Base64.DEFAULT),"utf-8");
                                     } catch (UnsupportedEncodingException e) {
                                         e.printStackTrace();
                                     }
-                                    internalMessageSender.sendNewMessageReceivedMessage(msg, fromAddress);
-                                    SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId(), false);
+                                    internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress);
+                                    SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId());
                                 } else if (level == 1) {
                                     Log.i(LOG_TAG, "Message is AES encrypted");
                                     //decrypt
@@ -126,13 +127,14 @@ public class ExternalMessageParser {
                                     if (deviceKey != null) {
                                         String decMsg = enc.decryptWithAES(msg, deviceKey);
                                         if (decMsg != null) {
+                                            String decodedMsg = "";
                                             try {
-                                                decMsg= new String(Base64.decode(decMsg,Base64.DEFAULT),"utf-8");
+                                                decodedMsg= new String(Base64.decode(decMsg,Base64.DEFAULT),"utf-8");
                                             } catch (UnsupportedEncodingException e) {
                                                 e.printStackTrace();
                                             }
-                                            internalMessageSender.sendNewMessageReceivedMessage(decMsg, fromAddress);
-                                            SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId(), true);
+                                            internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress);
+                                            SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, decMsg, localUserManager.getUserId());
                                         } else {
                                             Log.i(LOG_TAG, "Decryption failed: Decryption failed");
                                         }
