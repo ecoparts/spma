@@ -157,10 +157,8 @@ public class ExternalMessageSender {
 
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
-            JSONObject jsoOut = new JSONObject();
+            JSONObject jsoOut = getMessageFrame();
             try {
-
-                jsoOut.put("Extern", true);
                 jsoOut.put("Level", encryptionLevel);
                 jsoOut.put("Content", "DataResponse");
                 DeviceDBData device = deviceManager.getCachedDevice(address);
@@ -247,10 +245,8 @@ public class ExternalMessageSender {
 
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
             if (adapter != null) {
-                JSONObject jsoOut = new JSONObject();
+                JSONObject jsoOut = getMessageFrame();
                 try {
-
-                    jsoOut.put("Extern", true);
                     jsoOut.put("Level", encryptionLevel);
                     jsoOut.put("Content", "Text");
                     DeviceDBData device = deviceManager.getCachedDevice(address);
