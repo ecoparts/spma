@@ -3,11 +3,13 @@ package de.dralle.bluetoothtest.BGS;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
@@ -110,6 +112,11 @@ public class ExternalMessageParser {
                                 String msg = jsoIn.getString("Message");
                                 if (level == 0) {
                                     Log.i(LOG_TAG, "Message is not encrypted");
+                                    try {
+                                        msg= new String(Base64.decode(msg,Base64.DEFAULT),"utf-8");
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
                                     internalMessageSender.sendNewMessageReceivedMessage(msg, fromAddress);
                                     SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId(), false);
                                 } else if (level == 1) {
@@ -119,6 +126,11 @@ public class ExternalMessageParser {
                                     if (deviceKey != null) {
                                         String decMsg = enc.decryptWithAES(msg, deviceKey);
                                         if (decMsg != null) {
+                                            try {
+                                                decMsg= new String(Base64.decode(decMsg,Base64.DEFAULT),"utf-8");
+                                            } catch (UnsupportedEncodingException e) {
+                                                e.printStackTrace();
+                                            }
                                             internalMessageSender.sendNewMessageReceivedMessage(decMsg, fromAddress);
                                             SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId(), true);
                                         } else {

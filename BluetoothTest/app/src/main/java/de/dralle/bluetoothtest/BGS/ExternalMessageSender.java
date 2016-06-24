@@ -3,10 +3,13 @@ package de.dralle.bluetoothtest.BGS;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.SPMADatabaseAccessHelper;
@@ -172,12 +175,19 @@ public class ExternalMessageSender {
     public void prepareNewExternalMessage(JSONObject msgData) {
         String address = null;
         String msg = "";
+        String encMsg=null;
         int senderID = -1;
         try {
             address = msgData.getString("Address");
             msg = msgData.getString("Message");
             senderID = msgData.getInt("SenderID");
         } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //encode message as Base64 to handle äöü
+        try {
+            msg=Base64.encodeToString(msg.getBytes("utf-8"),Base64.DEFAULT);
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
@@ -190,9 +200,8 @@ public class ExternalMessageSender {
         if (address != null) {
             if (sender != null) {
                 if (sender.getAes() != null) {
-                    String encMsg = enc.encryptWithAES(msg, sender.getAes());
+                    encMsg = enc.encryptWithAES(msg, sender.getAes());
                     if (encMsg != null) {
-                        msg = encMsg;
                         encryptionLevel = 1;
                     } else {
                         Log.w(LOG_TAG, "Encryption failed");
@@ -208,7 +217,11 @@ public class ExternalMessageSender {
                 DeviceDBData device = deviceManager.getCachedDevice(address);
                 jsoOut=enrichData(jsoOut,encryptionLevel,"Text",sender,device,connection);
                 try {
-                    jsoOut.put("Message", msg);
+                    if(encryptionLevel==1){
+                        jsoOut.put("Message", encMsg);
+                    }else{
+                        jsoOut.put("Message", msg);
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
