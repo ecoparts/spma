@@ -1,5 +1,6 @@
 package de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -19,9 +20,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.dralle.bluetoothtest.GUI.OneFragment;
-import de.dralle.bluetoothtest.GUI.ThreeFragment;
-import de.dralle.bluetoothtest.GUI.TwoFragment;
 import de.dralle.bluetoothtest.R;
 
 /*
@@ -90,6 +88,7 @@ public class MainActivity_NT extends AppCompatActivity {
                         return true;
                     default:
                         Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
+
                         return true;
 
                 }
