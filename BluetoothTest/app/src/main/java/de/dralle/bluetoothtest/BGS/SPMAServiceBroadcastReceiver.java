@@ -73,17 +73,11 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         String action = intent.getAction();
         if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-
             Log.i(LOG_TAG, "New device found");
-
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
             deviceManager.addNearbyDevice(device);
-
-
         }
         if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             Log.i(LOG_TAG, "Discovery started");
