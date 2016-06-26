@@ -1,5 +1,6 @@
 package de.dralle.bluetoothtest.BGS;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Observable;
+import java.util.UUID;
 
 /**
  * Created by Nils on 26.05.2016.
@@ -17,8 +19,11 @@ public class BluetoothListener extends Observable implements Runnable {
 
     private static final String LOG_TAG = BluetoothListener.class.getName();
     private boolean continueListen = false; //continue to listen if new connection is accepted
-    private boolean secure = false;
-    private BluetoothServerSocket serverSocket = null;
+    private boolean secure=false;
+
+    public boolean isSecure() {
+        return secure;
+    }
 
     public BluetoothListener(boolean secure, BluetoothServerSocket serverSocket) {
         this.secure = secure;
@@ -26,13 +31,12 @@ public class BluetoothListener extends Observable implements Runnable {
         this.serverSocket = serverSocket;
     }
 
-    public boolean isSecure() {
-        return secure;
-    }
+    private BluetoothServerSocket serverSocket = null;
 
     public boolean isListening() {
         return continueListen;
     }
+
 
 
     @Override
@@ -76,11 +80,11 @@ public class BluetoothListener extends Observable implements Runnable {
     }
 
     private void notifyObserversAboutNewConnectionAccepted() {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Action", "NewConnectionAccepted");
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Action","NewConnectionAccepted");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -89,11 +93,11 @@ public class BluetoothListener extends Observable implements Runnable {
     }
 
     private void notifyObserversAboutStartup() {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Action", "Startup");
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Action","Startup");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -102,11 +106,11 @@ public class BluetoothListener extends Observable implements Runnable {
     }
 
     private void notifyObserversAboutShutdown() {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Action", "Shutdown");
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Action","Shutdown");
         } catch (JSONException e) {
             e.printStackTrace();
         }
