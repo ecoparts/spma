@@ -309,4 +309,22 @@ public class InternalMessageSender {
     }
 
 
+    /**
+     * Send a message that the device scan has finished
+     */
+    public void sendDeviceScanFinished(int cntResults) {
+        JSONObject mdvCmd = new JSONObject();
+        try {
+            mdvCmd.put("Extern", false);
+            mdvCmd.put("Level", 0);
+            mdvCmd.put("Action", "ScanFinished");
+            mdvCmd.put("CntResults", cntResults);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+
+    }
 }

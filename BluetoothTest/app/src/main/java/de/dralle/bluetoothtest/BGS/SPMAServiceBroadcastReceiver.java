@@ -81,6 +81,8 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
         }
         if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             Log.i(LOG_TAG, "Discovery started");
+            deviceManager.clearNearbyDevices();
+            deviceManager.clearSupportedDevices();
             internalMessageSender.sendClearDevices();
         }
         if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -117,6 +119,7 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
                 nextDeviceToScan.fetchUuidsWithSdp();
             } else {
                 Log.i(LOG_TAG, "Fetching UUIDs for all devices finished. Found " + deviceManager.getSupportedDevices().size() + " connect-worthy devices");
+                internalMessageSender.sendDeviceScanFinished(deviceManager.getSupportedDevices().size());
                 internalMessageSender.sendNewSupportedDeviceList();
             }
         }
