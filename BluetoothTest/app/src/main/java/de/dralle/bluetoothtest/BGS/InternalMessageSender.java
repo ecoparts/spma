@@ -237,7 +237,7 @@ public class InternalMessageSender {
     /**
      * Send a message that a new external message has arrived, directed at the GUI
      */
-    public void sendNewMessageReceivedMessage(String msg, String address) {
+    public void sendNewMessageReceivedMessage(String msg, String address, boolean wasEncrypted) {
         JSONObject mdvCmd = new JSONObject();
         try {
             mdvCmd.put("Extern", false);
@@ -252,6 +252,7 @@ public class InternalMessageSender {
             }
 
             mdvCmd.put("Timestamp", System.currentTimeMillis() / 1000);
+            mdvCmd.put("WasEncrypted", wasEncrypted);
             mdvCmd.put("Message", msg);
 
         } catch (JSONException e) {
