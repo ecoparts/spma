@@ -133,7 +133,6 @@ public class InternalMessageParser {
             case "MakeVisible":
                 bluetoothManager.makeDeviceVisible(msgData);
                 break;
-
             case "TurnOn":
                 bluetoothManager.turnBluetoothOn();
                 break;
