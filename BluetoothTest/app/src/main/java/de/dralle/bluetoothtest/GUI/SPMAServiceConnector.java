@@ -172,6 +172,7 @@ public class SPMAServiceConnector {
     private void saveNewUser(JSONObject msgData) {
         if (u == null) {
             u = new User();
+        }
             try {
                 u.setId(msgData.getInt("ID"));
 
@@ -180,7 +181,7 @@ public class SPMAServiceConnector {
                 e.printStackTrace();
             }
             userId = u.getId();
-        }
+
 
     }
 
