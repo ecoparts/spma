@@ -159,6 +159,7 @@ public class SPMAServiceConnector {
                 saveNewUser(msgData);
                 break;
             default:
+                broadcastToGUI(msgData.toString());
                 break;
         }
     }

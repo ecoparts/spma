@@ -118,7 +118,7 @@ public class ExternalMessageParser {
                                     } catch (UnsupportedEncodingException e) {
                                         e.printStackTrace();
                                     }
-                                    internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress);
+                                    internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress,false);
                                     SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, msg, localUserManager.getUserId());
                                 } else if (level == 1) {
                                     Log.i(LOG_TAG, "Message is AES encrypted");
@@ -135,7 +135,7 @@ public class ExternalMessageParser {
                                             } catch (UnsupportedEncodingException e) {
                                                 e.printStackTrace();
                                             }
-                                            internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress);
+                                            internalMessageSender.sendNewMessageReceivedMessage(decodedMsg, fromAddress,true);
                                             SPMADatabaseAccessHelper.getInstance(con).addReceivedMessage(fromAddress, decMsg, localUserManager.getUserId());
                                         } else {
                                             Log.i(LOG_TAG, "Decryption failed: Decryption failed");
