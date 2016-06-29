@@ -471,8 +471,6 @@ public class SPMAServiceConnector {
      * @return true if service is running and message was sent
      */
     public boolean requestCachedDevices() {
-
-
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending ResendCachedDevices");
             JSONObject mdvCmd = new JSONObject();
