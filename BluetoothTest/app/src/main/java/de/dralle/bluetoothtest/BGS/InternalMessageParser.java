@@ -149,7 +149,6 @@ public class InternalMessageParser {
                 for (DeviceDBData dd : devicesData) {
                     internalMessageSender.sendCachedDevice(dd);
                 }
-
                 break;
             case "StartListeners":
                 BluetoothListenerObserver.getInstance().startListeners(msgData);
