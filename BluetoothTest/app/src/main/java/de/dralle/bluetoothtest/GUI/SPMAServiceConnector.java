@@ -173,14 +173,14 @@ public class SPMAServiceConnector {
         if (u == null) {
             u = new User();
         }
-            try {
-                u.setId(msgData.getInt("ID"));
+        try {
+            u.setId(msgData.getInt("ID"));
 
-                u.setName(msgData.getString("Name"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            userId = u.getId();
+            u.setName(msgData.getString("Name"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        userId = u.getId();
 
 
     }
@@ -244,20 +244,18 @@ public class SPMAServiceConnector {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.i(LOG_TAG,"Receiver registered");
+            Log.i(LOG_TAG, "Receiver registered");
         }
     }
 
     public void unregisterForBroadcasts() {
-
-
-            try {
-                parentActivity.unregisterReceiver(broadcastReceiver);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            receiveBroadcasts = false;
-            Log.i(LOG_TAG,"Receiver unregistered");
+        try {
+            parentActivity.unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        receiveBroadcasts = false;
+        Log.i(LOG_TAG, "Receiver unregistered");
 
     }
 
@@ -350,8 +348,6 @@ public class SPMAServiceConnector {
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
-
-
         //parentActivity.startService(bgServiceIntent);
     }
 
@@ -359,8 +355,6 @@ public class SPMAServiceConnector {
         Intent bgServiceIntent = new Intent(MainActivity.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
-
-
         //parentActivity.startService(bgServiceIntent);
     }
 
@@ -368,16 +362,12 @@ public class SPMAServiceConnector {
         Intent bgServiceIntent = new Intent(ChatActivity.ACTION_NEW_MSG + "_" + address);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
-
-
         //parentActivity.startService(bgServiceIntent);
     }
 
     public void stopService() {
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.stopService(bgServiceIntent);
-
-
         Log.i(LOG_TAG, "Stopped service");
     }
 
@@ -390,7 +380,6 @@ public class SPMAServiceConnector {
         ActivityManager am = (ActivityManager) parentActivity.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(Integer.MAX_VALUE);
         for (ActivityManager.RunningServiceInfo rsi : services) {
-
             if (rsi.service.getClassName().equals(SPMAService.class.getName())) {
                 return true;
             }
