@@ -147,7 +147,7 @@ public class InternalMessageParser {
                 internalMessageSender.sendClearDevices();
                 List<DeviceDBData> devicesData = deviceManager.getAllCachedDevices();
                 for (DeviceDBData dd : devicesData) {
-                    internalMessageSender.sendSupportedDevice(dd);
+                    internalMessageSender.sendCachedDevice(dd);
                 }
 
                 break;
