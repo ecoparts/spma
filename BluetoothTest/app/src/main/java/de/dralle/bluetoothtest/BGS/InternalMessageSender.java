@@ -8,6 +8,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.DB.DeviceDBData;
@@ -249,9 +250,18 @@ public class InternalMessageSender {
 
     public void sendNewSupportedDeviceList() {
         sendClearDevices();
-        List<DeviceDBData> allDevices = deviceManager.getAllCachedDevices();
-        for (DeviceDBData device : allDevices)
+        List<BluetoothDevice> supported = deviceManager.getSupportedDevices();
+        List<DeviceDBData> supportedDevicesFromDB = new ArrayList<>();
+        for (BluetoothDevice device : supported){
+            DeviceDBData deviceData = deviceManager.getCachedDevice(device.getAddress());
+            if(deviceData==null){
+                deviceData=new DeviceDBData(device);
+            }
+            supportedDevicesFromDB.add(deviceData);
+        }
+        for (DeviceDBData device:supportedDevicesFromDB){
             sendSupportedDevice(device);
+        }
     }
 
     /**
