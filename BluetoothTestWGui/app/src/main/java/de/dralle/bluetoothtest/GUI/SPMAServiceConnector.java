@@ -345,24 +345,20 @@ public class SPMAServiceConnector {
 
 
     public void broadcastInternalMessageToService(String msg) {
-        Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
+        broadcastTo(msg,SPMAService.ACTION_NEW_MSG);
+    }
+    public void broadcastTo(String msg, String target) {
+        Intent bgServiceIntent = new Intent(target);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
-        //parentActivity.startService(bgServiceIntent);
     }
 
     public void broadcastToGUI(String msg) {
-        Intent bgServiceIntent = new Intent(MainActivity.ACTION_NEW_MSG);
-        bgServiceIntent.putExtra("msg", msg);
-        parentActivity.sendBroadcast(bgServiceIntent);
-        //parentActivity.startService(bgServiceIntent);
+        broadcastTo(msg,MainActivity.ACTION_NEW_MSG);
     }
 
     public void broadcastToChatGUI(String msg, String address) {
-        Intent bgServiceIntent = new Intent(ChatActivity.ACTION_NEW_MSG + "_" + address);
-        bgServiceIntent.putExtra("msg", msg);
-        parentActivity.sendBroadcast(bgServiceIntent);
-        //parentActivity.startService(bgServiceIntent);
+        broadcastTo(msg,ChatActivity.ACTION_NEW_MSG+"_"+address);
     }
 
     public void stopService() {
