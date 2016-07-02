@@ -361,6 +361,10 @@ public class SPMAServiceConnector {
         broadcastTo(msg,ChatActivity.ACTION_NEW_MSG+"_"+address);
     }
 
+    public void broadcastToNearbyDevicesFragment(String msg, String address) {
+        broadcastTo(msg,OneFragment.ACTION_NEW_MSG);
+    }
+
     public void stopService() {
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.stopService(bgServiceIntent);
