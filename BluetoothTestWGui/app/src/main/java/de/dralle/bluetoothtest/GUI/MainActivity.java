@@ -49,6 +49,7 @@ import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String ACTION_NEW_MSG = "MainActivity.ACTION_NEW_MSG";
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
