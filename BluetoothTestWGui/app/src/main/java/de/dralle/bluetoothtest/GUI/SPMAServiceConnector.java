@@ -362,7 +362,7 @@ public class SPMAServiceConnector {
     }
 
     public void broadcastToNearbyDevicesFragment(String msg, String address) {
-        broadcastTo(msg,OneFragment.ACTION_NEW_MSG);
+        broadcastTo(msg, NearbyDevicesFragment.ACTION_NEW_MSG);
     }
 
     public void stopService() {

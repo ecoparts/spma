@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.Interpolator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -31,11 +29,11 @@ import de.dralle.bluetoothtest.R;
 
 
 
-public class OneFragment extends Fragment {
+public class NearbyDevicesFragment extends Fragment {
 
-    private static final String LOG_TAG = OneFragment.class.getName();
+    private static final String LOG_TAG = NearbyDevicesFragment.class.getName();
     private SPMAServiceConnector serviceConnector;
-    public static final String ACTION_NEW_MSG = "OneFragment.ACTION_NEW_MSG";
+    public static final String ACTION_NEW_MSG = "NearbyDevicesFragment.ACTION_NEW_MSG";
 
     private ArrayList<String> deviceNames;
     private ArrayAdapter<String> displayAdapter;
@@ -92,7 +90,7 @@ public class OneFragment extends Fragment {
         }
     };
 
-    public OneFragment() {
+    public NearbyDevicesFragment() {
 
     }
 
