@@ -361,7 +361,7 @@ public class SPMAServiceConnector {
         broadcastTo(msg,ChatActivity.ACTION_NEW_MSG+"_"+address);
     }
 
-    public void broadcastToNearbyDevicesFragment(String msg) {
+    public void broadcastToNearbyDevicesFragment(String msg, String address) {
         broadcastTo(msg, NearbyDevicesFragment.ACTION_NEW_MSG);
     }
 

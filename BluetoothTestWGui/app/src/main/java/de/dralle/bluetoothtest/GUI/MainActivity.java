@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest.SettingsActivity;
 import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()){
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(),"Profil ausgewählt",Toast.LENGTH_SHORT).show();
+                        SettingsActivity fragment = new SettingsActivity();
 
                         return true;
                     case R.id.settings:
@@ -115,8 +118,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new NearbyDevicesFragment(), "Umgebung"); //TODO: reference strings.xml instead
-        adapter.addFragment(new FiendsFragment(), "Freunde");
-        adapter.addFragment(new ConnectionsFragment(), "Chats");
+        adapter.addFragment(new TwoFragment(), "Freunde");
+        adapter.addFragment(new ThreeFragment(), "Chats");
         viewPager.setAdapter(adapter);
     }
 
