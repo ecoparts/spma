@@ -115,7 +115,7 @@ public class OneFragment extends Fragment {
 
         }else{
             Log.w(LOG_TAG,"Connection not requested");
-            getActivity().finish();
+            //TODO: error message
         }
     }
 
