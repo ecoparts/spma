@@ -121,7 +121,6 @@ public class OneFragment extends Fragment {
 
     private void startNewChatActivity(BluetoothDevice remoteDevice) {
         if (remoteDevice != null) {
-
             serviceConnector.selectUser(0); //select user 0 (default) every time a new connection is created
             Intent newChatIntent = new Intent(getActivity(), ChatActivity.class);
             newChatIntent.putExtra("address", remoteDevice.getAddress());
@@ -134,7 +133,6 @@ public class OneFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.activity_main, container, false);
     }
 
@@ -150,7 +148,6 @@ public class OneFragment extends Fragment {
             @Override
             public void onRefresh() {
                 scanAndRefresh();
-
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
