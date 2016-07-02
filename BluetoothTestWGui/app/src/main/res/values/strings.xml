@@ -1,0 +1,96 @@
+<resources>
+    <string name="app_name">BluetoothTest</string>
+    <string name="app_version">0.16a</string>
+    <string name="db_version">6</string>
+    <string name="dbname">spma</string>
+    <string-array name="dbcreate">
+        <item>
+            create table if not exists User(
+                ID integer primary key autoincrement,
+                Name varchar(40) not null,
+                AES varchar(256),
+                RSAPrivate varchar(512),
+                RSAPublic varchar(512)
+            )
+        </item>
+        <item>
+            create table if not exists Devices(
+                ID integer primary key autoincrement,
+                Address varchar(17) not null,
+                DeviceName varchar(40),
+                FriendlyName varchar(40),
+                Paired integer not null,
+                LastSeen integer default CURRENT_TIMESTAMP
+            )
+        </item>
+        <item>
+            create table if not exists Friends(
+                ID integer primary key autoincrement,
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table if not exists Send(
+                ID integer primary key autoincrement,
+                Text varchar(1024) not null,
+                Timestamp integer default CURRENT_TIMESTAMP,
+                Encrypted integer not null,
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table if not exists Received(
+                ID integer primary key autoincrement,
+                Text varchar(1024) not null,
+                Timestamp integer default CURRENT_TIMESTAMP,
+                Encrypted integer not null,
+                UserID integer not null,
+                DeviceID integer not null,
+                foreign key(UserID) references User(ID),
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table if not exists AES(
+                ID integer primary key autoincrement,
+                Key varchar(256),
+                DeviceID integer not null,
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+        <item>
+            create table if not exists RSA(
+                ID integer primary key autoincrement,
+                Key varchar(256),
+                DeviceID integer not null,
+                foreign key(DeviceID) references Devices(ID)
+            )
+        </item>
+    </string-array>
+    <string name="scan">Scan</string>
+    <string name="btNotSupported">Bluetooth not supported</string>
+    <string name="btNotEnabled">Bluetooth not enabled</string>
+    <string name="uuid_insecure">d453cc08-615b-4300-b802-ccb61927aca9</string>
+    <string name="uuid_secure">cb918f7b-0550-41c5-a4e3-e75df009a82e</string>
+    <string name="startBTserver">Start Bluetooth Server</string>
+    <string name="stopBTserver">Stop Bluetooth listeners</string>
+    <string name="send">Send</string>
+    <string name="connectionRequested">Connection requested</string>
+    <string name="connectionFailed">Connection failed</string>
+    <string name="connectionRetrieved">Connection retrieved</string>
+    <string name="connectionReady">Connection ready</string>
+    <string name="connectionShutdown">Connection shutdown</string>
+    <string name="BGSNotificationTitle">SPMA Service</string>
+    <string name="BGSNotificationText">Service is currently running</string>
+    <string name="menuProfile">Profile</string>
+    <string name="menuSettings">Settings</string>
+    <string name="actionSettings">Settings</string>
+    <string name="openDrawer">Open</string>
+    <string name="closeDrawer">Close</string>
+</resources>
