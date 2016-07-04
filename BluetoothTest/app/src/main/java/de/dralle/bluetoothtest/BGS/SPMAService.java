@@ -177,6 +177,8 @@ public class SPMAService extends IntentService {
         enc.generateKeys(0,true);
         localUserManager.setUserId(0);
 
+        internalMessageSender.sendServiceStartupComplete();
+
 
     }
 

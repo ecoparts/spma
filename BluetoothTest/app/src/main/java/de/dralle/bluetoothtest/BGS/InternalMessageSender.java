@@ -227,6 +227,19 @@ public class InternalMessageSender {
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
+    /**
+     * Send a message that service has started
+     */
+    public void sendServiceStartupComplete() {
+        JSONObject mdvCmd = getMessageFrame();
+        try {
+            mdvCmd.put("Action", "ServiceStarted");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+    }
 
     /**
      * Send a internal message that a connection is ready
