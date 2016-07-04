@@ -162,6 +162,9 @@ public class SPMAServiceConnector {
             case "ServiceStarted":
                 turnBluetoothOn();
                 makeDeviceVisible(300);
+                if(isBtOn()){
+                    startListeners();
+                }
                 break;
             case "BluetoothTurnedOn":
                 if(!listenersOnline){

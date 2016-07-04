@@ -38,6 +38,15 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
      */
     private RemoteBTDeviceManager deviceManager = null;
 
+    public void setBluetoothManager(LocalBluetoothManager bluetoothManager) {
+        this.bluetoothManager = bluetoothManager;
+    }
+
+    /**
+     * Manages Bluetooth functions
+     */
+    private LocalBluetoothManager bluetoothManager = null;
+
     public SPMAServiceBroadcastReceiver() {
 
     }
@@ -81,9 +90,13 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
         }
         if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
             Log.i(LOG_TAG, "Discovery started");
-            deviceManager.clearNearbyDevices();
-            deviceManager.clearSupportedDevices();
-            internalMessageSender.sendClearDevices();
+            if(!bluetoothManager.isScanning()){
+                Log.i(LOG_TAG, "And not scanning");
+                deviceManager.clearNearbyDevices();
+                deviceManager.clearSupportedDevices();
+                internalMessageSender.sendClearDevices();
+            }
+
         }
         if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
             Log.i(LOG_TAG, "Discovery finished. " + deviceManager.getNearbyDevices().size() + " devices found");

@@ -164,6 +164,16 @@ public class LocalBluetoothManager {
         }
         return null;
     }
+    /**
+     * @return Is the device currently scanning?
+     */
+    public boolean isScanning() {
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            return adapter.isDiscovering();
+        }
+        return false;
+    }
 
 
 }
