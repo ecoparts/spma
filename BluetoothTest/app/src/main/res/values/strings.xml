@@ -174,4 +174,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="pref_title_social_background_service">Background Service</string>
+    <string name="pref_description_background_services">Turn the service on and off</string>
 </resources>
