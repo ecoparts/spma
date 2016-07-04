@@ -36,8 +36,6 @@ public class OneFragment extends Fragment {
     private static final String LOG_TAG = OneFragment.class.getName();
     private SPMAServiceConnector serviceConnector;
     public static final String ACTION_NEW_MSG = "OneFragment.ACTION_NEW_MSG";
-    private final int REQUEST_ENABLE_BT = 2;
-    private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
 
     private ArrayList<String> deviceNames;
     private ArrayAdapter<String> displayAdapter;
