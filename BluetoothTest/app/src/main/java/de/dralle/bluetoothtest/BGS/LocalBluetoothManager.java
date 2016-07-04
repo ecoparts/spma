@@ -84,13 +84,11 @@ public class LocalBluetoothManager {
     public boolean scanForNearbyDevices(JSONObject msgData) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) == PackageManager.PERMISSION_GRANTED) {
-
                 Log.i(LOG_TAG, "Permission ACCESS_COARSE_LOCATION granted");
             } else {
                 Log.w(LOG_TAG, "Permission ACCESS_COARSE_LOCATION denied");
                 return false;
             }
-
         }
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null) {
