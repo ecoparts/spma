@@ -451,9 +451,7 @@ public class SPMAServiceConnector {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_COARSE_LOCATION.toString()) != PackageManager.PERMISSION_GRANTED) {
-
                 parentActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION.toString()}, REQUEST_ACCESS_COARSE_LOCATION); //need to request permission at runtime for android 6.0+
-
             }
         }
 
