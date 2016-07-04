@@ -81,7 +81,8 @@ public class BluetoothConnectionObserver implements Observer {
                         if (jso.getString("Action").equals("Shutdown")) {
                             BluetoothConnection con = (BluetoothConnection) observable;
                             con.close();
-                            Log.v(LOG_TAG, "Connection removed " + btConnectionMap.remove(con.getDevice().getAddress()));
+                            removeConnection(con);
+                            Log.v(LOG_TAG, "Connection removed " + con.getDevice().getAddress());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
