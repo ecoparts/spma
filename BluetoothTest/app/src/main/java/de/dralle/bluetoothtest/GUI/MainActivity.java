@@ -49,7 +49,8 @@ import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private static final String LOG_TAG = OneFragment.class.getName();
+    private SPMAServiceConnector serviceConnector;
     public static final String ACTION_NEW_MSG = "MainActivity.ACTION_NEW_MSG";
 
     private Toolbar toolbar;
@@ -66,10 +67,40 @@ public class MainActivity extends AppCompatActivity {
     //Navigation
     private DrawerLayout drawerLayout;
 
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (ACTION_NEW_MSG.equals(action)) {
+                String msg = intent.getStringExtra("msg");
+                Log.i(LOG_TAG, "New message");
+                Log.i(LOG_TAG, msg);
+                JSONObject msgData = null;
+                try {
+                    msgData = new JSONObject(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (msgData != null) {
+                    if (serviceConnector.checkMessage(msgData)) {
+                    }
+                } else {
+                    Log.w(LOG_TAG, "Message not JSON");
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nt);
+
+        serviceConnector=SPMAServiceConnector.getInstance(this); //setup service connector
+        serviceConnector.startService();
+        serviceConnector.turnBluetoothOn();
+        serviceConnector.makeDeviceVisible(300);
+        serviceConnector.registerForBroadcasts();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -135,6 +166,21 @@ public class MainActivity extends AppCompatActivity {
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
+        registerReceiver(broadcastReceiver, filter);
     }
 
     private void setupTabIcons() {
@@ -206,11 +252,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
     }
-
+*/
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
 
+        serviceConnector.unregisterForBroadcasts();
         serviceConnector.stopListeners();
         serviceConnector.stopService();
 
@@ -222,6 +268,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    */
+
 
 }
