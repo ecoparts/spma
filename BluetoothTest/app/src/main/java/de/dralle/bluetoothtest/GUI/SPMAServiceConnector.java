@@ -499,6 +499,28 @@ public class SPMAServiceConnector {
         return false;
     }
     /**
+     * Sends a message to the service to resend all cached connections
+     *
+     * @return true if service is running and message was sent
+     */
+    public boolean requestCachedConnections() {
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending ResendCachedConnections");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "ResendCachedConnections");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
+    /**
      * Checks if the message is plausible. Checks the attributes 'Extern' and 'Level'. Extern needs to be false, Level needs to be 0 (for non encrypted, cause not extern)
      *
      * @param msgData JSON formatted message to be checked

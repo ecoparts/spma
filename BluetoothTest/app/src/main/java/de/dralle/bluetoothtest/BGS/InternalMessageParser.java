@@ -6,6 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.List;
 
 import de.dralle.bluetoothtest.DB.DeviceDBData;
@@ -147,6 +148,12 @@ public class InternalMessageParser {
                 List<DeviceDBData> devicesData = deviceManager.getAllCachedDevices();
                 for (DeviceDBData dd : devicesData) {
                     internalMessageSender.sendCachedDevice(dd);
+                }
+                break;
+            case "ResendCachedConnections":
+                Collection<BluetoothConnection> connections = BluetoothConnectionObserver.getInstance().getBtConnections();
+                for(BluetoothConnection c: connections){
+                    internalMessageSender.sendCachedConnection(c);
                 }
                 break;
             case "StartListeners":

@@ -120,7 +120,36 @@ public class InternalMessageSender {
 
 
     }
+    /**
+     * Send a message that a cached connection
+     *
+     * @param connection newly acquired connection
+     */
+    public void sendCachedConnection(BluetoothConnection connection) {
+        JSONObject mdvCmd = getMessageFrame();
+        try {
+            mdvCmd.put("Action", "CachedConnection");
+            //try to get name
+            BluetoothDevice device = connection.getDevice();
+            if(device!=null){
+                mdvCmd.put("Address", connection.getDevice().getAddress());
+                String name=device.getName();
+                DeviceDBData deviceDB = SPMADatabaseAccessHelper.getInstance(con).getDevice(device.getAddress());
+                if(deviceDB!=null){
+                    name=deviceDB.getFriendlyName();
+                    mdvCmd.put("LastSeen", deviceDB.getLastSeen());
+                }
+                mdvCmd.put("Name", name);
+            }
+            mdvCmd.put("Secure", connection.isSecureConnection());
+            mdvCmd.put("Active", connection.isActive());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
 
+
+    }
     /**
      * Send a message that a connection failed
      *

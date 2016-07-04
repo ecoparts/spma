@@ -7,6 +7,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -32,8 +33,11 @@ public class BluetoothConnectionObserver implements Observer {
     private RemoteBTDeviceManager deviceManager = null;
     private Map<String, BluetoothConnection> btConnectionMap;
 
-    private BluetoothConnectionObserver() {
+    public Collection<BluetoothConnection> getBtConnections() {
+        return btConnectionMap.values();
+    }
 
+    private BluetoothConnectionObserver() {
         btConnectionMap = new HashMap<>();
     }
 
@@ -160,8 +164,8 @@ public class BluetoothConnectionObserver implements Observer {
         if (device != null) {
             BluetoothConnection connection = BluetoothConnectionMaker.getInstance().createConnection(device);
             if (connection != null) {
-                connection.addObserver(BluetoothConnectionObserver.getInstance());
-                BluetoothConnectionObserver.getInstance().registerConnection(connection);
+                connection.addObserver(this);
+                registerConnection(connection);
                 Thread t = new Thread(connection);
                 t.start();
                 internalMessageSender.sendNewConnectionRetrieved(connection);
