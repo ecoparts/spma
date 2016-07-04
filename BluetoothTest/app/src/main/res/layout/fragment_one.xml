@@ -5,7 +5,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hier wewrden die bereits\ngekoppelten Kontakte angezeigt"
+        android:text=""
         android:textSize="25dp"
         android:textColor="@color/common_signin_btn_dark_text_disabled"
         android:background="@color/windowBackground"
