@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest.SettingsActivity;
 import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
