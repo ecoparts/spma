@@ -122,7 +122,7 @@ public class LocalBluetoothManager {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null) {
             Log.i(LOG_TAG, "Turning bluetooth on");
-            if (btAdapter.isEnabled()) {
+            if (!btAdapter.isEnabled()) {
                 Intent btOnRequest = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 btOnRequest.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //Flag needed when starting from a service
                 context.startActivity(btOnRequest);
