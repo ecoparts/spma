@@ -1,15 +1,14 @@
 package de.dralle.bluetoothtest.GUI;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.Interpolator;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,20 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import de.dralle.bluetoothtest.R;
-
 
 
 public class OneFragment extends Fragment {
@@ -60,17 +54,23 @@ public class OneFragment extends Fragment {
                 }
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
-                        if (serviceConnector.getMessageAction(msgData).equals("NewSupportedDevice")) {
-                            try {
-                                deviceNames.add(msgData.getString("SuperFriendlyName"));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            displayAdapter.notifyDataSetChanged();
-                        }
-                        if (serviceConnector.getMessageAction(msgData).equals("ClearDevices")) {
-                            deviceNames.clear();
-                            displayAdapter.notifyDataSetChanged();
+                        switch (serviceConnector.getMessageAction(msgData)) {
+                            case "NewSupportedDevice":
+                                try {
+                                    deviceNames.add(msgData.getString("SuperFriendlyName"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                displayAdapter.notifyDataSetChanged();
+                                break;
+                            case "ClearDevices":
+                                deviceNames.clear();
+                                displayAdapter.notifyDataSetChanged();
+                                break;
+                            case "ScanFinished":
+                                break;
+                            default:
+                                break;
                         }
                     }
                 } else {
@@ -109,13 +109,14 @@ public class OneFragment extends Fragment {
 
     /**
      * Request a new connection
+     *
      * @param remoteBTDeviceAddress
      */
     private void requestNewConnection(String remoteBTDeviceAddress) {
-        if(serviceConnector.requestNewConnection(remoteBTDeviceAddress)){
-            Log.i(LOG_TAG,"Connection requested");
-        }else{
-            Log.w(LOG_TAG,"Connection not requested");
+        if (serviceConnector.requestNewConnection(remoteBTDeviceAddress)) {
+            Log.i(LOG_TAG, "Connection requested");
+        } else {
+            Log.w(LOG_TAG, "Connection not requested");
             //TODO: show error
         }
     }
@@ -131,7 +132,7 @@ public class OneFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        View v= getView();
+        View v = getView();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.scan_and_refresh);
 
@@ -145,7 +146,7 @@ public class OneFragment extends Fragment {
         });
 
 
-        serviceConnector=SPMAServiceConnector.getInstance(getActivity());
+        serviceConnector = SPMAServiceConnector.getInstance(getActivity());
 
         if (serviceConnector.isServiceRunning()) {
             Log.i(LOG_TAG, "Service already running");
@@ -177,12 +178,12 @@ public class OneFragment extends Fragment {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(LOG_TAG,"Clicked device "+id);
-                BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
-                if(btDevice!=null){
+                Log.i(LOG_TAG, "Clicked device " + id);
+                BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int) id);
+                if (btDevice != null) {
                     requestNewConnection(btDevice.getAddress());
-                }else{
-                    Log.w(LOG_TAG,"Clicked device is null");
+                } else {
+                    Log.w(LOG_TAG, "Clicked device is null");
                 }
             }
         });
@@ -191,7 +192,7 @@ public class OneFragment extends Fragment {
     }
 
     //@Override
-    public boolean onOptionsTemSelected(MenuItem item){
+    public boolean onOptionsTemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         int id = item.getItemId();
         if (id == R.id.scan_and_refresh) {
@@ -202,14 +203,12 @@ public class OneFragment extends Fragment {
     }
 
 
-    public void scanAndRefresh(){
+    public void scanAndRefresh() {
 
         //------------Scan----------
-        if(serviceConnector.isBtOn()){
+        if (serviceConnector.isBtOn()) {
             serviceConnector.scanForNearbyDevices();
         }
-
-
 
 
     }
