@@ -113,7 +113,6 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
                 Log.i(LOG_TAG, "Device " + device.getAddress() + " not supported");
             }
 
-
             BluetoothDevice nextDeviceToScan = deviceManager.getNearbyDevice();
             if (nextDeviceToScan != null) {
                 nextDeviceToScan.fetchUuidsWithSdp();
