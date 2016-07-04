@@ -93,7 +93,6 @@ public class LocalBluetoothManager {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null) {
             if (btAdapter.isEnabled()) {
-
                 deviceManager.clearNearbyDevices();
                 deviceManager.clearSupportedDevices();//clear current device list
                 if (btAdapter.isDiscovering()) {
@@ -109,7 +108,6 @@ public class LocalBluetoothManager {
                 }
             } else {
                 Log.i(LOG_TAG, "Bluetooth disabled. Cant scan");
-
             }
         }
         Log.w(LOG_TAG, "No bluetooth. Cant scan");
