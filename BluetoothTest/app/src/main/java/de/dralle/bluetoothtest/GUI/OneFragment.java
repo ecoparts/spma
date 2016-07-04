@@ -25,6 +25,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import de.dralle.bluetoothtest.R;
@@ -96,6 +98,20 @@ public class OneFragment extends Fragment {
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
+        getActivity().registerReceiver(broadcastReceiver, filter);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -179,8 +195,7 @@ public class OneFragment extends Fragment {
             }
         };
 
-        IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
-        getActivity().registerReceiver(broadcastReceiver, filter);
+
     }
 
     //@Override
