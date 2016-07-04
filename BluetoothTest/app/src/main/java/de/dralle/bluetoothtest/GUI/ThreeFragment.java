@@ -156,6 +156,10 @@ public class ThreeFragment extends Fragment {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Connection c=cachedConnections.get((int) id);
+                if(c!=null){
+                    serviceConnector.startChatActvity(c.getConnectionTargetDeviceAddress());
+                }
 
             }
         });

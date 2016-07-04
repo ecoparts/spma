@@ -72,20 +72,6 @@ public class OneFragment extends Fragment {
                             deviceNames.clear();
                             displayAdapter.notifyDataSetChanged();
                         }
-                        if (serviceConnector.getMessageAction(msgData).equals("ConnectionReady")) {
-                            String address=null;
-                            try {
-                                address=msgData.getString("Address");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            BluetoothAdapter adapter=BluetoothAdapter.getDefaultAdapter();
-                            if(adapter!=null&&address!=null){
-                                BluetoothDevice device=adapter.getRemoteDevice(address);
-                                startNewChatActivity(device);
-                            }
-
-                        }
                     }
                 } else {
                     Log.w(LOG_TAG, "Message not JSON");
@@ -133,17 +119,6 @@ public class OneFragment extends Fragment {
             //TODO: show error
         }
     }
-
-    private void startNewChatActivity(BluetoothDevice remoteDevice) {
-        if (remoteDevice != null) {
-            serviceConnector.selectUser(0); //select user 0 (default) every time a new connection is created
-            Intent newChatIntent = new Intent(getActivity(), ChatActivity.class);
-            newChatIntent.putExtra("address", remoteDevice.getAddress());
-            startActivity(newChatIntent);
-        }
-
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

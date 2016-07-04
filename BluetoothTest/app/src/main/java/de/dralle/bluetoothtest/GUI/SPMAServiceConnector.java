@@ -179,7 +179,11 @@ public class SPMAServiceConnector {
                 break;
         }
     }
-
+    public void startChatActvity(String targetAddress){
+        Intent newChatIntent = new Intent(parentActivity, ChatActivity.class);
+        newChatIntent.putExtra("address", targetAddress);
+        parentActivity.startActivity(newChatIntent);
+    }
     /**
      * Tries to extract the userdata from the received internal message string
      *

@@ -7,7 +7,6 @@ public class Connection {
     private String connectionName;
     private boolean secure;
     private int lastSeen;
-    private boolean encrypted;
 
     public String getConnectionName() {
         return connectionName;
@@ -23,14 +22,6 @@ public class Connection {
 
     public void setConnectionTargetDeviceAddress(String connectionTargetDeviceAddress) {
         this.connectionTargetDeviceAddress = connectionTargetDeviceAddress;
-    }
-
-    public boolean isEncrypted() {
-        return encrypted;
-    }
-
-    public void setEncrypted(boolean encrypted) {
-        this.encrypted = encrypted;
     }
 
     public boolean isSecure() {

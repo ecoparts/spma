@@ -1,49 +1,32 @@
 package de.dralle.bluetoothtest.GUI;
 
-import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.crypto.KeyGenerator;
-
-import de.dralle.bluetoothtest.BGS.Encryption;
 import de.dralle.bluetoothtest.GUI.com.example.niklas.layouttest.SettingsActivity;
 import de.dralle.bluetoothtest.R;
 
@@ -84,6 +67,22 @@ public class MainActivity extends AppCompatActivity {
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
                         switch (serviceConnector.getMessageAction(msgData)) {
+                            case "ConnectionReady":
+                                String address = null;
+                                try {
+                                    address = msgData.getString("Address");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if (serviceConnector.isServiceRunning()&&address != null) {
+                                    serviceConnector.startChatActvity(address);
+                                }else{
+                                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.startChatFailed),Toast.LENGTH_SHORT).show();
+                                }
+                                break;
+                            case "ConnectionFailed":
+                                Toast.makeText(getApplicationContext(),getResources().getString(R.string.connectionFailed),Toast.LENGTH_SHORT).show();
+                                break;
                             default:
                                 break;
                         }
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nt);
 
-        serviceConnector=SPMAServiceConnector.getInstance(this); //setup service connector
+        serviceConnector = SPMAServiceConnector.getInstance(this); //setup service connector
         serviceConnector.startService();
         serviceConnector.registerForBroadcasts();
 
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         //Navigation
 
 
-       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -125,31 +124,31 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if(menuItem.isChecked())
+                if (menuItem.isChecked())
                     menuItem.setChecked(false);
                 else
                     menuItem.setChecked(true);
 
                 drawerLayout.closeDrawers();
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.profile:
-                        Toast.makeText(getApplicationContext(),"Profil ausgewählt",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Profil ausgewählt", Toast.LENGTH_SHORT).show();
                         SettingsActivity fragment = new SettingsActivity();
 
                         return true;
                     case R.id.settings:
-                        Toast.makeText(getApplicationContext(),"Einstellungen",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Einstellungen", Toast.LENGTH_SHORT).show();
 
                         return true;
                     default:
-                        Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
                         return true;
 
                 }
             }
         });
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.openDrawer, R.string.closeDrawer){
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new TwoFragment(), "Freunde");
         adapter.addFragment(new ThreeFragment(), "Chats");
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) { //whenever a tab changed, try to turn on BT and make visible again
                 super.onPageSelected(position);
@@ -236,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
-
 
 
     /*
