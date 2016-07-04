@@ -195,6 +195,23 @@ public class OneFragment extends Fragment {
             }
         };
 
+        //-----------devices----------------
+        ListView lvDevices = (ListView) getView().findViewById(R.id.listViewDevices);
+        lvDevices.setAdapter(displayAdapter);
+
+        lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(LOG_TAG,"Clicked device "+id);
+                BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
+                if(btDevice!=null){
+                    requestNewConnection(btDevice.getAddress());
+                }else{
+                    Log.w(LOG_TAG,"Clicked device is null");
+                }
+            }
+        });
+
 
     }
 
@@ -213,43 +230,12 @@ public class OneFragment extends Fragment {
     public void scanAndRefresh(){
 
         //------------Scan----------
-        serviceConnector.turnBluetoothOn();
-        serviceConnector.makeDeviceVisible();
-        serviceConnector.scanForNearbyDevices();
-
-        //-----------devices----------------
-        ListView lvDevices = (ListView) getView().findViewById(R.id.listViewDevices);
-        lvDevices.setAdapter(displayAdapter);
-
-        lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(LOG_TAG,"Clicked device "+id);
-                BluetoothDevice btDevice = serviceConnector.getDeviceByIndex((int)id);
-                if(btDevice!=null){
-                    requestNewConnection(btDevice.getAddress());
-                }else{
-                    Log.w(LOG_TAG,"Clicked device is null");
-                }
-            }
-        });
-
-        //------------Service starten------------
-        boolean serviceOnline = serviceConnector.isServiceRunning();
-        Log.v(LOG_TAG, "Service is running " + serviceOnline);
-
-        if (serviceOnline) {
-            boolean listenersOnline = serviceConnector.areListenersOnline();
-            Log.v(LOG_TAG, "Listeners are " + listenersOnline);
-            if (listenersOnline) {
-                serviceConnector.stopListeners();
-            } else {
-                serviceConnector.startListeners();
-            }
-        } else {
-            Log.w(LOG_TAG,"service not online. Starting now");
-            serviceConnector.startService();
+        if(serviceConnector.isBtOn()){
+            serviceConnector.scanForNearbyDevices();
         }
+
+
+
 
     }
 
