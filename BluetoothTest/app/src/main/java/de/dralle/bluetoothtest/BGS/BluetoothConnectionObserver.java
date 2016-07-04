@@ -104,7 +104,9 @@ public class BluetoothConnectionObserver implements Observer {
 
     public void removeConnection(BluetoothConnection btCon) {
         BluetoothDevice btDevice = btCon.getDevice();
-        btConnectionMap.remove(btDevice.getAddress());
+        if(btDevice!=null){
+            btConnectionMap.remove(btDevice.getAddress());
+        }
         Log.i(LOG_TAG, "Connection removed. " + btDevice.getAddress());
     }
 
