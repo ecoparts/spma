@@ -98,8 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
         serviceConnector=SPMAServiceConnector.getInstance(this); //setup service connector
         serviceConnector.startService();
-        serviceConnector.turnBluetoothOn();
-        serviceConnector.makeDeviceVisible(300);
         serviceConnector.registerForBroadcasts();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -195,6 +193,15 @@ public class MainActivity extends AppCompatActivity {
         adapter.addFragment(new TwoFragment(), "Freunde");
         adapter.addFragment(new ThreeFragment(), "Chats");
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener(){
+            @Override
+            public void onPageSelected(int position) { //whenever a tab changed, try to turn on BT and make visible again
+                super.onPageSelected(position);
+
+                serviceConnector.turnBluetoothOn();
+                serviceConnector.makeDeviceVisible(300);
+            }
+        });
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
