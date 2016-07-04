@@ -3,6 +3,8 @@ package de.dralle.bluetoothtest.GUI;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import de.dralle.bluetoothtest.R;
+
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
