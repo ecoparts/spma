@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
                         return true;
                     case R.id.settings:
-                        Toast.makeText(getApplicationContext(), "Einstellungen", Toast.LENGTH_SHORT).show();
+                        serviceConnector.startSettings();
 
                         return true;
                     default:
