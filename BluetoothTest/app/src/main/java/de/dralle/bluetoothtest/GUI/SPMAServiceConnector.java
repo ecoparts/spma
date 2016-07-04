@@ -174,6 +174,8 @@ public class SPMAServiceConnector {
                     startListeners();
                 }
                 break;
+            case "ScanFinished":
+                broadcastToNearbyDevicesFragment(msgData.toString());
             default:
                 broadcastToGUI(msgData.toString());
                 break;

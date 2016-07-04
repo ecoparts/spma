@@ -68,6 +68,7 @@ public class OneFragment extends Fragment {
                                 displayAdapter.notifyDataSetChanged();
                                 break;
                             case "ScanFinished":
+                                mSwipeRefreshLayout.setRefreshing(false);
                                 break;
                             default:
                                 break;
@@ -140,8 +141,6 @@ public class OneFragment extends Fragment {
             @Override
             public void onRefresh() {
                 scanAndRefresh();
-
-                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
 
