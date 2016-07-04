@@ -129,7 +129,6 @@ public class LocalBluetoothManager {
             } else {
                 Log.v(LOG_TAG, "Bluetooth already on");
             }
-
         }
     }
 
