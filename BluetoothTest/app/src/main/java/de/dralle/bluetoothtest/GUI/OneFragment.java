@@ -112,9 +112,9 @@ public class OneFragment extends Fragment {
     private void requestNewConnection(String remoteBTDeviceAddress) {
         if(serviceConnector.requestNewConnection(remoteBTDeviceAddress)){
             Log.i(LOG_TAG,"Connection requested");
-
         }else{
             Log.w(LOG_TAG,"Connection not requested");
+            //TODO: show error
         }
     }
 
