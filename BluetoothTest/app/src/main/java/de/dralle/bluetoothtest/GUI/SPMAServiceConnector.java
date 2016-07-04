@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
 import de.dralle.bluetoothtest.DB.User;
+import de.dralle.bluetoothtest.R;
 
 /**
  * Created by nils on 31.05.16.
@@ -44,7 +45,6 @@ public class SPMAServiceConnector {
         return instance;
     }
 
-    private boolean receiveBroadcasts = false;
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
     private List<BluetoothDevice> devices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
@@ -159,7 +159,6 @@ public class SPMAServiceConnector {
                 saveNewUser(msgData);
                 break;
             default:
-                broadcastToGUI(msgData.toString());
                 break;
         }
     }
@@ -172,28 +171,28 @@ public class SPMAServiceConnector {
     private void saveNewUser(JSONObject msgData) {
         if (u == null) {
             u = new User();
-        }
-        try {
-            u.setId(msgData.getInt("ID"));
+            try {
+                u.setId(msgData.getInt("ID"));
 
-            u.setName(msgData.getString("Name"));
-        } catch (Exception e) {
-            e.printStackTrace();
+                u.setName(msgData.getString("Name"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            userId=u.getId();
         }
-        userId = u.getId();
-
 
     }
 
     /**
+     *
      * @return Local user name. Can be null.
      */
-    public String getUserName() {
+    public String getUserName(){
 
-        if (u == null) {
+        if(u==null){
             requestLocalUser(userId);
             return null;
-        } else {
+        }else{
             return u.getName();
         }
     }
@@ -231,32 +230,6 @@ public class SPMAServiceConnector {
     private SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;
         devices = new ArrayList<>();
-        registerForBroadcasts();
-    }
-
-    public void registerForBroadcasts() {
-        if (!receiveBroadcasts) {
-            receiveBroadcasts = true;
-            //register broadcast receiver for messages from the service
-            IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
-            try {
-                parentActivity.registerReceiver(broadcastReceiver, filter);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Log.i(LOG_TAG, "Receiver registered");
-        }
-    }
-
-    public void unregisterForBroadcasts() {
-        try {
-            parentActivity.unregisterReceiver(broadcastReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        receiveBroadcasts = false;
-        Log.i(LOG_TAG, "Receiver unregistered");
-
     }
 
 
@@ -265,13 +238,14 @@ public class SPMAServiceConnector {
             Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
             parentActivity.startService(bgServiceIntent);
 
-
-            Log.i(LOG_TAG, "Service started");
+            //register broadcast receiver for messages from the service
+            IntentFilter filter = new IntentFilter(SPMAServiceConnector.ACTION_NEW_MSG);
             try {
-                Thread.sleep(50); //sleep a bit to give service time to come online
-            } catch (InterruptedException e) {
+                parentActivity.registerReceiver(broadcastReceiver, filter);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+            Log.i(LOG_TAG, "Service started");
         }
     }
 
@@ -348,13 +322,17 @@ public class SPMAServiceConnector {
         Intent bgServiceIntent = new Intent(SPMAService.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
+
+
         //parentActivity.startService(bgServiceIntent);
     }
 
     public void broadcastToGUI(String msg) {
-        Intent bgServiceIntent = new Intent(MainActivity.ACTION_NEW_MSG);
+        Intent bgServiceIntent = new Intent(OneFragment.ACTION_NEW_MSG);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
+
+
         //parentActivity.startService(bgServiceIntent);
     }
 
@@ -362,12 +340,21 @@ public class SPMAServiceConnector {
         Intent bgServiceIntent = new Intent(ChatActivity.ACTION_NEW_MSG + "_" + address);
         bgServiceIntent.putExtra("msg", msg);
         parentActivity.sendBroadcast(bgServiceIntent);
+
+
         //parentActivity.startService(bgServiceIntent);
     }
 
     public void stopService() {
         Intent bgServiceIntent = new Intent(parentActivity, SPMAService.class);
         parentActivity.stopService(bgServiceIntent);
+        try {
+            //unregister receiver
+            parentActivity.unregisterReceiver(broadcastReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Log.i(LOG_TAG, "Stopped service");
     }
 
@@ -380,6 +367,7 @@ public class SPMAServiceConnector {
         ActivityManager am = (ActivityManager) parentActivity.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> services = am.getRunningServices(Integer.MAX_VALUE);
         for (ActivityManager.RunningServiceInfo rsi : services) {
+
             if (rsi.service.getClassName().equals(SPMAService.class.getName())) {
                 return true;
             }
@@ -471,6 +459,8 @@ public class SPMAServiceConnector {
      * @return true if service is running and message was sent
      */
     public boolean requestCachedDevices() {
+
+
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending ResendCachedDevices");
             JSONObject mdvCmd = new JSONObject();
@@ -487,12 +477,14 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
+
     /**
      * Checks if the message is plausible. Checks the attributes 'Extern' and 'Level'. Extern needs to be false, Level needs to be 0 (for non encrypted, cause not extern)
      *
      * @param msgData JSON formatted message to be checked
      * @return true if valid
      */
+
     public boolean checkMessage(JSONObject msgData) {
         boolean b = false;
         try {
@@ -520,20 +512,17 @@ public class SPMAServiceConnector {
      */
     public boolean startListeners() {
         if (isServiceRunning()) {
-            if (!listenersOnline) {
-                Log.i(LOG_TAG, "Service is running. Sending startListeners");
-                JSONObject mdvCmd = new JSONObject();
-                try {
-                    mdvCmd.put("Extern", false);
-                    mdvCmd.put("Level", 0);
-                    mdvCmd.put("Action", "StartListeners");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                broadcastInternalMessageToService(mdvCmd.toString());
-                return true;
+            Log.i(LOG_TAG, "Service is running. Sending startListeners");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "StartListeners");
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            return false;
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
         }
         Log.w(LOG_TAG, "Service not running");
         return false;
@@ -651,7 +640,6 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
-
     /**
      * Calls the service to add a change the local username
      *
@@ -666,7 +654,7 @@ public class SPMAServiceConnector {
                 mdvCmd.put("Extern", false);
                 mdvCmd.put("Level", 0);
                 mdvCmd.put("Action", "ChangeLocalUserName");
-                mdvCmd.put("ID", userId);
+                mdvCmd.put("ID",userId);
                 mdvCmd.put("Name", name);
 
             } catch (JSONException e) {
@@ -678,7 +666,6 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
-
     /**
      * Calls the service to add a regenerate encryption keys
      *
@@ -693,7 +680,7 @@ public class SPMAServiceConnector {
                 mdvCmd.put("Extern", false);
                 mdvCmd.put("Level", 0);
                 mdvCmd.put("Action", "RegenerateKeys");
-                mdvCmd.put("UserID", userId);
+                mdvCmd.put("UserID",userId);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -704,7 +691,6 @@ public class SPMAServiceConnector {
         Log.w(LOG_TAG, "Service not running");
         return false;
     }
-
     /**
      * Calls the service to send the user data
      *

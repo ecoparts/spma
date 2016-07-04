@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -17,14 +19,27 @@ import java.util.Observable;
 /**
  * Created by Nils on 26.05.2016.
  */
-public class BluetoothConnection extends Observable implements Runnable {
+public class BluetoothConnection extends Observable implements Runnable{
     private static final String LOG_TAG = BluetoothConnection.class.getName();
 
     private BluetoothSocket socket;
     private BluetoothDevice device;
-    private BufferedInputStream in = null;
-    private BufferedOutputStream out = null;
-    private boolean secureConnection = false;
+    private BufferedInputStream in=null;
+    private BufferedOutputStream out=null;
+
+    public boolean isActive() {
+        return socket!=null&&socket.isConnected();
+    }
+
+    public BluetoothDevice getDevice() {
+        return device;
+    }
+
+
+
+    public boolean isSecureConnection() {
+        return secureConnection;
+    }
 
     public BluetoothConnection(BluetoothSocket socket, boolean secureConnection) {
         this.socket = socket;
@@ -32,88 +47,79 @@ public class BluetoothConnection extends Observable implements Runnable {
         this.secureConnection = secureConnection;
     }
 
-    public boolean isActive() {
-        return socket != null && socket.isConnected();
-    }
-
-    public BluetoothDevice getDevice() {
-        return device;
-    }
-
-    public boolean isSecureConnection() {
-        return secureConnection;
-    }
-
+    private boolean secureConnection=false;
     @Override
     public void run() {
-        Log.i(LOG_TAG, "Starting new connection thread to " + device.getAddress());
-        if (!socket.isConnected()) {
+        Log.i(LOG_TAG,"Starting new connection thread to "+device.getAddress());
+        if(!socket.isConnected()){
             try {
                 socket.connect();
 
             } catch (IOException e) {
                 e.printStackTrace();
 
-                Log.w(LOG_TAG, "Connection to " + device.getAddress() + " failed" + countObservers());
+                Log.w(LOG_TAG,"Connection to "+device.getAddress()+" failed"+countObservers());
 
             }
 
         }
-        Log.i(LOG_TAG, "Socket connected");
-        if (isActive()) {
+        Log.i(LOG_TAG,"Socket connected");
+        if(isActive()){
             try {
-                in = new BufferedInputStream(socket.getInputStream());
+                in=new BufferedInputStream(socket.getInputStream());
             } catch (IOException e) {
                 e.printStackTrace();
 
             }
             try {
-                out = new BufferedOutputStream(socket.getOutputStream());
+                out=new BufferedOutputStream(socket.getOutputStream());
             } catch (IOException e) {
                 e.printStackTrace();
 
             }
-            if (in != null && out != null) {
-                Log.i(LOG_TAG, "Input and outputstreams retrieved");
+            if(in!=null&&out!=null){
+                Log.i(LOG_TAG,"Input and outputstreams retrieved");
                 notifyObserversAboutConnectionReady();
-                while (isActive()) {//the next section (controlled by while(active)) receives messages and forwards them.
+                while(isActive()){//the next section (controlled by while(active)) receives messages and forwards them.
                     //its ugly and overly complicated and seems to be partly unnecessary
                     //this is because inputstream.available() return always 1 if something is available on some devices
                     //its also because bluetooth tends to hang sometimes and split 1 message into 2 at will
-                    List<Byte> msgBytesList = new ArrayList<>();
+                    List<Byte> msgBytesList=new ArrayList<>();
                     try {
-                        do {
-                            int avail = in.available();
-                            byte[] buffer = null;
-                            if (avail > 0) {
-                                buffer = new byte[avail];
-                                in.read(buffer, 0, avail);
+                        do{
+                            int avail=in.available();
+                            byte[] buffer=null;
+                            if(avail>0){
+                                buffer=new byte[avail];
+                                in.read(buffer,0,avail);
                             }
-                            if (buffer != null) {
-                                for (byte b : buffer) {
+                            if(buffer!=null){
+                                for(byte b:buffer){
                                     msgBytesList.add(b);
                                 }
                             }
 
                             Thread.sleep(50);
-                        } while (in.available() > 0);
+                        }while(in.available()>0);
+
+
 
 
                     } catch (Exception e) {
                         e.printStackTrace();
 
                     }
-                    if (msgBytesList.size() > 0) {
-                        byte[] msgBytes = new byte[msgBytesList.size()];
+                    if(msgBytesList.size()>0){
+                            byte[] msgBytes=new byte[msgBytesList.size()];
 
-                        for (int i = 0; i < msgBytesList.size(); i++) {
-                            msgBytes[i] = msgBytesList.get(i);
+                        for(int i=0;i<msgBytesList.size();i++){
+                            msgBytes[i]=msgBytesList.get(i);
                         }
-                        String message = new String(msgBytes);
-                        Log.i(LOG_TAG, "New message " + message);
+                        String message=new String(msgBytes);
+                        Log.i(LOG_TAG,"New message "+message);
                         notifyObserversAboutNewMessage(message);
 
-                    } else {
+                    }else{
                         try {
                             Thread.sleep(200); //wait a bit longer when no message was received
                         } catch (InterruptedException e) {
@@ -129,22 +135,21 @@ public class BluetoothConnection extends Observable implements Runnable {
             }
         }
         notifyObserversAboutShutdown();
-        Log.i(LOG_TAG, "Shutting down");
+        Log.i(LOG_TAG,"Shutting down");
 
 
     }
-
-    public void sendExternalMessage(String msg) {
-        Log.i(LOG_TAG, "Writing message");
-        if (isActive()) {
-            char[] msgChars = msg.toCharArray();
-            for (int i = 0; i < msgChars.length; i++) {
+    public void sendExternalMessage(String msg){
+        Log.i(LOG_TAG,"Writing message");
+        if(isActive()){
+            char[] msgChars=msg.toCharArray();
+            for(int i=0;i<msgChars.length;i++){
 
                 try {
-                    out.write((int) msgChars[i]);
+                    out.write((int)msgChars[i]);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.i(LOG_TAG, "Write failed");
+                    Log.i(LOG_TAG,"Write failed");
                     notifyObserversAboutShutdown();
 
                 }
@@ -154,52 +159,51 @@ public class BluetoothConnection extends Observable implements Runnable {
                 out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.i(LOG_TAG, "Write/Flush failed");
+                Log.i(LOG_TAG,"Write/Flush failed");
                 notifyObserversAboutShutdown();
             }
-        } else {
-            Log.i(LOG_TAG, "Write/Complete failed");
+        }
+        else{
+            Log.i(LOG_TAG,"Write/Complete failed");
             notifyObserversAboutShutdown();
         }
 
     }
 
     private void notifyObserversAboutShutdown() {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Address", device.getAddress());
-            jso.put("Action", "Shutdown");
+        jso.put("Extern",false);
+        jso.put("Level",0);
+jso.put("Address",device.getAddress());
+            jso.put("Action","Shutdown");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         setChanged();
         notifyObservers(jso.toString());
     }
-
     private void notifyObserversAboutConnectionReady() {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Address", device.getAddress());
-            jso.put("Action", "Ready");
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Address",device.getAddress());
+            jso.put("Action","Ready");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         setChanged();
         notifyObservers(jso.toString());
     }
-
     private void notifyObserversAboutNewMessage(String msg) {
-        JSONObject jso = new JSONObject();
+        JSONObject jso=new JSONObject();
         try {
-            jso.put("Extern", false);
-            jso.put("Level", 0);
-            jso.put("Address", device.getAddress());
-            jso.put("Action", "NewMessage");
-            jso.put("Message", msg);
+            jso.put("Extern",false);
+            jso.put("Level",0);
+            jso.put("Address",device.getAddress());
+            jso.put("Action","NewMessage");
+            jso.put("Message",msg);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -210,11 +214,11 @@ public class BluetoothConnection extends Observable implements Runnable {
     public void close() {
         try {
             socket.close();
-            Log.i(LOG_TAG, "Socket closed");
+            Log.i(LOG_TAG,"Socket closed");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        socket = null;
-        Log.i(LOG_TAG, "Socket removed");
+        socket=null;
+        Log.i(LOG_TAG,"Socket removed");
     }
 }
