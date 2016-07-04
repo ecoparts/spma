@@ -46,7 +46,7 @@ public class SPMAServiceConnector {
 
     private boolean receiveBroadcasts = false;
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
-    private List<BluetoothDevice> devices;
+    private List<BluetoothDevice> supportedDevices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private boolean listenersOnline = false;
@@ -85,7 +85,7 @@ public class SPMAServiceConnector {
                 handleNewDevice(msgData);
                 break;
             case "ClearDevices":
-                devices.clear();
+                supportedDevices.clear();
                 Log.i(LOG_TAG, "Cached devices cleared");
                 broadcastToGUI(msgData.toString());
                 break;
@@ -223,7 +223,7 @@ public class SPMAServiceConnector {
                 BluetoothDevice device = defaultAdapter.getRemoteDevice(address);
                 if (device != null) {
                     Log.i(LOG_TAG, "Added device with address " + address);
-                    devices.add(device);
+                    supportedDevices.add(device);
                     broadcastToGUI(msgData.toString());
                 }
             } else {
@@ -239,7 +239,7 @@ public class SPMAServiceConnector {
 
     private SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;
-        devices = new ArrayList<>();
+        supportedDevices = new ArrayList<>();
         registerForBroadcasts();
     }
 
@@ -576,8 +576,8 @@ public class SPMAServiceConnector {
      * @return the device with this index
      */
     public BluetoothDevice getDeviceByIndex(int id) {
-        if (id > -1 && id < devices.size()) {
-            return devices.get(id);
+        if (id > -1 && id < supportedDevices.size()) {
+            return supportedDevices.get(id);
         }
         return null;
     }
