@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.profile:
                         Toast.makeText(getApplicationContext(), "Profil ausgewählt", Toast.LENGTH_SHORT).show();
-                        SettingsActivity fragment = new SettingsActivity();
 
                         return true;
                     case R.id.settings:

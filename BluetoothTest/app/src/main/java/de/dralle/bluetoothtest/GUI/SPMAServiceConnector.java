@@ -187,8 +187,7 @@ public class SPMAServiceConnector {
         parentActivity.startActivity(newChatIntent);
     }
     public void startSettings(){
-        Intent newChatIntent = new Intent(parentActivity, SettingsActivity.class);
-        parentActivity.startActivity(newChatIntent);
+
     }
     /**
      * Tries to extract the userdata from the received internal message string
