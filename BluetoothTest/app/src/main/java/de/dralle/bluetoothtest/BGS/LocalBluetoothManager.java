@@ -126,7 +126,6 @@ public class LocalBluetoothManager {
                 Intent btOnRequest = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 btOnRequest.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); //Flag needed when starting from a service
                 context.startActivity(btOnRequest);
-
             } else {
                 Log.v(LOG_TAG, "Bluetooth already on");
             }
