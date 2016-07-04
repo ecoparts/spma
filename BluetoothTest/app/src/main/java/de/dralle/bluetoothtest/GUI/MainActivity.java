@@ -17,8 +17,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -31,7 +34,7 @@ import de.dralle.bluetoothtest.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = OneFragment.class.getName();
+    private static final String LOG_TAG = MainActivity.class.getName();
     private SPMAServiceConnector serviceConnector;
     public static final String ACTION_NEW_MSG = "MainActivity.ACTION_NEW_MSG";
 
@@ -123,10 +126,6 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if (menuItem.isChecked())
-                    menuItem.setChecked(false);
-                else
-                    menuItem.setChecked(true);
 
                 drawerLayout.closeDrawers();
                 switch (menuItem.getItemId()) {
@@ -156,15 +155,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
-
                 super.onDrawerOpened(drawerView);
+
+                setSettings(drawerView);
             }
         };
         //Setting the actionbarToggle to drawer layout
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+    }
+
+    private void setSettings(View drawerView) {
+        Log.i(LOG_TAG,"Drawer open");
+        //set user
+        TextView tv=(TextView)drawerView.findViewById(R.id.username);
+        tv.setText(serviceConnector.getUserName());
+        Log.v(LOG_TAG,"User name set to "+serviceConnector.getUserName());
     }
 
     @Override

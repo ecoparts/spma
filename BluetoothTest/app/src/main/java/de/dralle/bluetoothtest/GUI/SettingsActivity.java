@@ -4,6 +4,7 @@ package de.dralle.bluetoothtest.GUI;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -37,6 +38,10 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+    private static final String LOG_TAG = OneFragment.class.getName();
+    private SPMAServiceConnector serviceConnector;
+    public static final String KEY_USERNAME="user_name";
+
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -120,9 +125,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        serviceConnector.changeUserName(sharedPref.getString(KEY_USERNAME,""));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+
+        serviceConnector=SPMAServiceConnector.getInstance(this);
     }
 
     /**
@@ -192,7 +207,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference("example_text"));
+            bindPreferenceSummaryToValue(findPreference("user_name"));
             bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 

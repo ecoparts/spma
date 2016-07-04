@@ -9,8 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -168,6 +170,7 @@ public class SPMAServiceConnector {
                 if(isBtOn()){
                     startListeners();
                 }
+                selectUser(0);
                 break;
             case "BluetoothTurnedOn":
                 if(!listenersOnline){
@@ -187,7 +190,15 @@ public class SPMAServiceConnector {
         parentActivity.startActivity(newChatIntent);
     }
     public void startSettings(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(parentActivity);
+        String userName=getUserName();
+        if(userName!=null){
+           sharedPref.edit().putString(SettingsActivity.KEY_USERNAME, userName).commit();
+        }
 
+
+        Intent settingsIntent = new Intent(parentActivity, SettingsActivity.class);
+        parentActivity.startActivity(settingsIntent);
     }
     /**
      * Tries to extract the userdata from the received internal message string
