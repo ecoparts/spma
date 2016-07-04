@@ -108,6 +108,9 @@ public class SPMAServiceConnector {
                     broadcastToChatGUI(msgData.toString(), address);
                 }
                 break;
+            case "CachedConnection":
+                broadcastToConnectionsFragment(msgData.toString());
+                break;
             case "ConnectionShutdown":
                 broadcastToGUI(msgData.toString());
                 address = null;
@@ -376,6 +379,9 @@ public class SPMAServiceConnector {
 
     public void broadcastToNearbyDevicesFragment(String msg) {
         broadcastTo(msg, OneFragment.ACTION_NEW_MSG);
+    }
+    public void broadcastToConnectionsFragment(String msg) {
+        broadcastTo(msg, ThreeFragment.ACTION_NEW_MSG);
     }
 
     public void stopService() {

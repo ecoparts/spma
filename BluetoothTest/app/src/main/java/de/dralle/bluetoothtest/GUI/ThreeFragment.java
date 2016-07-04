@@ -62,11 +62,13 @@ public class ThreeFragment extends Fragment {
                                         c.setLastSeen(msgData.getInt("LastSeen"));
                                         c.setSecure(msgData.getBoolean("Secure"));
                                         cachedConnections.add(c);
+                                        Log.i(LOG_TAG,"Connection added "+c);
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 displayAdapter.notifyDataSetChanged();
+                                Log.v(LOG_TAG,"Connection added "+"Dataset changed");
                                 break;
                             default:
                                 break;
