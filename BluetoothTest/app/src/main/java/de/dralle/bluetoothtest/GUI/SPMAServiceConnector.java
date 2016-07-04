@@ -158,6 +158,15 @@ public class SPMAServiceConnector {
             case "LocalUserSelected":
                 saveNewUser(msgData);
                 break;
+            case "ServiceStarted":
+                turnBluetoothOn();
+                makeDeviceVisible(300);
+                break;
+            case "BluetoothTurnedOn":
+                if(!listenersOnline){
+                    startListeners();
+                }
+                break;
             default:
                 broadcastToGUI(msgData.toString());
                 break;

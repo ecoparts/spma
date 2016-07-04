@@ -149,6 +149,8 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
             if (defaultAdapter != null) {
                 if (defaultAdapter.isEnabled()) {
                     Log.i(LOG_TAG, "Bluetooth is now enabled");
+
+                    internalMessageSender.sendBluetoothTurnedOn(); //notify service connector and GUI
                 } else {
                     Log.i(LOG_TAG, "Bluetooth is now disabled");
                 }

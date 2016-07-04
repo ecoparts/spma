@@ -240,7 +240,19 @@ public class InternalMessageSender {
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
+    /**
+     * Send a message that BT turned on
+     */
+    public void sendBluetoothTurnedOn() {
+        JSONObject mdvCmd = getMessageFrame();
+        try {
+            mdvCmd.put("Action", "BluetoothTurnedOn");
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
+    }
     /**
      * Send a internal message that a connection is ready
      *

@@ -84,12 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
                         switch (serviceConnector.getMessageAction(msgData)) {
-                            case "ServiceStarted":
-                                Log.i(LOG_TAG,"Service started");
-
-                                serviceConnector.turnBluetoothOn();
-                                serviceConnector.makeDeviceVisible(300);
-                                break;
                             default:
                                 break;
                         }
