@@ -191,14 +191,11 @@ public class SPMAServiceConnector {
         }
         try {
             u.setId(msgData.getInt("ID"));
-
             u.setName(msgData.getString("Name"));
         } catch (Exception e) {
             e.printStackTrace();
         }
         userId = u.getId();
-
-
     }
 
     /**
