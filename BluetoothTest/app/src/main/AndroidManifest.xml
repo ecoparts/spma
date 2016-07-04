@@ -25,7 +25,6 @@
             android:exported="false" />
 
         <activity android:name=".GUI.ChatActivity" />
-        <activity android:name=".GUI.SettingsActivity"></activity>
     </application>
 
 </manifest>
