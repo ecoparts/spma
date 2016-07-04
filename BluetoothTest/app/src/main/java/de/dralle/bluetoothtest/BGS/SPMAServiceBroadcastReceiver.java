@@ -103,6 +103,8 @@ public class SPMAServiceBroadcastReceiver extends BroadcastReceiver {
             BluetoothDevice nextDeviceToScan = deviceManager.getNearbyDevice();
             if (nextDeviceToScan != null) {
                 nextDeviceToScan.fetchUuidsWithSdp();
+            }else{
+                internalMessageSender.sendDeviceScanFinished(0);
             }
         }
         if (BluetoothDevice.ACTION_UUID.equals(action)) {

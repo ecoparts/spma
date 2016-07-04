@@ -141,7 +141,9 @@ public class InternalMessageParser {
                 bluetoothManager.turnBluetoothOff();
                 break;
             case "Scan":
-                bluetoothManager.scanForNearbyDevices(msgData);
+                if(!bluetoothManager.scanForNearbyDevices(msgData)){
+                    internalMessageSender.sendDeviceScanFinished(0);
+                }
                 break;
             case "ResendCachedDevices":
                 internalMessageSender.sendClearDevices();
