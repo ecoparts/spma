@@ -81,12 +81,13 @@ public class SPMAServiceConnector {
         String action = getMessageAction(msgData);
         String address = null;
         switch (action) {
-            case "NewDevice":
-                handleNewDevice(msgData);
+            case "NewSupportedDevice":
+                handleNewSupportedDevice(msgData);
                 break;
             case "ClearDevices":
                 supportedDevices.clear();
                 Log.i(LOG_TAG, "Cached devices cleared");
+                broadcastToNearbyDevicesFragment(msgData.toString());
                 broadcastToGUI(msgData.toString());
                 break;
             case "ListenersStarted":
@@ -210,7 +211,7 @@ public class SPMAServiceConnector {
     /**
      * handle a newly discovered bt device
      */
-    private void handleNewDevice(JSONObject msgData) {
+    private void handleNewSupportedDevice(JSONObject msgData) {
         String address = "";
         try {
             address = msgData.getString("Address");
@@ -224,7 +225,7 @@ public class SPMAServiceConnector {
                 if (device != null) {
                     Log.i(LOG_TAG, "Added device with address " + address);
                     supportedDevices.add(device);
-                    broadcastToGUI(msgData.toString());
+                    broadcastToNearbyDevicesFragment(msgData.toString());
                 }
             } else {
                 Log.w(LOG_TAG, "Adapter is null. Now this is bad");
@@ -370,7 +371,7 @@ public class SPMAServiceConnector {
         broadcastTo(msg,ChatActivity.ACTION_NEW_MSG+"_"+address);
     }
 
-    public void broadcastToNearbyDevicesFragment(String msg, String address) {
+    public void broadcastToNearbyDevicesFragment(String msg) {
         broadcastTo(msg, OneFragment.ACTION_NEW_MSG);
     }
 

@@ -60,7 +60,7 @@ public class OneFragment extends Fragment {
                 }
                 if (msgData != null) {
                     if (serviceConnector.checkMessage(msgData)) {
-                        if (serviceConnector.getMessageAction(msgData).equals("NewDevice")) {
+                        if (serviceConnector.getMessageAction(msgData).equals("NewSupportedDevice")) {
                             try {
                                 deviceNames.add(msgData.getString("SuperFriendlyName"));
                             } catch (JSONException e) {
