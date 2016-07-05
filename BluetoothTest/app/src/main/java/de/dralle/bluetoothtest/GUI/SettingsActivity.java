@@ -39,6 +39,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_BTDISCOVERABLE="bt_discoverable_on";
     public static final String KEY_BTLISTENERS="bt_listeners_on";
     public static final String KEY_BTCLR="bt_clr_device_cache";
+    public static final String KEY_CLRCHIST="clr_chat_hist";
+    public static final String KEY_FRIENDLIST="friend_list";
 
     private static SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener=new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override

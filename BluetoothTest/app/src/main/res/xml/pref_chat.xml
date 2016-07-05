@@ -4,7 +4,7 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
-        android:key="bt_clr_chat_hist"
+        android:key="clr_chat_hist"
         android:summary="@string/pref_description_clr_chat_hist"
         android:title="@string/pref_title_clr_chat_hist" />
 
