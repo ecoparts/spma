@@ -390,6 +390,34 @@ public class SPMAServiceConnector {
 
 
     }
+    /**
+     * Sends a message to refresh friend status of a given device
+     *
+     * @return true if service is running and message was sent
+     */
+    @Deprecated
+    public boolean setDeviceAsFriend(String remoteAddress, boolean setAsFriend) {
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending RefreshFriendStatus");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "RefreshFriendStatus");
+                mdvCmd.put("Address", remoteAddress);
+                mdvCmd.put("Friend", setAsFriend);
+                mdvCmd.put("UserID", userId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+
+
+    }
 
     /**
      * Sends a message to the service to make the device visible
