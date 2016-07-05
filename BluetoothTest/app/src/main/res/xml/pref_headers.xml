@@ -8,6 +8,11 @@
         android:title="@string/pref_header_general" />
 
     <header
+        android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$BluetoothPreferenceFragment"
+        android:title="@string/pref_header_bt" />
+
+
+    <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
