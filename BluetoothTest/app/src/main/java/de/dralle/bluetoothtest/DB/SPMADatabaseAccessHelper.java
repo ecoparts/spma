@@ -215,6 +215,7 @@ public class SPMADatabaseAccessHelper {
         boolean friend = false;
         if (dID > -1) {
             friend = deviceAccessHelper.isDeviceFriend(dID, userID);
+            Log.i(LOG_TAG,"Device "+address+" is friend "+friend);
         }
         unlockDB();
         return friend;

@@ -189,9 +189,10 @@ public class DeviceAccessHelper {
     public void addDeviceAsFriend(int deviceID, int userID) {
         if(!isDeviceFriend(deviceID,userID)){
             ContentValues values = new ContentValues();
-            values.put("DeviceID", userID);
+            values.put("DeviceID", deviceID);
             values.put("UserID", userID);
             connection.insert("Friends",null,values);
+            Log.v(LOG_TAG,"Device "+deviceID+" added as friend for user "+userID);
         }
     }
     /**
@@ -203,9 +204,10 @@ public class DeviceAccessHelper {
     public void removeDeviceAsFriend(int deviceID, int userID) {
         if(isDeviceFriend(deviceID,userID)){
             ContentValues values = new ContentValues();
-            values.put("DeviceID", userID);
+            values.put("DeviceID", deviceID);
             values.put("UserID", userID);
             connection.delete("Friends","UserID=? and DeviceID=?",new String[]{userID+"",deviceID+""});
+            Log.v(LOG_TAG,"Device "+deviceID+" deleted as friend for user "+userID);
         }
     }
     /**
@@ -221,6 +223,8 @@ public class DeviceAccessHelper {
             cnt=c.getInt(0);
         }
         c.close();
+
+        Log.v(LOG_TAG,"Device "+deviceID+" is friend for user "+userID+" : "+cnt);
         return cnt>0;
     }
 

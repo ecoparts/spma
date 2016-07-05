@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BluetoothTest</string>
-    <string name="app_version">0.20a</string>
-    <string name="db_version">9</string>
+    <string name="app_version">0.21a</string>
+    <string name="db_version">10</string>
     <string name="dbname">spma</string>
     <string-array name="dbcreate">
         <item>
