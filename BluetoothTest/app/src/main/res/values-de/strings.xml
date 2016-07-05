@@ -8,7 +8,7 @@
     <string name="uuid_secure">cb918f7b-0550-41c5-a4e3-e75df009a82e</string>
     <string name="startBTserver">Starte Bluetooth Server</string>
     <string name="stopBTserver">Stoppe Bluetooth Empfänger</string>
-    <string name="send">Send</string>
+    <string name="send">Senden</string>
     <string name="connectionRequested">Verbindung angefragt</string>
     <string name="connectionFailed">Verbindung gescheitert</string>
     <string name="connectionRetrieved">Verbindung empfangen</string>
