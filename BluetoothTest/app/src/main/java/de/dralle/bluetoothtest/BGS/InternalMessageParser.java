@@ -168,7 +168,7 @@ public class InternalMessageParser {
             case "ClearCachedDevices":
                 deviceManager.clearCachedDevices();
                 break;
-            case "ClearChatHist":
+            case "ClearCachedHist":
                 SPMADatabaseAccessHelper.getInstance(con).clearChatHistory(localUserManager.getUserId());
                 break;
             case "ClearEncKeys":

@@ -91,7 +91,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                     break;
                 case KEY_CLRCRYPTOLOCAL:
-                    if(sharedPreferences.getBoolean(KEY_CLRCHIST,false)){
+                    if(sharedPreferences.getBoolean(KEY_CLRCRYPTOLOCAL,false)){
                         SPMAServiceConnector.getInstance(null).regenerateKeys();
                     }
                     break;
