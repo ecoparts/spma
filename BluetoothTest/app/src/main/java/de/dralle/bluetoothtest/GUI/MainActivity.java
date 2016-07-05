@@ -188,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
 
         IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
         registerReceiver(broadcastReceiver, filter);
+
+        serviceConnector.requestCachedDevices();
     }
 
     private void setupTabIcons() {

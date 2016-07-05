@@ -20,7 +20,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
 import de.dralle.bluetoothtest.DB.DeviceDBData;
@@ -188,6 +190,7 @@ public class SPMAServiceConnector {
                 }
                 break;
             case "ScanFinished":
+                requestCachedDevices();
                 broadcastToNearbyDevicesFragment(msgData.toString());
             default:
                 broadcastToGUI(msgData.toString());
@@ -200,15 +203,17 @@ public class SPMAServiceConnector {
         parentActivity.startActivity(newChatIntent);
     }
     public void startSettings(){
+        requestCachedDevices();
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(parentActivity);
         String userName=getUserName();
         if(userName!=null){
-           sharedPref.edit().putString(SettingsActivity.KEY_USERNAME, userName).commit();
+           sharedPref.edit().putString(SettingsActivity.KEY_USERNAME, userName).apply();
         }
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BGSON,isServiceRunning()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTON,isBtOn()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTDISCOVERABLE,isBtVisible()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTLISTENERS,listenersOnline).commit();
+        sharedPref.edit().putBoolean(SettingsActivity.KEY_BGSON,isServiceRunning()).apply();
+        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTON,isBtOn()).apply();
+        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTDISCOVERABLE,isBtVisible()).apply();
+        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTLISTENERS,listenersOnline).apply();
 
         Intent settingsIntent = new Intent(parentActivity, SettingsActivity.class);
         parentActivity.startActivity(settingsIntent);
