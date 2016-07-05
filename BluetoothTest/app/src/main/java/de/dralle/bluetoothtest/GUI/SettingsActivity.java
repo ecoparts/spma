@@ -56,9 +56,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case KEY_BGSON:
                     if(sharedPreferences.getBoolean(KEY_BGSON,true)){
-                        SPMAServiceConnector.getInstance(null).stopService();
-                    }else{
                         SPMAServiceConnector.getInstance(null).startService();
+                    }else{
+                        SPMAServiceConnector.getInstance(null).stopService();
+                    }
+                    break;
+                case KEY_BTON:
+                    if(sharedPreferences.getBoolean(KEY_BTON,true)){
+                        SPMAServiceConnector.getInstance(null).turnBluetoothOn();
+                    }else{
+                        SPMAServiceConnector.getInstance(null).turnBluetoothOff();
+                    }
+                    break;
+                case KEY_BTDISCOVERABLE:
+                    if(sharedPreferences.getBoolean(KEY_BTDISCOVERABLE,false)){
+                        SPMAServiceConnector.getInstance(null).makeDeviceVisible(300);
+                    }else{
+                        SPMAServiceConnector.getInstance(null).makeDeviceVisible(1);
+                    }
+                    break;
+                case KEY_BTLISTENERS:
+                    if(sharedPreferences.getBoolean(KEY_BTLISTENERS,false)){
+                        SPMAServiceConnector.getInstance(null).startListeners();
+                    }else{
+                        SPMAServiceConnector.getInstance(null).stopListeners();
                     }
                     break;
                 default:
