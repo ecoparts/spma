@@ -43,6 +43,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_BGSON = "bgs_on";
     private SPMAServiceConnector serviceConnector;
     public static final String KEY_USERNAME="user_name";
+    public static final String KEY_BTON="bt_on";
+    public static final String KEY_BTDISCOVERABLE="bt_discoverable_on";
+    public static final String KEY_BTLISTENERS="bt_listeners_on";
 
     private static SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener=new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -57,7 +60,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }else{
                         SPMAServiceConnector.getInstance(null).startService();
                     }
-
                     break;
                 default:
                     break;
