@@ -4,8 +4,6 @@
     <string name="scan">Scan</string>
     <string name="btNotSupported">Bluetooth wird nicht unterstützt</string>
     <string name="btNotEnabled">Bluetooth ist nicht aktiviert</string>
-    <string name="uuid_insecure">d453cc08-615b-4300-b802-ccb61927aca9</string>
-    <string name="uuid_secure">cb918f7b-0550-41c5-a4e3-e75df009a82e</string>
     <string name="startBTserver">Starte Bluetooth Server</string>
     <string name="stopBTserver">Stoppe Bluetooth Empfänger</string>
     <string name="send">Senden</string>
@@ -49,4 +47,8 @@
     <string name="nearby">Umgebung</string>
     <string name="pref_header_enc">Verschlüsselung</string>
     <string name="pref_header_general">Allgemein</string>
+    <string name="pref_title_clr_crypt_keys_local">Lösche meine Schlüssel</string>
+    <string name="pref_title_clr_crypt_keys_foreign">Lösche fremde Schlüssel</string>
+    <string name="pref_description_clr_crypt_keys_foreign">Lösche gespeichert Schlüssel anderer Geräte. Die Schlüssel müssen erneut ausgetauscht werden. DIes geschieht automatisch.</string>
+    <string name="pref_description_clr_crypt_keys_local">Erzwinge neugenerierung der Schlüssel von diesem Gerät</string>
 </resources>
