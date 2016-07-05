@@ -46,6 +46,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_BTON="bt_on";
     public static final String KEY_BTDISCOVERABLE="bt_discoverable_on";
     public static final String KEY_BTLISTENERS="bt_listeners_on";
+    public static final String KEY_BTCLR="bt_clr_device_cache";
 
     private static SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener=new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -80,6 +81,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         SPMAServiceConnector.getInstance(null).startListeners();
                     }else{
                         SPMAServiceConnector.getInstance(null).stopListeners();
+                    }
+                    break;
+                case KEY_BTCLR:
+                    if(sharedPreferences.getBoolean(KEY_BTCLR,false)){
+                        SPMAServiceConnector.getInstance(null).startListeners();
                     }
                     break;
                 default:
