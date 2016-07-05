@@ -58,8 +58,10 @@ public class FriendSelectPreference extends MultiSelectListPreference{
             for(int i=0;i<friendListValues.length;i++){
                 if(friendList.contains(friendListValues[i])) {
                     Log.v(LOG_TAG, "Entry " + friendListEntries[i] + " Value " + friendListValues[i]+" shall be added as friend");
+                    serviceConnector.setDeviceAsFriend(friendListValues[i]+"",true);
                 }else{
                     Log.v(LOG_TAG, "Entry " + friendListEntries[i] + " Value " + friendListValues[i]+" shall not be added as friend");
+                    serviceConnector.setDeviceAsFriend(friendListValues[i]+"",false);
                 }
             }
         }

@@ -152,8 +152,10 @@ public class InternalMessageParser {
                 }
                 break;
             case "RefreshFriendStatus":
-                if(msgData.getBoolean("Friend")){
-                    SPMADatabaseAccessHelper.getInstance(con).
+                try {
+                    SPMADatabaseAccessHelper.getInstance(con).befriendDevice(msgData.getString("Address"),localUserManager.getUserId(),msgData.getBoolean("Friend"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 break;
             case "ClearCachedDevices":

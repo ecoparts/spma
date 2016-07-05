@@ -395,7 +395,6 @@ public class SPMAServiceConnector {
      *
      * @return true if service is running and message was sent
      */
-    @Deprecated
     public boolean setDeviceAsFriend(String remoteAddress, boolean setAsFriend) {
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending RefreshFriendStatus");

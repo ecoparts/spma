@@ -198,8 +198,10 @@ public class SPMADatabaseAccessHelper {
         if(dID>-1){
             if(befriend){
                 deviceAccessHelper.addDeviceAsFriend(dID,userID);
+                Log.i(LOG_TAG,"Device "+address+" is now friend");
             }else{
                 deviceAccessHelper.removeDeviceAsFriend(dID,userID);
+                Log.i(LOG_TAG,"Device "+address+" is now unfriend");
             }
         }
         unlockDB();
