@@ -180,6 +180,49 @@ public class DeviceAccessHelper {
         connection.update("Devices", values, "Address = ?", new String[]{address});
         Log.i(LOG_TAG, "Device " + address + " updated with name " + friendlyName);
     }
+    /**
+     * Updates a devices friend status
+     *
+     * @param deviceID
+     * @param userID
+     */
+    public void addDeviceAsFriend(int deviceID, int userID) {
+        if(!isDeviceFriend(deviceID,userID)){
+            ContentValues values = new ContentValues();
+            values.put("DeviceID", userID);
+            values.put("UserID", userID);
+            connection.insert("Friends",null,values);
+        }
+    }
+    /**
+     * Updates a devices friend status
+     *
+     * @param deviceID
+     * @param userID
+     */
+    public void removeDeviceAsFriend(int deviceID, int userID) {
+        if(isDeviceFriend(deviceID,userID)){
+            ContentValues values = new ContentValues();
+            values.put("DeviceID", userID);
+            values.put("UserID", userID);
+            connection.delete("Friends","UserID=? and DeviceID=?",new String[]{userID+"",deviceID+""});
+        }
+    }
+    /**
+     * Checks a devices friend status
+     *
+     * @param deviceID
+     * @param userID
+     */
+    public boolean isDeviceFriend(int deviceID, int userID) {
+        int cnt=0;
+        Cursor c=connection.rawQuery("select count(*) from Friends where UserID=? and DeviceID=?",new String[]{userID+"",deviceID+""});
+        if(c.moveToNext()){
+            cnt=c.getInt(0);
+        }
+        c.close();
+        return cnt>0;
+    }
 
     /**
      * Get all devices, that are saved in this database

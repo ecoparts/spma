@@ -189,7 +189,23 @@ public class SPMADatabaseAccessHelper {
 
 
     }
+    /**
+     * Adds a device entry to the friends table
+     */
+    public void befriendDevice(String address, int userID, boolean befriend) {
+        lockDB();
+        int dID=deviceAccessHelper.getDeviceID(address);
+        if(dID>-1){
+            if(befriend){
+                deviceAccessHelper.addDeviceAsFriend(dID,userID);
+            }else{
+                deviceAccessHelper.removeDeviceAsFriend(dID,userID);
+            }
+        }
+        unlockDB();
 
+
+    }
     /**
      * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LastSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
      *

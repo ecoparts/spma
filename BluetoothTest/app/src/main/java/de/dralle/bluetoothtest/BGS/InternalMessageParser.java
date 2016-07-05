@@ -151,6 +151,11 @@ public class InternalMessageParser {
                     internalMessageSender.sendCachedDevice(dd);
                 }
                 break;
+            case "RefreshFriendStatus":
+                if(msgData.getBoolean("Friend")){
+                    SPMADatabaseAccessHelper.getInstance(con).
+                }
+                break;
             case "ClearCachedDevices":
                 deviceManager.clearCachedDevices();
                 break;
