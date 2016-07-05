@@ -390,6 +390,12 @@ public class SPMADatabaseAccessHelper {
         cryptoKeysAccessHelper.deleteAllForeignRSAKeys();
         unlockDB();
     }
+    public void clearChatHistory(int userID) {
+        lockDB();
+        messageHistoryAccessHelper.clearSendMessages(userID);
+        messageHistoryAccessHelper.clearReceivedMessages(userID);
+        unlockDB();
+    }
 
     public void closeConnections() {
         lockDB();

@@ -71,5 +71,12 @@ public class MessageHistoryAccessHelper {
         }
 
     }
+    public void clearSendMessages(int UserID){
+        connection.delete("Send","UserID = ?",new String[]{UserID+""});
+
+    }
+    public void clearReceivedMessages(int UserID){
+        connection.delete("Received","UserID = ?",new String[]{UserID+""});
+    }
 
 }

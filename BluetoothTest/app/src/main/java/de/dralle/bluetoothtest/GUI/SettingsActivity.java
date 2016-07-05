@@ -83,6 +83,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         SPMAServiceConnector.getInstance(null).clearCachedDevices();
                     }
                     break;
+                case KEY_CLRCHIST:
+                    if(sharedPreferences.getBoolean(KEY_CLRCHIST,false)){
+                        SPMAServiceConnector.getInstance(null).clearCachedHist();
+                    }
+                    break;
                 default:
                     break;
             }
