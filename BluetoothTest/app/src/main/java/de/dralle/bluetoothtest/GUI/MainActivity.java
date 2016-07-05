@@ -129,10 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
                 drawerLayout.closeDrawers();
                 switch (menuItem.getItemId()) {
-                    case R.id.profile:
-                        Toast.makeText(getApplicationContext(), "Profil ausgewählt", Toast.LENGTH_SHORT).show();
-
-                        return true;
                     case R.id.settings:
                         serviceConnector.startSettings();
 
