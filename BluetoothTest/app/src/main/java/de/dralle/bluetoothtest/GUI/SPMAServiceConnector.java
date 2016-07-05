@@ -196,9 +196,7 @@ public class SPMAServiceConnector {
            sharedPref.edit().putString(SettingsActivity.KEY_USERNAME, userName).commit();
         }
         sharedPref.edit().putBoolean(SettingsActivity.KEY_BGSON,isServiceRunning()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTON,isBtOn()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTDISCOVERABLE,isBtVisible()).commit();
-        sharedPref.edit().putBoolean(SettingsActivity.KEY_BTLISTENERS,listenersOnline).commit();
+
 
         Intent settingsIntent = new Intent(parentActivity, SettingsActivity.class);
         parentActivity.startActivity(settingsIntent);
