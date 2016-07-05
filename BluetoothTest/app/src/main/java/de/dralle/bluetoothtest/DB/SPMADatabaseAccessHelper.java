@@ -384,6 +384,13 @@ public class SPMADatabaseAccessHelper {
         return null;
     }
 
+    public void deleteAllForeignCryptoKeys() {
+        lockDB();
+        cryptoKeysAccessHelper.deleteAllForeignAESKeys();
+        cryptoKeysAccessHelper.deleteAllForeignRSAKeys();
+        unlockDB();
+    }
+
     public void closeConnections() {
         lockDB();
         writeConnection.close();

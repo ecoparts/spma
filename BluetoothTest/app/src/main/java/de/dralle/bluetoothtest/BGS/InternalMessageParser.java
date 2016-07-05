@@ -168,6 +168,12 @@ public class InternalMessageParser {
             case "ClearCachedDevices":
                 deviceManager.clearCachedDevices();
                 break;
+            case "ClearChatHist":
+                deviceManager.clearCachedDevices();
+                break;
+            case "ClearEncKeys":
+                SPMADatabaseAccessHelper.getInstance(con).deleteAllForeignCryptoKeys();
+                break;
             case "ResendCachedConnections":
                 Collection<BluetoothConnection> connections = BluetoothConnectionObserver.getInstance().getBtConnections();
                 for(BluetoothConnection c: connections){
