@@ -165,6 +165,16 @@ public class SPMADatabaseAccessHelper {
         unlockDB();
         return d;
     }
+    /**
+     * Delete all cached devices
+     */
+    public void deleteAllCachedDevices() {
+        lockDB();
+        cryptoKeysAccessHelper.deleteAllForeignAESKeys();
+        cryptoKeysAccessHelper.deleteAllForeignRSAKeys();
+        deviceAccessHelper.deleteAllCachedDevices();
+        unlockDB();
+    }
 
 
     /**

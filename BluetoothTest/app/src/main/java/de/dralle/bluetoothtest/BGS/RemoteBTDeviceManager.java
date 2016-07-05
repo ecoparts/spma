@@ -121,7 +121,7 @@ public class RemoteBTDeviceManager {
     }
     public void clearCachedDevices() {
         SPMADatabaseAccessHelper db = SPMADatabaseAccessHelper.getInstance(context);
-        db.cl
+        db.deleteAllCachedDevices();
     }
 
     public void clearSupportedDevices() {
