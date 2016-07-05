@@ -658,6 +658,52 @@ public class SPMAServiceConnector {
         return false;
     }
     /**
+     * Sends a message to the service to clear the cached devices
+     *
+     * @return true if service is running and message was sent
+     */
+    public boolean clearCachedHist() {
+        cachedDevices.clear();
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending ClearCachedHist");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "ClearCachedHist");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
+    /**
+     * Sends a message to the service to clear the cached devices
+     *
+     * @return true if service is running and message was sent
+     */
+    public boolean clearEncKeys() {
+        cachedDevices.clear();
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending ClearEncKeys");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "ClearEncKeys");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
+    /**
      * Sends a message to the service to resendFriendDevices
      *
      * @return true if service is running and message was sent
