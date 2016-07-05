@@ -161,7 +161,7 @@ public class TwoFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Device d=friends.get((int) id);
                 if(d!=null){
-                    serviceConnector.startChatActvity(d.getDeviceAddress());
+                    serviceConnector.requestNewConnection(d.getDeviceAddress());
                 }
 
             }

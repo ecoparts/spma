@@ -158,7 +158,7 @@ public class ThreeFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Connection c=cachedConnections.get((int) id);
                 if(c!=null){
-                    serviceConnector.startChatActvity(c.getConnectionTargetDeviceAddress());
+                    serviceConnector.requestNewConnection(c.getConnectionTargetDeviceAddress());
                 }
 
             }
