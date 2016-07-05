@@ -8,3 +8,9 @@ local.properties
 .DS_Store
 /build
 /captures
+/.idea/compiler.xml
+/.idea/copyright
+/.idea/libraries
+/.idea/misc.xml
+/.idea/workspace.xml
+/.idea/vcs.xml
