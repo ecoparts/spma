@@ -23,7 +23,6 @@
     <string name="closeDrawer">Schliessen</string>
     <string name="startChatFailed">Kann den Chat nicht starten</string>
     <string name="title_activity_settings">Einstellungen</string>
-
     <string name="pref_title_display_name">Anzeigename</string>
     <string name="pref_default_display_name">John Smith</string>
     <string name="pref_title_social_background_service">Background Service</string>
