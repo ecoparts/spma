@@ -190,4 +190,9 @@
     <string name="pref_description_friend_list">Manage a list of the devices you wish to show up as friends</string>
     <string name="pref_title_friend_list">Friends list</string>
     <string name="pref_header_chat">Chat</string>
+    <string name="pref_title_clr_crypt_keys_foreign">Delete foreign crypto keys</string>
+    <string name="pref_description_clr_crypt_keys_foreign">Delete saved foreign crypto keys. Keys must be re-exchanged. This happens automatically.</string>
+    <string name="pref_description_clr_crypt_keys_local">Delete my crypto keys and force regenerating them</string>
+    <string name="pref_title_clr_crypt_keys_local">Delete my crypto keys</string>
+    <string name="pref_header_enc">Encryption</string>
 </resources>

@@ -13,6 +13,9 @@
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$ChatPreferenceFragment"
         android:title="@string/pref_header_chat" />
+    <header
+        android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$EncryptionPreferenceFragment"
+        android:title="@string/pref_header_enc" />
 
 
     <header

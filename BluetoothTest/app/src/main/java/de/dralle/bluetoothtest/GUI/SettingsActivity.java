@@ -42,6 +42,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String KEY_BTCLR="bt_clr_device_cache";
     public static final String KEY_CLRCHIST="clr_chat_hist";
     public static final String KEY_FRIENDLIST="friend_list";
+    public static final String KEY_CLRCRYPTOLOCAL="clr_crypt_keys_local";
+    public static final String KEY_CLRCRYPTOFOREIGN="clr_crypt_keys_foreign";
 
     private static SharedPreferences.OnSharedPreferenceChangeListener prefChangeListener=new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -86,6 +88,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 case KEY_CLRCHIST:
                     if(sharedPreferences.getBoolean(KEY_CLRCHIST,false)){
                         SPMAServiceConnector.getInstance(null).clearCachedHist();
+                    }
+                    break;
+                case KEY_CLRCRYPTOLOCAL:
+                    if(sharedPreferences.getBoolean(KEY_CLRCHIST,false)){
+                        SPMAServiceConnector.getInstance(null).regenerateKeys();
+                    }
+                    break;
+                case KEY_CLRCRYPTOFOREIGN:
+                    if(sharedPreferences.getBoolean(KEY_CLRCRYPTOFOREIGN,false)){
+                        SPMAServiceConnector.getInstance(null).clearEncKeys();
                     }
                     break;
                 default:
@@ -178,7 +190,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 ||BluetoothPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName)
-                ||ChatPreferenceFragment.class.getName().equals(fragmentName);
+                ||ChatPreferenceFragment.class.getName().equals(fragmentName)
+                ||EncryptionPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     /**
@@ -204,6 +217,43 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
+            setHasOptionsMenu(true);
+
+
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    /**
+     * This fragment shows encryption preferences only.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class EncryptionPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(prefChangeListener);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(prefChangeListener);
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_enc);
             setHasOptionsMenu(true);
 
 

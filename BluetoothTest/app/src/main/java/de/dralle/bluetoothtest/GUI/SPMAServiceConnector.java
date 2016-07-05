@@ -924,7 +924,7 @@ public class SPMAServiceConnector {
      * @return true if service is running and message was sent
      */
 
-    public boolean regenerateKeys(String name) {
+    public boolean regenerateKeys() {
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending RegenerateKeys");
             JSONObject mdvCmd = new JSONObject();
