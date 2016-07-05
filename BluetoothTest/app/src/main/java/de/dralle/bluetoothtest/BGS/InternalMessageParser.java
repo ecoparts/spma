@@ -146,11 +146,13 @@ public class InternalMessageParser {
                 }
                 break;
             case "ResendCachedDevices":
-                internalMessageSender.sendClearDevices();
                 List<DeviceDBData> devicesData = deviceManager.getAllCachedDevices();
                 for (DeviceDBData dd : devicesData) {
                     internalMessageSender.sendCachedDevice(dd);
                 }
+                break;
+            case "ClearCachedDevices":
+                deviceManager.clearCachedDevices();
                 break;
             case "ResendCachedConnections":
                 Collection<BluetoothConnection> connections = BluetoothConnectionObserver.getInstance().getBtConnections();

@@ -78,4 +78,13 @@ public class CryptoKeysAccessHelper {
         return null;
     }
 
+    public void deleteAllForeignAESKeys() {
+        Log.i(LOG_TAG, "Deleting foreign AES keys from db");
+        connection.delete("AES",null,null);
+    }
+    public void deleteAllForeignRSAKeys() {
+        Log.i(LOG_TAG, "Deleting foreign RSA keys from db");
+        connection.delete("RSA",null,null);
+    }
+
 }

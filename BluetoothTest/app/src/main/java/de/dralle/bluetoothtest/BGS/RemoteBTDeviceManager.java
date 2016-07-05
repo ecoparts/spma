@@ -119,6 +119,10 @@ public class RemoteBTDeviceManager {
         nextReturnedBTDevice = 0;
         nearbyDevices.clear();
     }
+    public void clearCachedDevices() {
+        SPMADatabaseAccessHelper db = SPMADatabaseAccessHelper.getInstance(context);
+        db.cl
+    }
 
     public void clearSupportedDevices() {
         supportedDevices.clear();
