@@ -128,6 +128,10 @@ public class DeviceAccessHelper {
         }
         c.close();
     }
+    public void deleteAllCachedDevices() {
+        Log.i(LOG_TAG, "Deleting cached devices from db");
+        connection.delete("Devices",null,null);
+    }
 
     /**
      * Updates the last seen property of a given device
