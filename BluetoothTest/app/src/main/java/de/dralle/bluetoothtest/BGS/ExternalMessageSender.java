@@ -216,7 +216,7 @@ public class ExternalMessageSender {
             BluetoothConnectionObserver bco = BluetoothConnectionObserver.getInstance();
             BluetoothConnection connection = bco.getConnection(address);
             BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-            if (adapter != null) {
+            if (adapter != null&&connection!=null) {
                 JSONObject jsoOut = getMessageFrame();
                 DeviceDBData device = deviceManager.getCachedDevice(address);
                 jsoOut=enrichData(jsoOut,encryptionLevel,"Text",sender,device,connection);
@@ -266,7 +266,9 @@ public class ExternalMessageSender {
             original.put("SenderVersionApp", con.getResources().getString(R.string.app_version));
             original.put("Timestamp", System.currentTimeMillis() / 1000);
 
-            original.put("Secure", connection.isSecureConnection());
+            if(connection!=null){
+                original.put("Secure", connection.isSecureConnection());
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
