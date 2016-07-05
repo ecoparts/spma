@@ -32,6 +32,7 @@ import java.util.List;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final String LOG_TAG = SettingsActivity.class.getName();
+    public static final String ACTION_NEW_MSG = "SettingsActivity.ACTION_NEW_MSG";
     public static final String KEY_BGSON = "bgs_on";
     private SPMAServiceConnector serviceConnector;
     public static final String KEY_USERNAME="user_name";
