@@ -9,10 +9,13 @@
         android:title="@string/pref_title_clr_chat_hist" />
 
     <MultiSelectListPreference
-        android:defaultValue="1"
         android:key="friend_list"
         android:summary="@string/pref_description_friend_list"
-        android:title="@string/pref_title_friend_list" />
+        android:title="@string/pref_title_friend_list"
+        android:entries="@array/empty_array"
+        android:entryValues="@array/empty_array"
+        android:defaultValue="@array/empty_array"
+        />
 
 
 </PreferenceScreen>
