@@ -185,4 +185,6 @@
     <string name="pref_title_acp_connections">New connections</string>
     <string name="pref_title_clr_device_cache">Clear cached devices</string>
     <string name="pref_description_clr_device_cache">Delete device cache. This will also delete all saved encryption keys from cached devices.</string>
+    <string name="pref_title_clr_chat_hist">Clear chat history</string>
+    <string name="pref_description_clr_chat_hist">Clear local chat history</string>
 </resources>

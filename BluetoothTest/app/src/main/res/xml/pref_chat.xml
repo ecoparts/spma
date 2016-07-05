@@ -2,18 +2,11 @@
 
 
 
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-    <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
-        android:inputType="textCapWords"
-        android:key="user_name"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/pref_title_display_name"
-        android:summary="" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="bt_clr_chat_hist"
+        android:summary="@string/pref_description_clr_chat_hist"
+        android:title="@string/pref_title_clr_chat_hist" />
 
     <SwitchPreference
         android:defaultValue="false"
