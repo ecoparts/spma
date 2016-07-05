@@ -10,6 +10,9 @@
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$BluetoothPreferenceFragment"
         android:title="@string/pref_header_bt" />
+    <header
+        android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$ChatPreferenceFragment"
+        android:title="@string/pref_header_chat" />
 
 
     <header
