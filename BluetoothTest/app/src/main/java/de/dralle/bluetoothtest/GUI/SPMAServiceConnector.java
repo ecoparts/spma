@@ -46,6 +46,9 @@ public class SPMAServiceConnector {
         if (instance == null) {
             instance = new SPMAServiceConnector(parentActivity);
         }
+        if(parentActivity!=null){
+            instance.setParentActivity(parentActivity);
+        }
         return instance;
     }
 
@@ -309,6 +312,10 @@ public class SPMAServiceConnector {
 
 
     private Activity parentActivity;
+
+    public void setParentActivity(Activity parentActivity) {
+        this.parentActivity = parentActivity;
+    }
 
     private SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;

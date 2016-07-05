@@ -8,7 +8,7 @@
         android:summary="@string/pref_description_clr_chat_hist"
         android:title="@string/pref_title_clr_chat_hist" />
 
-    <MultiSelectListPreference
+    <de.dralle.bluetoothtest.GUI.FriendSelectPreference
         android:key="friend_list"
         android:summary="@string/pref_description_friend_list"
         android:title="@string/pref_title_friend_list"
