@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BluetoothTest</string>
+    <string name="scan">Scan</string>
+    <string name="btNotSupported">Bluetooth wird nicht unterstützt</string>
+    <string name="btNotEnabled">Bluetooth ist nicht aktiviert</string>
+    <string name="uuid_insecure">d453cc08-615b-4300-b802-ccb61927aca9</string>
+    <string name="uuid_secure">cb918f7b-0550-41c5-a4e3-e75df009a82e</string>
+    <string name="startBTserver">Starte Bluetooth Server</string>
+    <string name="stopBTserver">Stoppe Bluetooth Empfänger</string>
+    <string name="send">Send</string>
+    <string name="connectionRequested">Verbindung angefragt</string>
+    <string name="connectionFailed">Verbindung gescheitert</string>
+    <string name="connectionRetrieved">Verbindung empfangen</string>
+    <string name="connectionReady">Verbindung bereit</string>
+    <string name="connectionShutdown">Verbindung wird abgebaut</string>
+    <string name="BGSNotificationTitle">SPMA Service</string>
+    <string name="BGSNotificationText">Service läuft gerade</string>
+    <string name="menuProfile">Profil</string>
+    <string name="menuSettings">Einstellungen</string>
+    <string name="actionSettings">Einstellungen</string>
+    <string name="openDrawer">Öffnen</string>
+    <string name="closeDrawer">Schliessen</string>
+    <string name="startChatFailed">Kann den Chat nicht starten</string>
+    <string name="title_activity_settings">Einstellungen</string>
+
+    <string name="pref_title_display_name">Anzeigename</string>
+    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_title_social_background_service">Background Service</string>
+    <string name="pref_description_background_services">Schalte den Service ein und aus</string>
+    <string name="pref_header_bt">Bluetooth</string>
+    <string name="pref_description_bt">Schalte Bluetooth ein und aus</string>
+    <string name="pref_title_bt">Bluetooth</string>
+    <string name="pref_description_discoverable">Zeige das Gerät anderen Geräten</string>
+    <string name="pref_title_discoverable">sichtbar</string>
+    <string name="pref_description_acp_connections">Akzeptiere ankommende Verbindungen</string>
+    <string name="pref_title_acp_connections">Neue Verbindungen</string>
+    <string name="pref_title_clr_device_cache">Gespeicherte Geräte löschen</string>
+    <string name="pref_description_clr_device_cache">
+    Gespeicherte Geräte löschen. Die Schlüssel der Geräte werden ebenfalls gelöscht.
+    </string>
+    <string name="pref_title_clr_chat_hist">Chathistorie löschen</string>
+    <string name="pref_description_clr_chat_hist">locale Chathistorie löschen</string>
+    <string name="pref_description_friend_list">
+    Liste der Geräte verwalten welche als Freunde angezeigt werden sollen
+    </string>
+    <string name="pref_title_friend_list">Liste der Freunde</string>
+    <string name="pref_header_chat">Chat</string>
+</resources>
