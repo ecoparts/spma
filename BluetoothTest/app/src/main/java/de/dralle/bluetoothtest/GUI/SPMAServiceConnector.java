@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dralle.bluetoothtest.BGS.SPMAService;
+import de.dralle.bluetoothtest.DB.DeviceDBData;
 import de.dralle.bluetoothtest.DB.User;
 
 /**
@@ -49,6 +50,7 @@ public class SPMAServiceConnector {
     private boolean receiveBroadcasts = false;
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
     private List<BluetoothDevice> supportedDevices;
+    private List<DeviceDBData> cachedDevices;
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private boolean listenersOnline = false;
@@ -86,9 +88,12 @@ public class SPMAServiceConnector {
             case "NewSupportedDevice":
                 handleNewSupportedDevice(msgData);
                 break;
+            case "NewCachedDevice":
+                handleNewCachedDevice(msgData);
+                break;
             case "ClearDevices":
                 supportedDevices.clear();
-                Log.i(LOG_TAG, "Cached devices cleared");
+                Log.i(LOG_TAG, "Supported devices cleared");
                 broadcastToNearbyDevicesFragment(msgData.toString());
                 broadcastToGUI(msgData.toString());
                 break;
@@ -238,6 +243,32 @@ public class SPMAServiceConnector {
      * handle a newly discovered bt device
      */
     private void handleNewSupportedDevice(JSONObject msgData) {
+        String address = "";
+        try {
+            address = msgData.getString("Address");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (BluetoothAdapter.checkBluetoothAddress(address)) {
+            BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (defaultAdapter != null) {
+                BluetoothDevice device = defaultAdapter.getRemoteDevice(address);
+                if (device != null) {
+                    Log.i(LOG_TAG, "Added device with address " + address);
+                    supportedDevices.add(device);
+                    broadcastToNearbyDevicesFragment(msgData.toString());
+                }
+            } else {
+                Log.w(LOG_TAG, "Adapter is null. Now this is bad");
+            }
+        } else {
+            Log.w(LOG_TAG, "Address " + address + " is not valid");
+        }
+    }
+    /**
+     * handle a resend cached bt device
+     */
+    private void handleNewCachedDevice(JSONObject msgData) {
         String address = "";
         try {
             address = msgData.getString("Address");
