@@ -116,17 +116,9 @@
     <string name="closeDrawer">Close</string>
     <string name="startChatFailed">Could not start chat</string>
     <string name="title_activity_settings">Settings</string>
-
-
     <string name="pref_header_general">General</string>
-
-
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name" translatable="false">John Smith</string>
-
-
-
-   
     <string name="pref_title_social_background_service">Background Service</string>
     <string name="pref_description_background_services">Turn the service on and off</string>
     <string name="pref_header_bt">Bluetooth</string>
