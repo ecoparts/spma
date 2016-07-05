@@ -76,8 +76,6 @@ public class InternalMessageSender {
             e.printStackTrace();
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
-
-
     }
     /**
      * Send a message that a new device was recovered from cache
@@ -99,8 +97,27 @@ public class InternalMessageSender {
             e.printStackTrace();
         }
         sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
-
-
+    }
+    /**
+     * Send a message that a new device was recovered from cache
+     *
+     * @param device newly recovered device
+     */
+    public void sendFriendDevice(DeviceDBData device) {
+        JSONObject mdvCmd = getMessageFrame();
+        try {
+            mdvCmd.put("Action", "FriendDevice");
+            mdvCmd.put("Name", device.getDeviceName());
+            mdvCmd.put("SuperFriendlyName", device.getFriendlyName());
+            mdvCmd.put("Address", device.getAddress());
+            boolean bonded = device.isPaired();
+            mdvCmd.put("Paired", bonded);
+            mdvCmd.put("LastSeen", device.getLastSeen());
+            mdvCmd.put("ID", device.getId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendInternalMessageForSPMAServiceConnector(mdvCmd.toString());
     }
     /**
      * Send a message that a connection is ready, either from a list of cached connection or newly created

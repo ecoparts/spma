@@ -151,6 +151,13 @@ public class InternalMessageParser {
                     internalMessageSender.sendCachedDevice(dd);
                 }
                 break;
+            case "INeedFriends":
+                List<DeviceDBData> friends = deviceManager.getAllCachedDevices();
+                for (DeviceDBData dd : friends) {
+                    if(SPMADatabaseAccessHelper.getInstance(con).isDeviceFriend(dd.getAddress(),localUserManager.getUserId()))
+                        internalMessageSender.sendFriendDevice(dd);
+                }
+                break;
             case "RefreshFriendStatus":
                 try {
                     SPMADatabaseAccessHelper.getInstance(con).befriendDevice(msgData.getString("Address"),localUserManager.getUserId(),msgData.getBoolean("Friend"));

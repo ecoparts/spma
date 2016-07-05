@@ -195,6 +195,10 @@ public class SPMAServiceConnector {
             case "ScanFinished":
                 requestCachedDevices();
                 broadcastToNearbyDevicesFragment(msgData.toString());
+                break;
+            case "FriendDevice":
+                broadcastToFriendDevicesFragment(msgData.toString());
+                break;
             default:
                 broadcastToGUI(msgData.toString());
                 break;
@@ -481,6 +485,9 @@ public class SPMAServiceConnector {
     public void broadcastToNearbyDevicesFragment(String msg) {
         broadcastTo(msg, OneFragment.ACTION_NEW_MSG);
     }
+    public void broadcastToFriendDevicesFragment(String msg) {
+        broadcastTo(msg, TwoFragment.ACTION_NEW_MSG);
+    }
     public void broadcastToConnectionsFragment(String msg) {
         broadcastTo(msg, ThreeFragment.ACTION_NEW_MSG);
     }
@@ -641,6 +648,29 @@ public class SPMAServiceConnector {
                 mdvCmd.put("Extern", false);
                 mdvCmd.put("Level", 0);
                 mdvCmd.put("Action", "ClearCachedDevices");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            broadcastInternalMessageToService(mdvCmd.toString());
+            return true;
+        }
+        Log.w(LOG_TAG, "Service not running");
+        return false;
+    }
+    /**
+     * Sends a message to the service to resendFriendDevices
+     *
+     * @return true if service is running and message was sent
+     */
+    public boolean requestFriends() {
+        if (isServiceRunning()) {
+            Log.i(LOG_TAG, "Service is running. Sending INeedFriends");
+            JSONObject mdvCmd = new JSONObject();
+            try {
+                mdvCmd.put("Extern", false);
+                mdvCmd.put("Level", 0);
+                mdvCmd.put("Action", "INeedFriends");
+                mdvCmd.put("UserID", userId);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

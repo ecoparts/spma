@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import de.dralle.bluetoothtest.GUI.ToStringAdapters.Connection;
+import de.dralle.bluetoothtest.GUI.ToStringAdapters.Device;
 import de.dralle.bluetoothtest.R;
 
 /**
@@ -33,8 +34,8 @@ public class TwoFragment extends Fragment {
     private SPMAServiceConnector serviceConnector;
     public static final String ACTION_NEW_MSG = "TwoFragment.ACTION_NEW_MSG";
 
-    private ArrayList<Connection> cachedConnections;
-    private ArrayAdapter<Connection> displayAdapter;
+    private ArrayList<Device> friends;
+    private ArrayAdapter<Device> displayAdapter;
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -54,21 +55,21 @@ public class TwoFragment extends Fragment {
                     if (serviceConnector.checkMessage(msgData)) {
                         switch (serviceConnector.getMessageAction(msgData)) {
                             case "FriendDevice":
-                                Connection c = new Connection();
+                                Device d=new Device();
                                 try {
-                                    if(msgData.getBoolean("Active")){
-                                        c.setConnectionName(msgData.getString("Name"));
-                                        c.setConnectionTargetDeviceAddress(msgData.getString("Address"));
-                                        c.setLastSeen(msgData.getInt("LastSeen"));
-                                        c.setSecure(msgData.getBoolean("Secure"));
-                                        cachedConnections.add(c);
-                                        Log.i(LOG_TAG,"Connection added "+c);
-                                    }
+
+                                        d.setDeviceName(msgData.getString("Name"));
+                                        d.setDeviceAddress(msgData.getString("Address"));
+                                        d.setLastSeen(msgData.getInt("LastSeen"));
+                                        d.setPaired(msgData.getBoolean("Paired"));
+                                        friends.add(d);
+                                        Log.i(LOG_TAG,"Friend added "+d);
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 displayAdapter.notifyDataSetChanged();
-                                Log.v(LOG_TAG,"Connection added "+"Dataset changed");
+                                Log.v(LOG_TAG,"Friend added "+"Dataset changed");
                                 break;
                             default:
                                 break;
@@ -99,7 +100,9 @@ public class TwoFragment extends Fragment {
         IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
         getActivity().registerReceiver(broadcastReceiver, filter);
 
-        serviceConnector.requestCachedConnections();
+        friends.clear();
+        displayAdapter.notifyDataSetChanged();
+        serviceConnector.requestFriends();
     }
 
     @Override
@@ -134,8 +137,8 @@ public class TwoFragment extends Fragment {
         }
         serviceConnector.selectUser(0); //always select user 0, since its the default one
 
-        cachedConnections = new ArrayList<>();
-        displayAdapter = new ArrayAdapter<Connection>(getActivity(), android.R.layout.simple_list_item_1, cachedConnections) {
+        friends = new ArrayList<>();
+        displayAdapter = new ArrayAdapter<Device>(getActivity(), android.R.layout.simple_list_item_1, friends) {
             @Override
             public View getView(int position, View convertView,
                                 ViewGroup parent) {
@@ -156,9 +159,9 @@ public class TwoFragment extends Fragment {
         lvDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Connection c=cachedConnections.get((int) id);
-                if(c!=null){
-                    serviceConnector.startChatActvity(c.getConnectionTargetDeviceAddress());
+                Device d=friends.get((int) id);
+                if(d!=null){
+                    serviceConnector.startChatActvity(d.getDeviceAddress());
                 }
 
             }

@@ -205,8 +205,19 @@ public class SPMADatabaseAccessHelper {
             }
         }
         unlockDB();
-
-
+    }
+    /**
+     * Adds a device entry to the friends table
+     */
+    public boolean isDeviceFriend(String address, int userID) {
+        lockDB();
+        int dID = deviceAccessHelper.getDeviceID(address);
+        boolean friend = false;
+        if (dID > -1) {
+            friend = deviceAccessHelper.isDeviceFriend(dID, userID);
+        }
+        unlockDB();
+        return friend;
     }
     /**
      * Adds a device to the device table, if the device is new. Otherwise updates the existing device. LastSeen will be updated based on current system time. LastSeen and ID wont be read from the DeviceDBData class
