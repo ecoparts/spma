@@ -51,6 +51,11 @@ public class SPMAServiceConnector {
     private static final String LOG_TAG = SPMAServiceConnector.class.getName();
     private List<BluetoothDevice> supportedDevices;
     private List<DeviceDBData> cachedDevices;
+
+    public List<DeviceDBData> getCachedDevices() {
+        return cachedDevices;
+    }
+
     public static final String ACTION_NEW_MSG = "SPMAServiceConnector.ACTION_NEW_MSG";
     private final int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private boolean listenersOnline = false;
@@ -267,29 +272,34 @@ public class SPMAServiceConnector {
     }
     /**
      * handle a resend cached bt device
+     * @return Device was inserted into the list
      */
-    private void handleNewCachedDevice(JSONObject msgData) {
-        String address = "";
+    private boolean handleNewCachedDevice(JSONObject msgData) {
+        String address = null;
         try {
             address = msgData.getString("Address");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (BluetoothAdapter.checkBluetoothAddress(address)) {
-            BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (defaultAdapter != null) {
-                BluetoothDevice device = defaultAdapter.getRemoteDevice(address);
-                if (device != null) {
-                    Log.i(LOG_TAG, "Added device with address " + address);
-                    supportedDevices.add(device);
-                    broadcastToNearbyDevicesFragment(msgData.toString());
-                }
-            } else {
-                Log.w(LOG_TAG, "Adapter is null. Now this is bad");
+        if (address!=null) {
+            for(DeviceDBData d:cachedDevices){
+                if(d.getAddress().equals(address))
+                    return false;
+            }
+            DeviceDBData d= null;
+            try {
+                d = new DeviceDBData(address,msgData.getString("Name"),msgData.getString("SuperFriendlyName"),msgData.getInt("LastSeen"),msgData.getInt("ID"),msgData.getBoolean("Paired"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(d!=null){
+                cachedDevices.add(d);
+                return true;
             }
         } else {
             Log.w(LOG_TAG, "Address " + address + " is not valid");
         }
+        return false;
     }
 
 
@@ -298,6 +308,7 @@ public class SPMAServiceConnector {
     private SPMAServiceConnector(Activity parentActivity) {
         this.parentActivity = parentActivity;
         supportedDevices = new ArrayList<>();
+        cachedDevices=new ArrayList<>();
         registerForBroadcasts();
     }
 
@@ -583,6 +594,7 @@ public class SPMAServiceConnector {
      * @return true if service is running and message was sent
      */
     public boolean clearCachedDevices() {
+        cachedDevices.clear();
         if (isServiceRunning()) {
             Log.i(LOG_TAG, "Service is running. Sending ClearCachedDevices");
             JSONObject mdvCmd = new JSONObject();

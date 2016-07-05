@@ -116,6 +116,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         serviceConnector=SPMAServiceConnector.getInstance(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        serviceConnector.requestCachedDevices();
+    }
+
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */

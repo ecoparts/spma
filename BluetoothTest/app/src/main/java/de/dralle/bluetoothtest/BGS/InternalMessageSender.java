@@ -94,6 +94,7 @@ public class InternalMessageSender {
             boolean bonded = device.isPaired();
             mdvCmd.put("Paired", bonded);
             mdvCmd.put("LastSeen", device.getLastSeen());
+            mdvCmd.put("ID", device.getId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
