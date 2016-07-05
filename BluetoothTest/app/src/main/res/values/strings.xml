@@ -196,4 +196,8 @@
     <string name="pref_title_clr_crypt_keys_local">Delete my crypto keys</string>
     <string name="pref_header_enc">Encryption</string>
     <string name="pref_summary_display_name">Change your users name. This name will be displayed on other devices in front of your messages.</string>
+    <string name="nearby">Nearby</string>
+    <string name="friends">Friends</string>
+    <string name="chats">Chats</string>
+    <item name="nearby" type="id">Nearby</item>
 </resources>

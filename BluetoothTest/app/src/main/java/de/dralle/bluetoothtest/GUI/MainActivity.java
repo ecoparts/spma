@@ -200,9 +200,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new OneFragment(), "Umgebung"); //TODO: reference strings.xml instead
-        adapter.addFragment(new TwoFragment(), "Freunde");
-        adapter.addFragment(new ThreeFragment(), "Chats");
+        adapter.addFragment(new OneFragment(), getResources().getString(R.string.nearby));
+        adapter.addFragment(new TwoFragment(), getResources().getString(R.string.friends));
+        adapter.addFragment(new ThreeFragment(), getResources().getString(R.string.chats));
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
