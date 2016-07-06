@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BluetoothTest</string>
+    <string name="app_name">BluetoothChat</string>
     <string name="app_version" translatable="false">0.21a</string>
     <string name="db_version" translatable="false">10</string>
     <string name="dbname" translatable="false">spma</string>
