@@ -216,6 +216,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            findPreference(SettingsActivity.KEY_BGSON).setEnabled(false);
 
 
         }
