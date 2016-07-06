@@ -58,7 +58,7 @@ public class TwoFragment extends Fragment {
                                 Device d=new Device();
                                 try {
 
-                                        d.setDeviceName(msgData.getString("Name"));
+                                        d.setDeviceName(msgData.getString("SuperFriendlyName"));
                                         d.setDeviceAddress(msgData.getString("Address"));
                                         d.setLastSeen(msgData.getInt("LastSeen"));
                                         d.setPaired(msgData.getBoolean("Paired"));
