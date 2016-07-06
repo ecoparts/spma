@@ -99,6 +99,8 @@ public class ThreeFragment extends Fragment {
         IntentFilter filter = new IntentFilter(ACTION_NEW_MSG);
         getActivity().registerReceiver(broadcastReceiver, filter);
 
+         cachedConnections.clear();
+        displayAdapter.notifyDataSetChanged();
         serviceConnector.requestCachedConnections();
     }
 
