@@ -19,7 +19,7 @@ import de.dralle.bluetoothtest.GUI.SPMAServiceConnector;
 /**
  * Created by nils on 20.06.16.
  */
-public class "InternalMessageSender {
+public class InternalMessageSender {
     /**
      * Log tag. Used to identify this´ class log messages in log output
      */
