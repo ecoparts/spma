@@ -12,7 +12,7 @@
         android:title="@string/pref_header_bt" />
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$ChatPreferenceFragment"
-        android:icon="@drawable/chat_48"
+        android:icon="@drawable/chat_24"
         android:title="@string/pref_header_chat" />
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$EncryptionPreferenceFragment"
