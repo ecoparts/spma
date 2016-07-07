@@ -111,6 +111,7 @@ public class ChatActivity extends AppCompatActivity {
         if(deviceAddress!=null){
             unregisterReceiver(broadcastReceiver);
         }
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -186,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(broadcastReceiver, filter);
 
         serviceConnector.requestCachedDevices();
-
     }
 
     private void setupTabIcons() {
@@ -270,10 +269,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-
-        serviceConnector.stopListeners();
         serviceConnector.unregisterForBroadcasts();
-        //serviceConnector.stopService();
+        serviceConnector.stopListeners();
+        serviceConnector.stopService();
 
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null && btAdapter.isEnabled()) {

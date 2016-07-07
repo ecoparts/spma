@@ -180,7 +180,6 @@ public class SPMAServiceConnector {
                 saveNewUser(msgData);
                 break;
             case "ServiceStarted":
-                Log.v(LOG_TAG,"Service started message");
                 turnBluetoothOn();
                 makeDeviceVisible(300);
                 if(isBtOn()){
@@ -326,6 +325,7 @@ public class SPMAServiceConnector {
         this.parentActivity = parentActivity;
         supportedDevices = new ArrayList<>();
         cachedDevices=new ArrayList<>();
+        registerForBroadcasts();
     }
 
     public void registerForBroadcasts() {
