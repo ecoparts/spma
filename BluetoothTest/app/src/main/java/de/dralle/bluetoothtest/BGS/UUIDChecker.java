@@ -5,7 +5,9 @@ import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -19,7 +21,7 @@ public class UUIDChecker {
     /**
      * UUIDs to check for
      */
-    private List<UUID> uuidsToCheckFor = null;
+    private Set<UUID> uuidsToCheckFor = null;
 
     /**
      * Dirty hack for android 6.0.1
@@ -28,7 +30,7 @@ public class UUIDChecker {
 
     public UUIDChecker(boolean android6hack) {
         this.android6hack = android6hack;
-        uuidsToCheckFor = new ArrayList<>();
+        uuidsToCheckFor = new HashSet<>();
     }
 
     public void addUUID(UUID u) {
