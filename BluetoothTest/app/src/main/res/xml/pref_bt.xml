@@ -9,11 +9,13 @@
     <SwitchPreference
         android:defaultValue="false"
         android:key="bt_discoverable_on"
+        android:dependency="bt_on"
         android:summary="@string/pref_description_discoverable"
         android:title="@string/pref_title_discoverable" />
     <SwitchPreference
         android:defaultValue="false"
         android:key="bt_listeners_on"
+        android:dependency="bt_on"
         android:summary="@string/pref_description_acp_connections"
         android:title="@string/pref_title_acp_connections" />
     <CheckBoxPreference
