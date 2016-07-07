@@ -48,23 +48,17 @@ public class SPMADatabaseAccessHelper {
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
         db = new SPMADatabaseHelper(context);
-        openConnection();
-        createAccessHelpers();
-        unlockDB();
-    }
-
-    private void createAccessHelpers(){
         userAccessHelper = new UserAccessHelper(writeConnection);
         deviceAccessHelper = new DeviceAccessHelper(writeConnection);
         messageHistoryAccessHelper = new MessageHistoryAccessHelper(writeConnection);
         cryptoKeysAccessHelper = new CryptoKeysAccessHelper(writeConnection);
+        unlockDB();
     }
 
     public static SPMADatabaseAccessHelper getInstance(Context context) {
         if (instance == null) {
             instance = new SPMADatabaseAccessHelper(context);
         }
-        instance.openConnectionIfNecessary();
         return instance;
     }
 
@@ -77,9 +71,6 @@ public class SPMADatabaseAccessHelper {
     private void unlockDB() {
         dbLocked = false;
         Log.v(LOG_TAG, "Database unlocked");
-
-    }
-    public void openConnection(){
         if(writeConnection==null){
             writeConnection = db.getWritableDatabase();
             Log.i(LOG_TAG, "Database connection open");
@@ -87,17 +78,6 @@ public class SPMADatabaseAccessHelper {
             if(!writeConnection.isOpen()){
                 writeConnection = db.getWritableDatabase();
                 Log.i(LOG_TAG, "Database connection re-open");
-            }
-        }
-    }
-    public void openConnectionIfNecessary(){
-        if(writeConnection==null){
-            openConnection();
-            createAccessHelpers();
-        }else{
-            if(!writeConnection.isOpen()){
-                openConnection();
-                createAccessHelpers();
             }
         }
     }
