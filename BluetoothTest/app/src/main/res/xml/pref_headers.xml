@@ -9,6 +9,7 @@
 
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$BluetoothPreferenceFragment"
+        android:icon="@drawable/bluetooth_24_black"
         android:title="@string/pref_header_bt" />
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$ChatPreferenceFragment"
@@ -16,6 +17,7 @@
         android:title="@string/pref_header_chat" />
     <header
         android:fragment="de.dralle.bluetoothtest.GUI.SettingsActivity$EncryptionPreferenceFragment"
+        android:icon="@drawable/key_24_black"
         android:title="@string/pref_header_enc" />
 
 </preference-headers>

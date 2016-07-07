@@ -42,7 +42,7 @@ public class SPMANotificationManager {
         PendingIntent pInten = PendingIntent.getActivity(con, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //Create Notification
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(con)
-                .setSmallIcon(R.drawable.n_icon_test)
+                .setSmallIcon(R.drawable.bluetooth_128_blank)
                 .setContentTitle(con.getResources().getString(R.string.BGSNotificationTitle))
                 .setContentText(con.getResources().getString(R.string.BGSNotificationText))
                 .setOngoing(true);
