@@ -48,6 +48,8 @@ public class SPMADatabaseAccessHelper {
     private SPMADatabaseAccessHelper(Context context) {
         this.context = context;
         db = new SPMADatabaseHelper(context);
+        writeConnection = db.getWritableDatabase();
+        Log.i(LOG_TAG, "Database connection open");
         userAccessHelper = new UserAccessHelper(writeConnection);
         deviceAccessHelper = new DeviceAccessHelper(writeConnection);
         messageHistoryAccessHelper = new MessageHistoryAccessHelper(writeConnection);
@@ -71,15 +73,6 @@ public class SPMADatabaseAccessHelper {
     private void unlockDB() {
         dbLocked = false;
         Log.v(LOG_TAG, "Database unlocked");
-        if(writeConnection==null){
-            writeConnection = db.getWritableDatabase();
-            Log.i(LOG_TAG, "Database connection open");
-        }else{
-            if(!writeConnection.isOpen()){
-                writeConnection = db.getWritableDatabase();
-                Log.i(LOG_TAG, "Database connection re-open");
-            }
-        }
     }
 
     @Deprecated
