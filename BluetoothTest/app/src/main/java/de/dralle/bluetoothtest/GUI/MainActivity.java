@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
         serviceConnector.unregisterForBroadcasts();
         serviceConnector.stopListeners();
-        serviceConnector.stopService();
+        //serviceConnector.stopService();
 
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null && btAdapter.isEnabled()) {
